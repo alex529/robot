@@ -1,0 +1,34 @@
+\hypertarget{structtimer__t}{\section{timer\+\_\+t Struct Reference}
+\label{structtimer__t}\index{timer\+\_\+t@{timer\+\_\+t}}
+}
+
+
+The structure is used to enable delay functionalities has to be used in the following way\+:  
+
+
+
+
+{\ttfamily \#include $<$timer.\+h$>$}
+
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{structtimer__t_a080acd8538cab58318498768716925cd}{uint32\+\_\+t \hyperlink{structtimer__t_a080acd8538cab58318498768716925cd}{timer\+\_\+start}}\label{structtimer__t_a080acd8538cab58318498768716925cd}
+
+\begin{DoxyCompactList}\small\item\em Start time of the timer. \end{DoxyCompactList}\item 
+\hypertarget{structtimer__t_a253f5d8522b9d7cc268c2164bb35960e}{uint32\+\_\+t \hyperlink{structtimer__t_a253f5d8522b9d7cc268c2164bb35960e}{timer\+\_\+expires}}\label{structtimer__t_a253f5d8522b9d7cc268c2164bb35960e}
+
+\begin{DoxyCompactList}\small\item\em Alarm time. \end{DoxyCompactList}\item 
+\hypertarget{structtimer__t_ac09f40fc0fe9b649a369895f32859d8e}{uint8\+\_\+t \hyperlink{structtimer__t_ac09f40fc0fe9b649a369895f32859d8e}{do\+\_\+once}}\label{structtimer__t_ac09f40fc0fe9b649a369895f32859d8e}
+
+\begin{DoxyCompactList}\small\item\em Evaluate only once. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The structure is used to enable delay functionalities has to be used in the following way\+: 
+
+\hyperlink{structtimer__t}{timer\+\_\+t} delay\+\_\+timer; N\+O\+T\+E!!! has to be global/static tmr\+\_\+start(\&delay\+\_\+timer, dealy\+\_\+in\+\_\+milliseconds); if(tmr\+\_\+exp(\&delay\+\_\+timer)) do something; 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Car Charger Station/\+Car Charger Station/timer.\+h\end{DoxyCompactItemize}

@@ -1,0 +1,94 @@
+/*
+ * common.h
+ *
+ * Created: 2/28/2014 11:58:57 AM
+ *  Author: Administrator
+ */ 
+
+
+#ifndef COMMON_H_
+#define COMMON_H_
+
+#include <avr/io.h>
+#include "timer.h"
+#include "task.h"
+
+
+/**
+ * \brief Toggles the LED that is present on port b pin 0.
+ */
+#define toggle_led()		{PORTB^=(1<<PB0);}
+/*
+ * Sets the LED on.
+ */
+#define led_on()			{PORTB&=~(1<<PB0);}
+/*
+ * Sets the LED off.
+ */
+#define led_off()			{PORTB|=(1<<PB0);}
+/**
+ * \brief Used for copying task buffers to the UART, copies first 5 bits of a buffer.
+ */
+#define task_buffer_copy(paste_buffer,copy_buffer)		{paste_buffer[0]=copy_buffer[0]; paste_buffer[1]=copy_buffer[1]; paste_buffer[2]=copy_buffer[2]; paste_buffer[3]=copy_buffer[3]; paste_buffer[4]=copy_buffer[4];}
+/**
+ * Decodes an uint value into a string.
+ * NOTE!!! Last char has to be manually set to 0 if string parsing wants to be used.
+ */
+#define uint_to_string(uint_nr,string_ptr, string_size)	{for(int i=0;uint_nr || i>string_size;i++){string_ptr[string_size-i-1]=uint_nr%10+48;	uint_nr/=10;}}
+/**
+ * Swaps the value of 2 1byte variables.
+ */
+#define swap_uint8_t(x,y) {uint8_t temp;temp=x;x=y;y=temp;}//if memory needed can be changed with x^=y;y^=x;x^=y;	
+/*
+ * Used for debug porpoises it sends an INIT_CONN command with a desired value attached to it.
+ */
+#define debug_task(u32_value)							{test_task.data.command = INIT_CONN;	test_task.data.value = u32_value;	USART_Transmit_command(&test_task);}
+	
+/**
+* Used for converting different types of values
+*/
+typedef union
+{
+    uint8_t b[4];
+    uint16_t w[2];
+    uint32_t dw;
+} u32_union;
+
+/**
+* Encapsulates all the system status related flags in one place, for easy assignment and clearing.
+*/
+typedef union
+{
+	struct //TODO maybe delete the interrupt part of the status
+	{
+		uint8_t uart_rx : 1;
+		uint8_t uart_tx : 1;
+		uint8_t not_used : 6;
+	} interrupt;
+	struct
+	{
+		uint8_t connected : 1;
+		
+		uint8_t start_charging : 1;
+		uint8_t charging : 1;
+		uint8_t finished_charging : 1;
+		
+		uint8_t transaction_in_progres : 1;
+		
+		uint8_t ack_received : 1;
+		uint8_t task_sent : 1;
+		
+		uint8_t card_valid : 1;
+	} system;
+	uint8_t byte[2];
+} status_t;
+
+
+timer_t test_timer;
+task_t test_task;
+
+
+extern volatile status_t status;
+extern volatile bool run_card_reader;
+
+#endif /* COMMON_H_ */
