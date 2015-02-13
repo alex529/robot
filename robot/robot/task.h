@@ -18,30 +18,19 @@
 */
 typedef enum
 {
-    INIT_CONN,      ACK_INIT_CONN,
-	PING,			ACK_PING,
+	STRING=0,
+	INIT_CONN=1,    
+	ACK_INIT_CONN=2,
+	PING=3,			
+	STOP_CONN=4,
 	
-    ASK_DAY,        ACK_ASK_DAY,
-    ASK_MONTH,      ACK_ASK_MONTH,
-    ASK_YEAR,       ACK_ASK_YEAR,
+    MOTOR_X_Y=20,
 	
-	ASK_SECOND,     ACK_ASK_SECOND,
-    ASK_MINUTE,     ACK_ASK_MINUTE,
-    ASK_HOUR,       ACK_ASK_HOUR,
+	PID_ERROR=40,			
 	
-    ASK_PRICE,      ACK_ASK_PRICE,
+	ADC1=60,
 	
-    SEND_CARD1,     ACK_SEND_CARD1,
-    SEND_CARD2,     ACK_SEND_CARD2,
-	
-    CARD_VALID,     ACK_CARD_VALID,
-    SEND_PIN,       ACK_SEND_PIN,
-    VALID_PIN,      ACK_VALID_PIN,
-	
-    START_CHARGING, ACK_START_CHARGING,
-    PARTIAL_COST,   ACK_PARTIAL_COSTS,
-    FINISH,         ACK_FINISH,
-	ERROR,			ACK_ERROR
+	DEBUG11=80
 	// NOTE!!! if new commands are added to task_command_t MAX_FUNCTION_POINTER_INDEX has to be updated.
 } task_command_t;
 
@@ -49,7 +38,7 @@ typedef enum
 * Represents the maximum number off commands acceptable by the com port.
 * NOTE!!! if new commands are added to task_command_t MAX_FUNCTION_POINTER_INDEX has to be updated.
 */
-#define MAX_FUNCTION_POINTER_INDEX	36 //if NEW TASKS are added increment value
+#define FUNCTION_POINTER_SIZE	8 
 
 /**
 * Clears the task queue.
@@ -58,15 +47,17 @@ typedef enum
 
 /**
 * Uses to create a generic way to handle the in/out data
+* NOTE!!! if the size of the buffer is changed task_buffer_copy() has to be updated
 */
 typedef union
 {
     struct
     {
         task_command_t command;
+        uint32_t timestamp;
         uint32_t value;
     } data;
-    uint8_t buffer[5];
+    uint8_t buffer[9];
 } task_t;
 
 /**
@@ -74,7 +65,7 @@ typedef union
 */
 typedef void (*task_function_ptr)(task_t*);
 
-extern task_function_ptr do_task[MAX_FUNCTION_POINTER_INDEX];
+extern task_function_ptr do_task[FUNCTION_POINTER_SIZE];
 
 void task_manager_init(void);
 void recive_task_init(void);

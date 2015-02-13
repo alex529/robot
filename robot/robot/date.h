@@ -15,19 +15,10 @@ typedef struct
 	uint32_t hour;
 	uint32_t minute;
 	uint32_t second;
-	uint32_t day;
-	uint32_t month;
-	uint32_t year;	
 } date_t;
 
 extern volatile date_t date;
 
-void set_hour(task_t *p);
-void set_minute(task_t *p);
-void set_second(task_t *p);
-void set_day(task_t *p);
-void set_month(task_t *p);
-void set_year(task_t *p);
 void clock_tick(void);
 void get_date(void);
 

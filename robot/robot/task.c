@@ -18,7 +18,7 @@
 #include "usart.h"
 
 uint8_t task_count;
-task_function_ptr do_task[MAX_FUNCTION_POINTER_INDEX]; // can be declared as half size
+task_function_ptr do_task[FUNCTION_POINTER_SIZE]; // can be declared as half size
 
 
 /**
@@ -42,30 +42,18 @@ struct node
  */
 void recive_task_init(void)
 {
-	//do_task[ACK_INIT_CONN]		= &ack_communication_init;
-	//do_task[ACK_PING]			= &ack_ping;
+	//do_task[STRING]        = &set_day;
+	//do_task[INIT_CONN]        = &set_day;
+	//do_task[PING]			= &ack_ping;	
+	//do_task[STOP_CONN]        = &set_day;
 	//
-	//do_task[ACK_ASK_DAY]        = &set_day;
-	//do_task[ACK_ASK_MONTH]      = &set_month;
-	//do_task[ACK_ASK_YEAR]       = &set_year;
+	//do_task[MOTOR_X_Y]      = &set_month;
 	//
-	//do_task[ACK_ASK_SECOND]     = &set_second;
-	//do_task[ACK_ASK_MINUTE]     = &set_minute;
-	//do_task[ACK_ASK_HOUR]       = &set_hour;
+	//do_task[PID_ERROR]       = &set_year;
 	//
-	//do_task[ACK_ASK_PRICE]		= &set_price;
+	//do_task[ADC]     = &set_second;
 	//
-	//do_task[ACK_SEND_CARD1]		= &ack_card1;
-	//do_task[ACK_SEND_CARD2]		= &ack_card2;
-	//
-	//do_task[ACK_CARD_VALID]		= &ack_card_valid;
-	//do_task[ACK_SEND_PIN]		= &ack_pin;
-	//do_task[ACK_VALID_PIN]		= &ack_pin_valid;
-	//
-	//do_task[ACK_START_CHARGING] = &ack_start_charging;
-	//do_task[ACK_FINISH]			= &ack_finish;
-	//do_task[ACK_PARTIAL_COSTS]	= &ack_partial_cost;
-	//do_task[ACK_ERROR]			= &ack_error;
+	//do_task[DEBUG]     = &set_minute;
 }
 /**
  * \brief Initializes the head and tail of the task queue.

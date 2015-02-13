@@ -43,14 +43,9 @@
 *
 */
 #define set_usart(value)                    {UDR=value;}
-/**
-* \brief Sets the 8bit value that will be sent by the USART port
-*
-*/
-#define USART_FRAME_SIZE	22
 
 
-extern volatile char tx_buffer[USART_FRAME_SIZE], rx_buffer[USART_FRAME_SIZE];
+extern char tx_buffer[sizeof(task_t)], rx_buffer[sizeof(task_t)];
 
 
 void USART_init(void);

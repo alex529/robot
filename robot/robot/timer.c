@@ -91,12 +91,11 @@ bool tmr_exp(timer_t *timer)
 	uint32_t timer_expires  = timer->timer_expires; // making a copy of the timer var for safety 
 
  	if (timer->do_once == false) //check if the timer has been evaluated is set to false so no initialization of the timer is needed if the timer is global/static
- 	{
-		
-		if (timer_expires > timer_start) //check if the milliseconds has overlapped
-		{
-			if((milliseconds < timer_start) || (milliseconds >= timer_expires)) //check timer boundaries 
-			{
+ 	{		
+		if (timer_expires > timer_start) //check if the milliseconds variable has overlapped(once every 50 days)
+		{//timer didn't overlap
+			if((milliseconds >= timer_expires) || (milliseconds < timer_start)) //check timer boundaries 
+			{//  check if milliseconds passed timer limit	     check if milliseconds overlapped		
 				timer->do_once=true; //ensure that the timer is evaluated once only
 				return true;
 			}
@@ -106,9 +105,9 @@ bool tmr_exp(timer_t *timer)
 			}
 		}
 		else if (timer_expires < timer_start)
-		{
+		{//timer overlapped
 			if((milliseconds < timer_start) && (milliseconds >= timer_expires))
-			{
+			{// 	   check if milliseconds overlapped		 check if milliseconds passed timer limit
 				timer->do_once = true;
 				return true;
 			}

@@ -29,7 +29,7 @@
 /**
  * \brief Used for copying task buffers to the UART, copies first 5 bits of a buffer.
  */
-#define task_buffer_copy(paste_buffer,copy_buffer)		{paste_buffer[0]=copy_buffer[0]; paste_buffer[1]=copy_buffer[1]; paste_buffer[2]=copy_buffer[2]; paste_buffer[3]=copy_buffer[3]; paste_buffer[4]=copy_buffer[4];}
+#define task_buffer_copy(paste_buffer,copy_buffer)		{paste_buffer[0]=copy_buffer[0]; paste_buffer[1]=copy_buffer[1]; paste_buffer[2]=copy_buffer[2]; paste_buffer[3]=copy_buffer[3]; paste_buffer[4]=copy_buffer[4]; paste_buffer[5]=copy_buffer[5]; paste_buffer[6]=copy_buffer[6]; paste_buffer[7]=copy_buffer[7]; paste_buffer[8]=copy_buffer[8];}
 /**
  * Decodes an uint value into a string.
  * NOTE!!! Last char has to be manually set to 0 if string parsing wants to be used.
@@ -39,11 +39,17 @@
  * Swaps the value of 2 1byte variables.
  */
 #define swap_uint8_t(x,y) {uint8_t temp;temp=x;x=y;y=temp;}//if memory needed can be changed with x^=y;y^=x;x^=y;	
-/*
+	
+/**
  * Used for debug porpoises it sends an INIT_CONN command with a desired value attached to it.
  */
 #define debug_task(u32_value)							{test_task.data.command = INIT_CONN;	test_task.data.value = u32_value;	USART_Transmit_command(&test_task);}
 	
+/**
+ * Returns the size of an buffer
+ */
+#define get_array_len(arrayName) (sizeof(arrayName) / sizeof((arrayName)[0]))
+		
 /**
 * Used for converting different types of values
 */

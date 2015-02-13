@@ -14,8 +14,8 @@
 #include "task.h"
 #include "common.h"
 
-	
-volatile char tx_buffer[USART_FRAME_SIZE]="AT+BAUD9", rx_buffer[USART_FRAME_SIZE];
+
+char tx_buffer[sizeof(task_t)], rx_buffer[sizeof(task_t)];
 
 /**
 * \brief Setting up the USART module full duplex 8 bit frame 19200bps.
@@ -34,7 +34,7 @@ void USART_init(void)
     //URSEL: Register Select
     //use data sheet or http://www.wormfood.net/avrbaudcalc.php to calculate
     UBRRH&=~(1<<URSEL);
-    UBRRL = 129; //baud rate set to 19200bps //fosc/(8*baud)-1
+    UBRRL = 64; //baud rate set to 19200bps //fosc/(8*baud)-1
     
     //U2X: Double the USART Transmission Speed
     UCSRA =(1<<U2X);
@@ -63,8 +63,6 @@ void USART_init(void)
 void USART_Transmit_command(task_t* task)
 {
     task_buffer_copy(tx_buffer,task->buffer);
-    swap_uint8_t(tx_buffer[1],tx_buffer[4]);
-    swap_uint8_t(tx_buffer[2],tx_buffer[3]);
 	enable_uart_transmision();
 	
 	status.system.ack_received = false;

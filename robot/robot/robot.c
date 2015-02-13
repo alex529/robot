@@ -39,7 +39,6 @@ timer_t test;
 *
 * \return int
 */
-static uint8_t date_s [22];
 int main(void)
 {
 	bool sync_time = true, backup_sync = false;
