@@ -20,8 +20,8 @@ typedef struct
 extern volatile date_t date;
 
 void clock_tick(void);
-void get_date(void);
 
-void date_to_string(char *date_20b);
+void get_date_to_string(char *date_9b);
+uint32_t get_date_to_int(void);
 
 #endif /* DATE_H_ */

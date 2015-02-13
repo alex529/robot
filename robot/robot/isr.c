@@ -31,15 +31,16 @@ volatile uint32_t system_tic;
 ISR(USART_RXC_vect)
 {
 	static uint8_t rx_index = 0;
-	
-	status.interrupt.uart_rx = true;
-    rx_buffer[rx_index]=get_usart();
-	if(++rx_index>get_array_len(rx_buffer)-1)
+    usart_rx_task.buffer[rx_index]=get_usart();
+	if(++rx_index>get_array_len(usart_rx_task.buffer)-1)
 	{
+		rx_index = 0;
+		status.system.task_received=true;
+		//task_buffer_copy(usart_tx_task.buffer,usart_rx_task.buffer);
+		//enable_uart_transmision();
 		//swap_uint8_t(rx_buffer[1],rx_buffer[4]);//bytes need to be swapped due to different arrangement in the server
 		//swap_uint8_t(rx_buffer[2],rx_buffer[3]);
-		rx_index = 0;
-		status.system.ack_received = true;
+		
 	}
 }
     
@@ -56,14 +57,13 @@ ISR(USART_UDRE_vect)
 {
 	static uint8_t tx_index = 0;
 	
-	status.interrupt.uart_tx = true;
-	set_usart(tx_buffer[tx_index]);
-	if (++tx_index>get_array_len(tx_buffer)-1)
+	set_usart(usart_tx_task.buffer[tx_index]);
+	if (++tx_index>get_array_len(usart_tx_task.buffer)-1)
 	{
 		tx_index = 0;
+		
 		disable_uart_transmision();
-		status.system.task_sent = true;
-		status.interrupt.uart_tx = false;
+		status.system.sending_task = false;
 	}
 }
     
@@ -79,8 +79,7 @@ ISR(USART_UDRE_vect)
  */
 ISR(TIMER1_COMPA_vect)
 {
-    milliseconds++;
-    if (milliseconds%100 == 0) //small error every ~50 days max number being 4294967295, so every 50 days the systems will have a 5 milliseconds error if the system is rebooted between this periods the system will act normally
+    if (++milliseconds%100 == 0) //small error every ~50 days max number being 4294967295, so every 50 days the systems will have a 5 milliseconds error if the system is rebooted between this periods the system will act normally
     {
         system_tic = true;
     }

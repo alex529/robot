@@ -13,9 +13,10 @@
 #include "usart.h"
 #include "task.h"
 #include "common.h"
+#include "date.h"
 
 
-char tx_buffer[sizeof(task_t)], rx_buffer[sizeof(task_t)];
+task_t usart_tx_task,usart_rx_task;
 
 /**
 * \brief Setting up the USART module full duplex 8 bit frame 19200bps.
@@ -57,14 +58,13 @@ void USART_init(void)
 * \author Alexandru
 *
 * \param task Used to specify a pointer to a task, that needs to be transmitted.
-* 
+*
 * \return void
 */
-void USART_Transmit_command(task_t* task)
+void USART_transmit_command(task_t* task)
 {
-    task_buffer_copy(tx_buffer,task->buffer);
+	status.system.sending_task=true;
+	task->data.timestamp=get_date_to_int();
+	task_buffer_copy(usart_tx_task.buffer,task->buffer);
 	enable_uart_transmision();
-	
-	status.system.ack_received = false;
-	status.system.task_sent = true;
 }

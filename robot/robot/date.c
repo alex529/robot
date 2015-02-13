@@ -51,7 +51,7 @@ void clock_tick(void)
  * 
  * \return void
  */
-void date_to_string(char *date_9b)
+void get_date_to_string(char *date_9b)
 {
 	if (get_array_len(date_9b)==9)
 	{
@@ -88,7 +88,7 @@ void date_to_string(char *date_9b)
  * 
  * \return uint32_t
  */
-uint32_t date_to_int(void) 
+uint32_t get_date_to_int(void) 
 {
 	uint32_t date_u32=date.hour*1000;
 	date_u32 += date.minute;

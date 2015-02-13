@@ -116,7 +116,7 @@ bool tmr_exp(timer_t *timer)
 				return false;
 			}
 		}
- 		else
+ 		else //either the timer_expires == timer_start or both of them are 0 this is the case when the timer_t pointer is not initialised
  		{
      		timer->do_once = true;
  			return true; // timer_expires == timer_start

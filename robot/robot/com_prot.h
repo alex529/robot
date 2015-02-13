@@ -15,14 +15,10 @@
 
 extern timer_t ping_tmr;
 
-
-void communication_init(void);
 void com_prot_task(void);
 
-void ack_communication_init(task_t *task);
-void ack_ping(task_t *task);
-void ack_finish(task_t *task);
-void ack_error(task_t *task);
+void communication_init(task_t *task);
+void stop(task_t *task);
 
 
 #endif /* COM_PROT_H_ */

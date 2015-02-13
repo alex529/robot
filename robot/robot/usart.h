@@ -45,11 +45,12 @@
 #define set_usart(value)                    {UDR=value;}
 
 
-extern char tx_buffer[sizeof(task_t)], rx_buffer[sizeof(task_t)];
+extern task_t usart_tx_task,usart_rx_task;
 
 
 void USART_init(void);
-void USART_Transmit_command(task_t* task);
+void USART_transmit_command(task_t* task);
+task_t* USART_receive_command(void);
 
 
 

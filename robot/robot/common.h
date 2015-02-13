@@ -65,33 +65,25 @@ typedef union
 */
 typedef union
 {
-	struct //TODO maybe delete the interrupt part of the status
-	{
-		uint8_t uart_rx : 1;
-		uint8_t uart_tx : 1;
-		uint8_t not_used : 6;
-	} interrupt;
 	struct
 	{
 		uint8_t connected : 1;
 		
-		uint8_t start_charging : 1;
-		uint8_t charging : 1;
-		uint8_t finished_charging : 1;
+		uint8_t sending_task : 1;
+		uint8_t task_received : 1;
 		
-		uint8_t transaction_in_progres : 1;
-		
-		uint8_t ack_received : 1;
-		uint8_t task_sent : 1;
-		
-		uint8_t card_valid : 1;
+		uint8_t not_used3 : 1;
+		uint8_t not_used4 : 1;		
+		uint8_t not_used5 : 1;		
+		uint8_t not_used6 : 1;
+		uint8_t not_used7 : 1;
 	} system;
-	uint8_t byte[2];
+	uint8_t byte[1];
 } status_t;
 
 
 timer_t test_timer;
-task_t test_task;
+task_t tes1_task;
 
 
 extern volatile status_t status;
