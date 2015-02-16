@@ -55,7 +55,11 @@ typedef union
     {
         task_command_t command;
         uint32_t timestamp;
-        uint32_t value;
+		union{
+			uint32_t value;
+			uint8_t u8[4];
+			char *str;
+		};
     } data;
     uint8_t buffer[9];
 } task_t;

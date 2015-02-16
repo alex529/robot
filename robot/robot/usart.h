@@ -1,6 +1,9 @@
 /*
  * usart.h
  *
+ * Eable/dissable_uart_transmision has to be used because if not the UDRE
+ * interrupt will always be fired
+ *
  * Created: 2/17/2014 12:49:08 PM
  *  Author: Alexandru Savin
  */
@@ -16,6 +19,7 @@
  * Eable/dissable_uart_transmision has to be used because if not the UDRE 
  * interrupt will always be fired.                                      
  ************************************************************************/
+
 /**
 * \brief enables uart udre interrupt
 *
@@ -50,7 +54,7 @@ extern task_t usart_tx_task,usart_rx_task;
 
 void USART_init(void);
 void USART_transmit_command(task_t* task);
-task_t* USART_receive_command(void);
+void USART_transmit_string(char* string);
 
 
 

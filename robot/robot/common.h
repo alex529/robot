@@ -43,7 +43,8 @@
 /**
  * Used for debug porpoises it sends an INIT_CONN command with a desired value attached to it.
  */
-#define debug_task(u32_value)							{test_task.data.command = INIT_CONN;	test_task.data.value = u32_value;	USART_Transmit_command(&test_task);}
+task_t test_task;
+#define debug_task(u32_value)							{test_task.data.command = INIT_CONN;	test_task.data.value = u32_value;	USART_transmit_command(&test_task);}
 	
 /**
  * Returns the size of an buffer

@@ -37,7 +37,6 @@ void communication_init(task_t *task)
 		status.system.connected = true;
 		clear_task_fifo();
 		add_task(&comm_init);
-		add_task(&comm_init);
 	}
 }
 
@@ -97,14 +96,14 @@ void com_prot_task(void)
 			tmr_start(&ping_tmr,SEC1);
 			ping();
 		}
-		if (status.system.sending_task == false) //if th
+		if (status.system.sending_task == false) //check if a transmission is in progress
 		{
 			tx_task = delete_task();
-			if (tx_task != NULL)
+			if (tx_task != NULL) // manipulation on a null pointer results in memory damage
 			{
 				if (tx_task->data.command == STRING)
 				{
-
+					
 				}
 				else
 				{

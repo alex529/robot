@@ -79,10 +79,13 @@ int main(void)
 		{
 			run_clock = false;
 			clock_tick();
+			//get_date_to_string(date1p);
+			//USART_transmit_string("AT+BAUD8");
+			
 		}
 		if (run_com_prot)
 		{
-			run_clock = false;
+			run_com_prot = false;
 			com_prot_task();
 		}
 	}

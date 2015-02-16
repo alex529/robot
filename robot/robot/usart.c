@@ -35,7 +35,7 @@ void USART_init(void)
     //URSEL: Register Select
     //use data sheet or http://www.wormfood.net/avrbaudcalc.php to calculate
     UBRRH&=~(1<<URSEL);
-    UBRRL = 64; //baud rate set to 19200bps //fosc/(8*baud)-1
+    UBRRL = 129; //baud rate set to 19200bps //fosc/(8*baud)-1
     
     //U2X: Double the USART Transmission Speed
     UCSRA =(1<<U2X);
@@ -66,5 +66,24 @@ void USART_transmit_command(task_t* task)
 	status.system.sending_task=true;
 	task->data.timestamp=get_date_to_int();
 	task_buffer_copy(usart_tx_task.buffer,task->buffer);
+	enable_uart_transmision();
+}
+
+
+/**
+* \brief Used to send a string over usart
+*
+* \author Alexandru
+*
+* \param task Used to specify a pointer to a string, that needs to be transmitted.
+*
+* \return void
+*/
+void USART_transmit_string(char* string)
+{
+	task_t string_task = {.data.command = STRING, .data.str = string};
+	status.system.sending_task=true;
+	string_task.data.timestamp=get_date_to_int();
+	task_buffer_copy(usart_tx_task.buffer,string_task.buffer);
 	enable_uart_transmision();
 }
