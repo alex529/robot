@@ -14,6 +14,7 @@
 #include "isr.h"
 #include "timer.h"
 #include "common.h"
+#include "adc.h"
 
 volatile status_t status;
 volatile uint32_t system_tic;
@@ -122,4 +123,32 @@ ISR(TIMER1_COMPA_vect)
 	{
 		system_tic = true;
 	}
+}
+
+ISR(ADC_vect) {
+	
+	int value=0;
+
+	//the measured value is 2+8 bits long. The following 2 lines creates a 10bit value from the 2+8 bit values
+	value = ADCL;
+	value = value + (ADCH<<8);
+	
+	if (itr8307sOnly) {
+		if (current_channel < PINA5 ){
+			// set channel ++
+		} else {
+			 //set channel PINA0
+		}
+	} else {
+		if (current_channel < PINA6 ){
+			// set channel ++
+		} else {
+			//set channel PINA0
+		}
+	}
+	
+	//store result
+	//create task if conversion is finished
+	
+	conversionIsInProgress = false;
 }

@@ -18,12 +18,14 @@
 #include "common.h"
 #include "date.h"
 #include "com_prot.h"
+#include "adc.h"
 
 // 1 represents 100 ms
 #define CLOCK_INTERVAL		10
 #define CHARGING_INTERVAL	10
 #define PING_INTERVAL		10
 #define COMM_PROT_INTERVAL	2
+#define ADC_INTERVAL		2
 #define CARD_READ_INTERVAL	5
 #define LCD_UPDATE_INTERVAL	5
 #define KEY_INTERVAL		1
@@ -44,14 +46,17 @@ int main(void)
 {
 	uint8_t clock_timer = CLOCK_INTERVAL;
 	uint8_t com_prot_timer = COMM_PROT_INTERVAL;
+	uint8_t adc_timer = COMM_PROT_INTERVAL;
 	
 	bool run_clock = false;
 	bool run_com_prot = false;
+	bool run_adc = false;
 
 	DDRB|=(1<<PB0);
 	led_off();
 	
 	status.byte[0]=0;
+	adc_measurement_init();
 	USART_init();
 	timer1_init();
 	recive_task_init();
@@ -72,6 +77,11 @@ int main(void)
 			{
 				com_prot_timer = COMM_PROT_INTERVAL;
 				run_com_prot = true;
+			}
+			if(--adc_timer == 0)
+			{
+				adc_timer = ADC_INTERVAL;
+				run_adc = true;
 			}
 			
 		}
