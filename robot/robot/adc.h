@@ -12,13 +12,11 @@
 #define setChannel(pin_number){ADMUX= ((pin_number && 0x1F) | (ADMUX&0xE0));}
 
 typedef struct {
-	uint16_t results[8];
-	bool itr8307ResultsPresent;
+	uint16_t results[2];
 	bool proximitySensorResultPresent;
 }adc_values_t;
 
 extern volatile int8_t current_channel;
-extern volatile bool itr8307sOnly;
 extern volatile bool conversionIsInProgress;
 extern volatile adc_values_t adc_values;
 

@@ -91,6 +91,7 @@ ISR(USART_UDRE_vect)
 				tx_index=0;
 				disable_uart_transmision();
 				status.system.sending_task = false;
+				toggle_led();
 			}
 			
 		}
@@ -101,7 +102,7 @@ ISR(USART_UDRE_vect)
 		if (++tx_index>get_array_len(usart_tx_task.buffer)-1)
 		{
 			tx_index = 0;
-			
+			toggle_led();
 			disable_uart_transmision();
 			status.system.sending_task = false;
 		}
@@ -128,21 +129,41 @@ ISR(TIMER1_COMPA_vect)
 
 ISR(ADC_vect) {
 	
-	int16_t value=0;
-	int16_t vstep = 488;
+	uint32_t value=0;
+	uint32_t vstep = 488;
 
 	//the measured value is 2+8 bits long. The following 2 lines creates a 10bit value from the 2+8 bit values
 	value = ADCL;
 	value = value + (ADCH<<8);
 	
+	value = value * 488;
+	
+	task_t string_task;
+	string_task.data.command = ADC1;
+	string_task.data.timestamp=0;
+	string_task.data.value = value;
+	add_task(&string_task);
+	
+	/* task_t string_task2;
+	string_task2.data.command = ADC1;
+	string_task2.data.timestamp=0;
+	string_task2.data.value = ADCH;
+	add_task(&string_task2);
+	*/
+	/*
 	adc_values.results[current_channel] = value * vstep;
 	
-	if (itr8307sOnly) {
-		if (current_channel < PINA5 ){
-			adc_values.itr8307ResultsPresent = true;
-			setChannel(++current_channel);
+		if (current_channel == PINA0 ){
+			setChannel(PINA1);
 			// starting next conversion
 			ADCSRA |= (1<<ADSC);
+			
+			task_t string_task;
+			string_task.data.command = ADC1;
+			string_task.data.timestamp=0;
+			string_task.data.value = 3;
+			add_task(&string_task);
+			
 		} else {
 			setChannel(PINA0);
 			
@@ -152,23 +173,7 @@ ISR(ADC_vect) {
 			string_task.data.value = 3;
 			add_task(&string_task);
 		}
-	} else {
-		if (current_channel < PINA6 ){
-			adc_values.itr8307ResultsPresent = true;
-			adc_values.proximitySensorResultPresent = true;
-			setChannel(++current_channel);
-			// starting next conversion
-			ADCSRA |= (1<<ADSC);
-		} else {
-			setChannel(PINA0);
-			
-			task_t string_task;
-			string_task.data.command = ADC1;
-			string_task.data.timestamp=0;
-			string_task.data.value = 3;
-			add_task(&string_task);
-		}
-	}
-	
+	*/
 	conversionIsInProgress = false;
+	
 }

@@ -13,7 +13,6 @@
 #include "task.h"
 
 volatile int8_t current_channel;
-volatile bool itr8307sOnly;
 volatile bool conversionIsInProgress;
 volatile bool enabled;
 volatile adc_values_t adc_values;
@@ -24,12 +23,6 @@ void adc_measurement_init() {
 	/** setting AD0-AD7 as input */
 	DDRA&=~(1<<PINA0);
 	DDRA&=~(1<<PINA1);
-	DDRA&=~(1<<PINA2);
-	DDRA&=~(1<<PINA3);
-	DDRA&=~(1<<PINA4);
-	DDRA&=~(1<<PINA5);
-	DDRA&=~(1<<PINA6);
-	DDRA&=~(1<<PINA7);
 
 	/** selecting ref voltage to AVCC */
 	ADMUX&=~(1<<REFS1);
@@ -46,7 +39,7 @@ void adc_measurement_init() {
 	ADCSRA|=(1<<ADPS1);
 	ADCSRA|=(1<<ADPS0);
 	
-	conversionIsInProgress = 0;
+	conversionIsInProgress = false;
 	current_channel = PINA0;
 }
 
@@ -56,29 +49,15 @@ void measure() {
 	//reset adc_values
 	adc_values = adc_values_empty;
 	
-	ADMUX&=~(1<<MUX4);
-	ADMUX&=~(1<<MUX3);
-	ADMUX&=~(1<<MUX2);
-	ADMUX&=~(1<<MUX1);
-	ADMUX&=~(1<<MUX0);
+	setChannel(PINA0);
 	
-	// is it set false in the ISR 
+	// it is set false in the ISR 
 	conversionIsInProgress = true;
 	
 	 /** starting conversion */
 	ADCSRA |= (1<<ADSC);
 	// channel is changed in the ISR 
 	// ISR is located in the ISR.c file
-}
-
-void measureWithItr8307sOnly() {
-	
-	itr8307sOnly = true;
-}
-
-void measureWithBothKindOfSensors() {
-	
-	itr8307sOnly = false;
 }
 
 void enableADC() {
@@ -90,23 +69,17 @@ void disableADC() {
 }
 
 void handleMeasurement() {
-	
-	task_t adc_task;
-	adc_task.data.command = ADC1;
-	adc_task.data.timestamp=0;
-	adc_task.data.value = 3;
 
-	add_task(&adc_task);
-	
-	/**
-	if (enabled)
+	 if (enabled)
 	{
-		if (!conversionIsInProgress)
+
+		if (conversionIsInProgress==false)
 		{
 			measure();
 			} else {
 			return;
 		}
-	}*/
+	}
+	
 }
 
