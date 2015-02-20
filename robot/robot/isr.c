@@ -172,7 +172,3 @@ ISR(ADC_vect) {
 	
 	conversionIsInProgress = false;
 }
-
-void setChannel(int pin) {
-	ADMUX|= pin && 0x1f;
-}
