@@ -8,10 +8,16 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include "adc.h"
+#include "task.h"
 
-static volatile int current_channel = PINA0;
-static volatile bool itr8307sOnly;
-static volatile bool conversionIsInProgress = 0;
+volatile int8_t current_channel;
+volatile bool itr8307sOnly;
+volatile bool conversionIsInProgress;
+volatile bool enabled;
+volatile adc_values_t adc_values;
+volatile adc_values_t adc_values_empty;
 
 void adc_measurement_init() {
 	
@@ -39,9 +45,22 @@ void adc_measurement_init() {
 	ADCSRA|=(1<<ADPS2);
 	ADCSRA|=(1<<ADPS1);
 	ADCSRA|=(1<<ADPS0);
+	
+	conversionIsInProgress = 0;
+	current_channel = PINA0;
 }
 
+// starts the first conversion, the rest will be started in the ISR
 void measure() {
+	
+	//reset adc_values
+	adc_values = adc_values_empty;
+	
+	ADMUX&=~(1<<MUX4);
+	ADMUX&=~(1<<MUX3);
+	ADMUX&=~(1<<MUX2);
+	ADMUX&=~(1<<MUX1);
+	ADMUX&=~(1<<MUX0);
 	
 	// is it set false in the ISR 
 	conversionIsInProgress = true;
@@ -62,12 +81,32 @@ void measureWithBothKindOfSensors() {
 	itr8307sOnly = false;
 }
 
+void enableADC() {
+	enabled = true;
+}
+
+void disableADC() {
+	enabled = false;
+}
+
 void handleMeasurement() {
-	if (!conversionIsInProgress)
+	
+	task_t adc_task;
+	adc_task.data.command = ADC1;
+	adc_task.data.timestamp=0;
+	adc_task.data.value = 3;
+
+	add_task(&adc_task);
+	
+	/**
+	if (enabled)
 	{
-		measure();
-	} else {
-		return;
-	}
+		if (!conversionIsInProgress)
+		{
+			measure();
+			} else {
+			return;
+		}
+	}*/
 }
 

@@ -10,6 +10,7 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include "usart.h"
 #include "isr.h"
 #include "timer.h"
@@ -127,28 +128,51 @@ ISR(TIMER1_COMPA_vect)
 
 ISR(ADC_vect) {
 	
-	int value=0;
+	int16_t value=0;
+	int16_t vstep = 488;
 
 	//the measured value is 2+8 bits long. The following 2 lines creates a 10bit value from the 2+8 bit values
 	value = ADCL;
 	value = value + (ADCH<<8);
 	
+	adc_values.results[current_channel] = value * vstep;
+	
 	if (itr8307sOnly) {
 		if (current_channel < PINA5 ){
-			// set channel ++
+			adc_values.itr8307ResultsPresent = true;
+			setChannel(++current_channel);
+			// starting next conversion
+			ADCSRA |= (1<<ADSC);
 		} else {
-			 //set channel PINA0
+			setChannel(PINA0);
+			
+			task_t string_task;
+			string_task.data.command = ADC1;
+			string_task.data.timestamp=0;
+			string_task.data.value = 3;
+			add_task(&string_task);
 		}
 	} else {
 		if (current_channel < PINA6 ){
-			// set channel ++
+			adc_values.itr8307ResultsPresent = true;
+			adc_values.proximitySensorResultPresent = true;
+			setChannel(++current_channel);
+			// starting next conversion
+			ADCSRA |= (1<<ADSC);
 		} else {
-			//set channel PINA0
+			setChannel(PINA0);
+			
+			task_t string_task;
+			string_task.data.command = ADC1;
+			string_task.data.timestamp=0;
+			string_task.data.value = 3;
+			add_task(&string_task);
 		}
 	}
 	
-	//store result
-	//create task if conversion is finished
-	
 	conversionIsInProgress = false;
+}
+
+void setChannel(int pin) {
+	ADMUX|= pin && 0x1f;
 }

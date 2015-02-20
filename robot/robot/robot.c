@@ -57,6 +57,7 @@ int main(void)
 	
 	status.byte[0]=0;
 	adc_measurement_init();
+	enableADC();
 	USART_init();
 	timer1_init();
 	recive_task_init();
@@ -97,6 +98,12 @@ int main(void)
 		{
 			run_com_prot = false;
 			com_prot_task();
+		}
+		
+		if (run_adc)
+		{
+			run_adc = false;
+			handleMeasurement();
 		}
 	}
 	return 1;

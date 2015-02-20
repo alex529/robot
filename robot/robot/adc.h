@@ -9,16 +9,25 @@
 #ifndef ADC_H_
 #define ADC_H_
 
-extern volatile int current_channel;
+typedef struct {
+	uint16_t results[8];
+	bool itr8307ResultsPresent;
+	bool proximitySensorResultPresent;
+}adc_values_t;
+
+extern volatile int8_t current_channel;
 extern volatile bool itr8307sOnly;
-extern volatile bool conversionIsInProgress = 0;
+extern volatile bool conversionIsInProgress;
+extern volatile adc_values_t adc_values;
 
-
+void disableADC(); 
+void enableADC();
 void handleMeasurement();
 void measureWithBothKindOfSensors();
 void measureWithItr8307sOnly();
 void measure();
 void adc_measurement_init();
+
 
 
 #endif /* ADC_H_ */

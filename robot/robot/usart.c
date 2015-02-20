@@ -35,7 +35,7 @@ void USART_init(void)
     //URSEL: Register Select
     //use data sheet or http://www.wormfood.net/avrbaudcalc.php to calculate
     UBRRH&=~(1<<URSEL);
-    UBRRL = 129; //baud rate set to 19200bps //fosc/(8*baud)-1
+    UBRRL = 10; //baud rate set to 19200bps //fosc/(8*baud)-1
     
     //U2X: Double the USART Transmission Speed
     UCSRA =(1<<U2X);
