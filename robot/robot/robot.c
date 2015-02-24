@@ -29,6 +29,7 @@
 #define CARD_READ_INTERVAL	5
 #define LCD_UPDATE_INTERVAL	5
 #define KEY_INTERVAL		1
+#define SEND_ADC_VALUE		5
 
 volatile bool run_card_reader = false;
 timer_t test;
@@ -47,10 +48,12 @@ int main(void)
 	uint8_t clock_timer = CLOCK_INTERVAL;
 	uint8_t com_prot_timer = COMM_PROT_INTERVAL;
 	uint8_t adc_timer = COMM_PROT_INTERVAL;
+	uint8_t send_adc_value = SEND_ADC_VALUE;
 	
 	bool run_clock = false;
 	bool run_com_prot = false;
 	bool run_adc = false;
+	bool run_send_adc_value = false;
 
 	DDRB|=(1<<PB0);
 	led_off();
@@ -84,6 +87,11 @@ int main(void)
 				adc_timer = ADC_INTERVAL;
 				run_adc = true;
 			}
+			if(--run_send_adc_value == 0)
+			{
+				run_send_adc_value = SEND_ADC_VALUE;
+				run_send_adc_value = true;
+			}
 			
 		}
 		if (run_clock) 
@@ -104,6 +112,12 @@ int main(void)
 		{
 			run_adc = false;
 			handleMeasurement();
+		}
+		
+		if (run_send_adc_value)
+		{
+			run_send_adc_value = false;
+			send_adc_value();
 		}
 	}
 	return 1;

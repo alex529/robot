@@ -13,7 +13,7 @@
 
 typedef struct {
 	uint16_t results[2];
-	bool proximitySensorResultPresent;
+	bool new_data_available; 
 }adc_values_t;
 
 extern volatile int8_t current_channel;

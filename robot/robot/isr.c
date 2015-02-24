@@ -135,45 +135,18 @@ ISR(ADC_vect) {
 	//the measured value is 2+8 bits long. The following 2 lines creates a 10bit value from the 2+8 bit values
 	value = ADCL;
 	value = value + (ADCH<<8);
-	
 	value = value * 488;
 	
-	task_t string_task;
-	string_task.data.command = ADC1;
-	string_task.data.timestamp=0;
-	string_task.data.value = value;
-	add_task(&string_task);
-	
-	/* task_t string_task2;
-	string_task2.data.command = ADC1;
-	string_task2.data.timestamp=0;
-	string_task2.data.value = ADCH;
-	add_task(&string_task2);
-	*/
-	/*
-	adc_values.results[current_channel] = value * vstep;
+	adc_values.results[current_channel] = value * vstep / 100;
 	
 		if (current_channel == PINA0 ){
 			setChannel(PINA1);
 			// starting next conversion
-			ADCSRA |= (1<<ADSC);
-			
-			task_t string_task;
-			string_task.data.command = ADC1;
-			string_task.data.timestamp=0;
-			string_task.data.value = 3;
-			add_task(&string_task);
-			
+			ADCSRA |= (1<<ADSC);			
 		} else {
-			setChannel(PINA0);
-			
-			task_t string_task;
-			string_task.data.command = ADC1;
-			string_task.data.timestamp=0;
-			string_task.data.value = 3;
-			add_task(&string_task);
+			setChannel(PINA0);	
 		}
-	*/
 	conversionIsInProgress = false;
+	adc_values.new_data_available = true;
 	
 }

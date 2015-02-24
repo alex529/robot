@@ -29,6 +29,7 @@ typedef enum
 	PID_ERROR=40,			
 	
 	ADC1=60,
+	ADC2=61,
 	
 	DEBUG11=80
 	// NOTE!!! if new commands are added to task_command_t MAX_FUNCTION_POINTER_INDEX has to be updated.
@@ -38,7 +39,7 @@ typedef enum
 * Represents the maximum number off commands acceptable by the com port.
 * NOTE!!! if new commands are added to task_command_t MAX_FUNCTION_POINTER_INDEX has to be updated.
 */
-#define FUNCTION_POINTER_SIZE	8 
+#define FUNCTION_POINTER_SIZE	9 
 
 /**
 * Clears the task queue.

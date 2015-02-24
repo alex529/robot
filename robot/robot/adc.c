@@ -83,3 +83,10 @@ void handleMeasurement() {
 	
 }
 
+void send_adc_value() {
+	
+	task_t string_task = {.data.command = ADC1, .data.timestamp=0, .data.value = adc_values.results[0};
+	task_t string_task = {.data.command = ADC2, .data.timestamp=0, .data.value = adc_values.results[1};
+	add_task(&string_task);	
+}
+
