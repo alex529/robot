@@ -27,6 +27,7 @@ void measureWithBothKindOfSensors();
 void measureWithItr8307sOnly();
 void measure();
 void adc_measurement_init();
+void send_adc_value_to_pc();
 
 
 

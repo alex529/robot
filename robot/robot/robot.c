@@ -117,7 +117,7 @@ int main(void)
 		if (run_send_adc_value)
 		{
 			run_send_adc_value = false;
-			send_adc_value();
+			send_adc_value_to_pc();
 		}
 	}
 	return 1;
