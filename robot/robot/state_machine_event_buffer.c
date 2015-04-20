@@ -5,7 +5,7 @@
 
 #define MAX_QUEUE_SIZE 10
 
-event_t events [10];
+event_t events [MAX_QUEUE_SIZE];
 int8_t front = -1;
 uint8_t count = 0;
 
