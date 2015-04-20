@@ -19,6 +19,7 @@
 #include "date.h"
 #include "com_prot.h"
 #include "adc.h"
+#include "state_machine.h"
 
 // 1 represents 100 ms
 #define CLOCK_INTERVAL		10
@@ -30,6 +31,7 @@
 #define LCD_UPDATE_INTERVAL	5
 #define KEY_INTERVAL		1
 #define SEND_ADC_VALUE		5
+#define STATE_MACHINE		1
 
 volatile bool run_card_reader = false;
 timer_t test;
@@ -49,11 +51,13 @@ int main(void)
 	uint8_t com_prot_timer = COMM_PROT_INTERVAL;
 	uint8_t adc_timer = COMM_PROT_INTERVAL;
 	uint8_t send_adc_value = SEND_ADC_VALUE;
+	uint8_t state_machine_value = STATE_MACHINE;
 	
 	bool run_clock = false;
 	bool run_com_prot = false;
 	bool run_adc = false;
 	bool run_send_adc_value = false;
+	bool run_state_machine = false;
 
 	DDRB|=(1<<PB0);
 	led_off();
@@ -89,8 +93,13 @@ int main(void)
 			}
 			if(--run_send_adc_value == 0)
 			{
-				run_send_adc_value = SEND_ADC_VALUE;
+				send_adc_value = SEND_ADC_VALUE;
 				run_send_adc_value = true;
+			}
+			if(--run_state_machine == 0)
+			{
+				state_machine_value = STATE_MACHINE;
+				run_state_machine = true;
 			}
 			
 		}
@@ -118,6 +127,21 @@ int main(void)
 		{
 			run_send_adc_value = false;
 			send_adc_value_to_pc();
+		}
+			if (run_adc)
+		{
+			run_adc = false;
+			handleMeasurement();
+		}
+			if (run_adc)
+		{
+			run_adc = false;
+			handleMeasurement();
+		}
+		if (run_state_machine)
+		{
+			run_state_machine = false;
+			state_machine();
 		}
 	}
 	return 1;
