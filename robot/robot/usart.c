@@ -30,12 +30,13 @@ void USART_init(void)
     ///* Set baud rate*/
     //UBRRH = (unsigned char)(baud>>8);
     //UBRRL = (unsigned char)baud;
+	
     
     
     //URSEL: Register Select
     //use data sheet or http://www.wormfood.net/avrbaudcalc.php to calculate
     UBRRH&=~(1<<URSEL);
-    UBRRL = 129; //baud rate set to 19200bps //fosc/(8*baud)-1
+    UBRRL = 129; //baud rate set to 9600bps //fosc/(8*baud)-1
     
     //U2X: Double the USART Transmission Speed
     UCSRA =(1<<U2X);
@@ -49,6 +50,7 @@ void USART_init(void)
     //URSEL: Register Select
     //UCSZ1:0: Character Size 8bit frame size
     UCSRC|=(1<<URSEL)|(1<<UCSZ1)|(1<<UCSZ0);
+	PORTD |= (1<<PD0);
 }
 
 

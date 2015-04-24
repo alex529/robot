@@ -24,7 +24,9 @@ typedef enum
 	PING=3,			
 	STOP_CONN=4,
 	
-    MOTOR_X_Y=20,
+	MOTOR_X_Y=20,
+	MOTOR_R=21,
+	MOTOR_L=22,
 	
 	PID_ERROR=40,			
 	
@@ -38,7 +40,7 @@ typedef enum
 * Represents the maximum number off commands acceptable by the com port.
 * NOTE!!! if new commands are added to task_command_t MAX_FUNCTION_POINTER_INDEX has to be updated.
 */
-#define FUNCTION_POINTER_SIZE	8 
+#define FUNCTION_POINTER_SIZE	11
 
 /**
 * Clears the task queue.
@@ -65,7 +67,7 @@ typedef union
 } task_t;
 
 /**
-* Encapsulates the function pointer type for the incoming packeges.
+* Encapsulates the function pointer type for the incoming packages.
 */
 typedef void (*task_function_ptr)(task_t*);
 

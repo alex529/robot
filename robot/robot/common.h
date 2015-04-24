@@ -17,15 +17,15 @@
 /**
  * \brief Toggles the LED that is present on port b pin 0.
  */
-#define toggle_led()		{PORTB^=(1<<PB0);}
+#define toggle_led()		{PORTB^=(1<<PB7);}
 /*
  * Sets the LED on.
  */
-#define led_on()			{PORTB&=~(1<<PB0);}
+#define led_on()			{PORTB&=~(1<<PB7);}
 /*
  * Sets the LED off.
  */
-#define led_off()			{PORTB|=(1<<PB0);}
+#define led_off()			{PORTB|=(1<<PB7);}
 /**
  * \brief Used for copying task buffers to the UART, copies first 5 bits of a buffer.
  */
@@ -73,7 +73,7 @@ typedef union
 		uint8_t sending_task : 1;
 		uint8_t task_received : 1;
 		
-		uint8_t not_used3 : 1;
+		uint8_t java_in_control : 1;
 		uint8_t not_used4 : 1;		
 		uint8_t not_used5 : 1;		
 		uint8_t not_used6 : 1;
