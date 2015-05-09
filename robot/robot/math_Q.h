@@ -12,6 +12,7 @@
 
 
 int16_t int16_abs_Q(int16_t x);
+int8_t int8_abs_Q(int8_t x);
 
 
 #endif /* MATH_Q_H_ */

@@ -114,6 +114,12 @@
     <Compile Include="com_prot.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="led.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="led.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="math_Q.c">
       <SubType>compile</SubType>
     </Compile>

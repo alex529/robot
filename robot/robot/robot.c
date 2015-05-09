@@ -19,11 +19,13 @@
 #include "date.h"
 #include "com_prot.h"
 #include "motor.h"
+#include "led.h"
 
-// 1 represents 100 ms
+// 1 represents 10 ms
 #define CLOCK_INTERVAL		100
 #define COMM_PROT_INTERVAL	20
 #define MOTOR_INTERVAL	1
+#define LED_INTERVAL	7
 
 volatile bool run_card_reader = false;
 timer_t test;
@@ -39,14 +41,16 @@ timer_t test;
 */
 int main(void)
 {
-	uint8_t clock_timer = CLOCK_INTERVAL;
-	uint8_t com_prot_timer = COMM_PROT_INTERVAL;
-	uint8_t motor_timer = COMM_PROT_INTERVAL;
+	uint8_t clock_timer		= CLOCK_INTERVAL;
+	uint8_t com_prot_timer	= COMM_PROT_INTERVAL;
+	uint8_t motor_timer		= MOTOR_INTERVAL;
+	uint8_t led_timer		= LED_INTERVAL;
 	
-	bool do_handler = false;
-	bool run_clock = false;
-	bool run_com_prot = false;
-	bool run_motor = false;
+	bool do_handler		= false;
+	bool run_clock		= false;
+	bool run_com_prot	= false;
+	bool run_motor		= false;
+	bool run_led		= false;
 
 	DDRB|=(1<<PB7);
 	led_off();
@@ -55,8 +59,10 @@ int main(void)
 	USART_init();
 	timer1_init();
 	recive_task_init();
-	init_motors();
-	//status.system.connected = true;
+	motors_init();
+	led_init();
+	
+	status.system.connected = true;
 	
 	sei();
 	
@@ -83,9 +89,15 @@ int main(void)
 				run_motor = true;
 				do_handler = true;
 			}
+			if(--led_timer == 0)
+			{
+				led_timer = LED_INTERVAL;
+				run_led = true;
+				do_handler = true;
+			}
 			
 		}
-		if(do_handler)
+		if(do_handler)/*get_line_error();*/
 		{
 			if (run_clock)
 			{
@@ -101,10 +113,14 @@ int main(void)
 			if (run_motor)
 			{
 				run_motor = false;
-				l_motor.rps=7;
-				r_motor.rps=7;
 				motors_controoler();
 			}
+			if (run_led)
+			{
+				run_led = false;
+				get_line_error();
+			}
+			
 		}
 	}
 	return 1;

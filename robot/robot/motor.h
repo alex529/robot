@@ -17,18 +17,22 @@
 #define int1_toggle_edge()		{MCUCR ^=  (1 << ISC10);}
 
 #define int0_toggle_edge()		{MCUCR ^=  (1 << ISC00);}
+	
+	
+	#define MAX_RPM 129
 
 typedef struct
 {
 	uint16_t pulses;
 	int16_t error;
 	bool direction;
-	uint8_t rps;
+	int16_t rpm;
+	int16_t ref_rpm;
 } motor_t;
 
 extern motor_t l_motor, r_motor;
 
-void init_motors(void);
+void motors_init(void);
 void set_left(task_t *task);
 void set_right(task_t *task);
 void set_motors(task_t *task);

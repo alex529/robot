@@ -30,7 +30,6 @@ void clock_tick(void)
 {
 	if (++date.second == 60)
 	{
-		toggle_led()
 		date.second =0;
 		if (++date.minute == 60)
 		{

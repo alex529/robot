@@ -37,7 +37,6 @@ ISR(USART_RXC_vect)
 	usart_rx_task.buffer[rx_index]=get_usart();
 	if(++rx_index>get_array_len(usart_rx_task.buffer)-1)
 	{
-		toggle_led();
 		rx_index = 0;
 		status.system.task_received=true;
 	}
@@ -125,10 +124,10 @@ ISR(TIMER1_COMPA_vect)
 
 ISR(INT0_vect){
 	int0_toggle_edge();
-	p_l++;
+	p_r++;
 }
 
 ISR(INT1_vect){
 	int1_toggle_edge();
-	p_r++;
+	p_l++;
 }

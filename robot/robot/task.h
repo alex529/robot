@@ -31,6 +31,8 @@ typedef enum
 	PID_ERROR=40,			
 	
 	ADC1=60,
+	ADC_PI_ERROR=61,
+	LED=62,
 	
 	DEBUG11=80
 	// NOTE!!! if new commands are added to task_command_t MAX_FUNCTION_POINTER_INDEX has to be updated.

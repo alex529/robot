@@ -50,6 +50,9 @@ task_t test_task;
  * Returns the size of an buffer
  */
 #define get_array_len(arrayName) (sizeof(arrayName) / sizeof((arrayName)[0]))
+
+#define set_pin_as_input(port, pin_number)	{DDR##port&=~(1<<pin_number);}
+#define set_pin_as_output(port, pin_number)	{DDR##port|=(1<<pin_number);}
 		
 /**
 * Used for converting different types of values
@@ -79,7 +82,7 @@ typedef union
 		uint8_t not_used6 : 1;
 		uint8_t not_used7 : 1;
 	} system;
-	uint8_t byte[1];
+	uint8_t byte[2];
 } status_t;
 
 
