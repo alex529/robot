@@ -53,22 +53,20 @@ int main(void)
 {
 	uint8_t clock_timer		= CLOCK_INTERVAL;
 	uint8_t com_prot_timer	= COMM_PROT_INTERVAL;
-	uint8_t clock_timer = CLOCK_INTERVAL;
-	uint8_t com_prot_timer = COMM_PROT_INTERVAL;
 	uint8_t adc_timer = COMM_PROT_INTERVAL;
+	uint8_t motor_timer = MOTOR_INTERVAL;
+	uint8_t led_timer = LED_INTERVAL;
 	uint8_t send_adc_value = SEND_ADC_VALUE;
 	uint8_t state_machine_value = STATE_MACHINE;
 	
 	bool do_handler		= false;
-	bool run_clock		= false;
 	bool run_com_prot	= false;
-	bool run_clock = false;
-	bool run_com_prot = false;
 	bool run_adc = false;
 	bool run_send_adc_value = false;
 	bool run_motor		= false;
 	bool run_led		= false;
 	bool run_state_machine = false;
+	bool run_clock =false;
 
 	DDRB|=(1<<PB7);
 	led_off();

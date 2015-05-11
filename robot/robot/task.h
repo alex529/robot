@@ -31,6 +31,7 @@ typedef enum
 	PID_ERROR=40,			
 	
 	ADC1=60,
+	ADC2=63,
 	ADC_PI_ERROR=61,
 	LED=62,
 	
