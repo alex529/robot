@@ -91,7 +91,7 @@ void com_prot_task(void)
 {
 	static task_t *tx_task;
 	
-	if (status.system.connected==true)
+	//if (status.system.connected==true)
 	{
 		if (tmr_exp(&ping_tmr)) //send ping message every sec
 		{
@@ -101,6 +101,7 @@ void com_prot_task(void)
 		if (status.system.sending_task == false) //check if a transmission is in progress
 		{
 			tx_task = delete_task();
+			
 			if (tx_task != NULL) // manipulation on a null pointer results in memory damage
 			{
 				if (tx_task->data.command == STRING)

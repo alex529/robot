@@ -10,11 +10,13 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include "usart.h"
 #include "isr.h"
 #include "timer.h"
 #include "common.h"
 #include "motor.h"
+#include "adc.h"
 
 #define increment_pulse_timer(x) { if(++x>9){x=0;}}
 
@@ -130,4 +132,28 @@ ISR(INT0_vect){
 ISR(INT1_vect){
 	int1_toggle_edge();
 	p_l++;
+}
+
+ISR(ADC_vect) {
+	
+	uint32_t value=0;
+	uint32_t vstep = 488;
+
+	//the measured value is 2+8 bits long. The following 2 lines creates a 10bit value from the 2+8 bit values
+	value = ADCL;
+	value = value + (ADCH<<8);
+	value = value * 488;
+	
+	adc_values.results[current_channel] = value * vstep / 100;
+	
+		if (current_channel == PINA0 ){
+			setChannel(PINA1);
+			// starting next conversion
+			ADCSRA |= (1<<ADSC);			
+		} else {
+			setChannel(PINA0);	
+		}
+	conversionIsInProgress = false;
+	adc_values.new_data_available = true;
+	
 }

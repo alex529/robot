@@ -20,12 +20,22 @@
 #include "com_prot.h"
 #include "motor.h"
 #include "led.h"
+#include "adc.h"
+#include "state_machine.h"
 
 // 1 represents 10 ms
 #define CLOCK_INTERVAL		100
 #define COMM_PROT_INTERVAL	20
 #define MOTOR_INTERVAL	1
 #define LED_INTERVAL	7
+// 1 represents 100 ms
+#define CLOCK_INTERVAL		10
+#define CHARGING_INTERVAL	10
+#define PING_INTERVAL		10
+#define COMM_PROT_INTERVAL	2
+#define ADC_INTERVAL		2
+#define SEND_ADC_VALUE		5
+#define STATE_MACHINE		1
 
 volatile bool run_card_reader = false;
 timer_t test;
@@ -43,19 +53,29 @@ int main(void)
 {
 	uint8_t clock_timer		= CLOCK_INTERVAL;
 	uint8_t com_prot_timer	= COMM_PROT_INTERVAL;
-	uint8_t motor_timer		= MOTOR_INTERVAL;
-	uint8_t led_timer		= LED_INTERVAL;
+	uint8_t clock_timer = CLOCK_INTERVAL;
+	uint8_t com_prot_timer = COMM_PROT_INTERVAL;
+	uint8_t adc_timer = COMM_PROT_INTERVAL;
+	uint8_t send_adc_value = SEND_ADC_VALUE;
+	uint8_t state_machine_value = STATE_MACHINE;
 	
 	bool do_handler		= false;
 	bool run_clock		= false;
 	bool run_com_prot	= false;
+	bool run_clock = false;
+	bool run_com_prot = false;
+	bool run_adc = false;
+	bool run_send_adc_value = false;
 	bool run_motor		= false;
 	bool run_led		= false;
+	bool run_state_machine = false;
 
 	DDRB|=(1<<PB7);
 	led_off();
 	
 	status.byte[0]=0;
+	adc_measurement_init();
+	enableADC();
 	USART_init();
 	timer1_init();
 	recive_task_init();
@@ -95,6 +115,21 @@ int main(void)
 				run_led = true;
 				do_handler = true;
 			}
+			if(--adc_timer == 0)
+			{
+				adc_timer = ADC_INTERVAL;
+				run_adc = true;
+			}
+			if(--run_send_adc_value == 0)
+			{
+				send_adc_value = SEND_ADC_VALUE;
+				run_send_adc_value = true;
+			}
+			if(--run_state_machine == 0)
+			{
+				state_machine_value = STATE_MACHINE;
+				run_state_machine = true;
+			}
 			
 		}
 		if(do_handler)/*get_line_error();*/
@@ -121,6 +156,33 @@ int main(void)
 				get_line_error();
 			}
 			
+		}
+		
+		if (run_adc)
+		{
+			run_adc = false;
+			handleMeasurement();
+		}
+		
+		if (run_send_adc_value)
+		{
+			run_send_adc_value = false;
+			send_adc_value_to_pc();
+		}
+			if (run_adc)
+		{
+			run_adc = false;
+			handleMeasurement();
+		}
+			if (run_adc)
+		{
+			run_adc = false;
+			handleMeasurement();
+		}
+		if (run_state_machine)
+		{
+			run_state_machine = false;
+			state_machine();
 		}
 	}
 	return 1;

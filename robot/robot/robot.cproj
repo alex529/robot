@@ -108,6 +108,18 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="adc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="adc.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="buttons.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="buttons.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="com_prot.c">
       <SubType>compile</SubType>
     </Compile>
@@ -148,6 +160,18 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="isr.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="state_machine.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="state_machine.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="state_machine_event_buffer.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="state_machine_event_buffer.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="task.c">
