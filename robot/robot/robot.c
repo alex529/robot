@@ -116,8 +116,8 @@ int main(void)
 		
 		if (run_send_adc_value)
 		{
-			run_send_adc_value = false;
-			send_adc_value();
+		/*	run_send_adc_value = false;
+			send_adc_value();*/
 		}
 	}
 	return 1;
