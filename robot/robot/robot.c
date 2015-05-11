@@ -1,7 +1,7 @@
 /*
 * Car_Charger_Station.c
 *
-* The Car_Charger_Station.c file is in charge of scheduling all the functionality
+* The robot.c file is in charge of scheduling all the functionality
 * that needs to be handled by the client.
 *
 * Created: 3/3/2014 11:13:44 AM
@@ -26,16 +26,13 @@
 // 1 represents 10 ms
 #define CLOCK_INTERVAL		100
 #define COMM_PROT_INTERVAL	20
-#define MOTOR_INTERVAL	1
-#define LED_INTERVAL	7
-// 1 represents 100 ms
-#define CLOCK_INTERVAL		10
-#define CHARGING_INTERVAL	10
-#define PING_INTERVAL		10
-#define COMM_PROT_INTERVAL	2
-#define ADC_INTERVAL		2
-#define SEND_ADC_VALUE		5
-#define STATE_MACHINE		1
+#define MOTOR_INTERVAL		1
+#define LED_INTERVAL		7
+#define PING_INTERVAL		100
+#define COMM_PROT_INTERVAL	20
+#define ADC_INTERVAL		50
+#define SEND_ADC_VALUE		50
+#define STATE_MACHINE		5
 
 volatile bool run_card_reader = false;
 timer_t test;
@@ -66,8 +63,8 @@ int main(void)
 	bool run_motor		= false;
 	bool run_led		= false;
 	bool run_state_machine = false;
-	bool run_clock =false;
-
+	bool run_clock = false;
+	
 	DDRB|=(1<<PB7);
 	led_off();
 	
@@ -113,12 +110,12 @@ int main(void)
 				run_led = true;
 				do_handler = true;
 			}
-			if(--adc_timer == 0)
+			if(enable_features.adc == true && --adc_timer == 0)
 			{
 				adc_timer = ADC_INTERVAL;
 				run_adc = true;
 			}
-			if(--run_send_adc_value == 0)
+			if(enable_features.send_adc_value == true && --run_send_adc_value == 0)
 			{
 				send_adc_value = SEND_ADC_VALUE;
 				run_send_adc_value = true;
@@ -172,16 +169,13 @@ int main(void)
 			run_adc = false;
 			handleMeasurement();
 		}
-			if (run_adc)
-		{
-			run_adc = false;
-			handleMeasurement();
-		}
+		
 		if (run_state_machine)
 		{
 			run_state_machine = false;
 			state_machine();
 		}
+		
 	}
 	return 1;
 }

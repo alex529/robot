@@ -93,4 +93,14 @@ task_t tes1_task;
 extern volatile status_t status;
 extern volatile bool run_card_reader;
 
+typedef struct  
+{
+	bool adc;
+	bool send_adc_value;
+	bool controller;
+	bool find_line;
+} enable_features_t;
+
+extern volatile enable_features_t enable_features;
+
 #endif /* COMMON_H_ */
