@@ -17,9 +17,10 @@
 #include "task.h"
 #include "usart.h"
 #include "com_prot.h"
+#include "motor.h"
 
 uint8_t task_count;
-task_function_ptr do_task[FUNCTION_POINTER_SIZE]; // can be declared as half size
+task_function_ptr do_task[FUNCTION_POINTER_SIZE];
 
 
 /**
@@ -47,8 +48,11 @@ void recive_task_init(void)
 	do_task[INIT_CONN]        = &communication_init;
 	//do_task[PING]			= &ack_ping;
 	do_task[STOP_CONN]        = &stop;
-
-	//do_task[MOTOR_X_Y]      = &set_month;
+	
+	
+	do_task[MOTOR_L]        = &set_left;
+	do_task[MOTOR_R]        = &set_right;
+	do_task[MOTOR_X_Y]        = &set_motors;
 //
 	//do_task[PID_ERROR]       = &set_year;
 //
@@ -97,6 +101,10 @@ uint32_t get_task_number(void)
 void add_task(task_t *task)
 {
 	if(task==NULL) return;
+	if (task_count>50)
+	{
+		return;
+	}
 	
 	struct node *temp_node = malloc(1*sizeof(*temp_node));
 	//task_t *temp_task = malloc(1*sizeof(*temp_task));

@@ -114,6 +114,24 @@
     <Compile Include="com_prot.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="led.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="led.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="math_Q.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="math_Q.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="motor.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="motor.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="robot.c">
       <SubType>compile</SubType>
     </Compile>

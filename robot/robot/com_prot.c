@@ -15,6 +15,7 @@
 #include "date.h"
 #include "usart.h"
 #include "com_prot.h"
+#include "motor.h"
 
 timer_t ping_tmr;
 
@@ -31,9 +32,10 @@ timer_t ping_tmr;
 */
 void communication_init(task_t *task)
 {
+	toggle_led();
 	if (task->data.value == 0)
 	{
-		task_t comm_init = {.data.command = ACK_INIT_CONN, .data.value = 0};
+		task_t comm_init = {.data.command = ACK_INIT_CONN, .data.value = PINA};
 		status.system.connected = true;
 		clear_task_fifo();
 		add_task(&comm_init);
@@ -69,10 +71,10 @@ void stop(task_t *task)
 */
 void ping(void)
 {
-	task_t ping = {.data.command = PING, .data.value = 0};
+	task_t ping = {.data.command = PING, .data.value = status.byte[1]};
 	
 	add_task(&ping);
-	tmr_start(&ping_tmr,SEC1);
+	tmr_start(&ping_tmr,200);//TODO: change back to SEC1
 }
 
 
@@ -103,7 +105,7 @@ void com_prot_task(void)
 			{
 				if (tx_task->data.command == STRING)
 				{
-					
+					USART_transmit_string(tx_task->data.str);
 				}
 				else
 				{
@@ -115,6 +117,7 @@ void com_prot_task(void)
 	if (status.system.task_received==true)
 	{
 		status.system.task_received=false;
+		USART_transmit_command(&usart_rx_task);
 		do_task[usart_rx_task.data.command](&usart_rx_task);
 	}
 }

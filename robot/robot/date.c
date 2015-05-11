@@ -90,9 +90,8 @@ void get_date_to_string(char *date_9b)
  */
 uint32_t get_date_to_int(void) 
 {
-	uint32_t date_u32=date.hour*1000;
-	date_u32 += date.minute;
-	date_u32=date.hour*1000;
+	uint32_t date_u32=date.hour*10000;//245959
+	date_u32 += date.minute*100;
 	date_u32 += date.second;
 	return date_u32;    
 }
