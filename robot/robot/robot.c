@@ -110,21 +110,21 @@ int main(void)
 				run_led = true;
 				do_handler = true;
 			}
-			if(enable_features.adc == true && --adc_timer == 0)
-			{
-				adc_timer = ADC_INTERVAL;
-				run_adc = true;
-			}
-			if(enable_features.send_adc_value == true && --run_send_adc_value == 0)
-			{
-				send_adc_value = SEND_ADC_VALUE;
-				run_send_adc_value = true;
-			}
-			if(--run_state_machine == 0)
-			{
-				state_machine_value = STATE_MACHINE;
-				run_state_machine = true;
-			}
+// 			if(enable_features.adc == true && --adc_timer == 0)
+// 			{
+// 				adc_timer = ADC_INTERVAL;
+// 				run_adc = true;
+// 			}
+// 			if(enable_features.send_adc_value == true && --run_send_adc_value == 0)
+// 			{
+// 				send_adc_value = SEND_ADC_VALUE;
+// 				run_send_adc_value = true;
+// 			}
+// 			if(--run_state_machine == 0)
+// 			{
+// 				state_machine_value = STATE_MACHINE;
+// 				run_state_machine = true;
+// 			}
 			
 		}
 		if(do_handler)/*get_line_error();*/
@@ -148,33 +148,34 @@ int main(void)
 			if (run_led)
 			{
 				run_led = false;
-				get_line_error();
+				//get_line_error();
+			}
+			
+			if (run_adc)
+			{
+				run_adc = false;
+				handleMeasurement();
+			}
+			
+			if (run_send_adc_value)
+			{
+				run_send_adc_value = false;
+				send_adc_value_to_pc();
+			}
+			if (run_adc)
+			{
+				run_adc = false;
+				handleMeasurement();
+			}
+			
+			if (run_state_machine)
+			{
+				run_state_machine = false;
+				state_machine();
 			}
 			
 		}
 		
-		if (run_adc)
-		{
-			run_adc = false;
-			handleMeasurement();
-		}
-		
-		if (run_send_adc_value)
-		{
-			run_send_adc_value = false;
-			send_adc_value_to_pc();
-		}
-			if (run_adc)
-		{
-			run_adc = false;
-			handleMeasurement();
-		}
-		
-		if (run_state_machine)
-		{
-			run_state_machine = false;
-			state_machine();
-		}
 		
 	}
 	return 1;

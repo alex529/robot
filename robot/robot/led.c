@@ -112,8 +112,8 @@ void get_line_error(void)
 			error = 6;
 		break;
 		case 0b00000000:
-		l_motor.rpm=290;
-		r_motor.rpm=300;
+		l_motor.rpm=190;
+		r_motor.rpm=200;
 		break;
 		case 0b01111111:
 		l_motor.rpm=0;
@@ -133,13 +133,13 @@ void get_line_error(void)
 	last_error = error;
 	status.byte[1]=i_factor;
 	int16_t new_rpm;
-	new_rpm = r_motor.rpm + i_factor-p_factor;
+	new_rpm = r_motor.ref_rpm + i_factor-p_factor;
 	if (new_rpm<33)
 	{
 		new_rpm = 33;
 	}
 	r_motor.rpm = new_rpm;
-	new_rpm = l_motor.rpm - i_factor+p_factor;
+	new_rpm = l_motor.ref_rpm - i_factor+p_factor;
 	if (new_rpm<33)
 	{
 		new_rpm = 33;
