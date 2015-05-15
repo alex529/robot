@@ -78,6 +78,7 @@ void init_pwm(void){
 
 void motors_controoler(void)
 {
+	
 	if (l_motor.rpm>MAX_RPM)
 	{
 		l_motor.rpm=MAX_RPM;
@@ -123,7 +124,6 @@ void motors_controoler(void)
 		set_r_forward();
 	}
 	set_right_m(motor);
-
 }
 
 void drive(int8_t x,int8_t y, uint8_t mag)

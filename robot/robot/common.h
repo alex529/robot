@@ -85,10 +85,8 @@ typedef union
 	uint8_t byte[2];
 } status_t;
 
-
 timer_t test_timer;
 task_t tes1_task;
-
 
 extern volatile status_t status;
 extern volatile bool run_card_reader;
@@ -101,6 +99,6 @@ typedef struct
 	bool find_line;
 } enable_features_t;
 
-extern volatile enable_features_t enable_features;
+ volatile enable_features_t enable_features;
 
 #endif /* COMMON_H_ */
