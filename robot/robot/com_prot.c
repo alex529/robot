@@ -38,6 +38,16 @@ void communication_init(task_t *task)
 		task_t comm_init = {.data.command = ACK_INIT_CONN, .data.value = PINA};
 		status.system.connected = true;
 		clear_task_fifo();
+		//add_task(&comm_init);
+		add_task(&comm_init);
+		add_task(&comm_init);
+		add_task(&comm_init);
+		add_task(&comm_init);
+		add_task(&comm_init);
+		add_task(&comm_init);
+		add_task(&comm_init);
+		add_task(&comm_init);
+		add_task(&comm_init);
 		add_task(&comm_init);
 	}
 }
@@ -74,7 +84,7 @@ void ping(void)
 	task_t ping = {.data.command = PING, .data.value = status.byte[1]};
 	
 	add_task(&ping);
-	tmr_start(&ping_tmr,200);//TODO: change back to SEC1
+	tmr_start(&ping_tmr,SEC1);//TODO: change back to SEC1
 }
 
 
@@ -91,7 +101,7 @@ void com_prot_task(void)
 {
 	static task_t *tx_task;
 	
-	//if (status.system.connected==true)
+	if (status.system.connected==true)
 	{
 		if (tmr_exp(&ping_tmr)) //send ping message every sec
 		{
@@ -118,7 +128,6 @@ void com_prot_task(void)
 	if (status.system.task_received==true)
 	{
 		status.system.task_received=false;
-		USART_transmit_command(&usart_rx_task);
 		do_task[usart_rx_task.data.command](&usart_rx_task);
 	}
 }
