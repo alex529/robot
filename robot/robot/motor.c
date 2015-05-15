@@ -186,8 +186,8 @@ void motors_init(void)
 	init_pwm();
 	set_l_forward();
 	set_r_forward();
-	// 	l_motor.rpm=MAX_RPM;
-	// 	r_motor.rpm=MAX_RPM;
-	l_motor.rpm=100;
-	r_motor.rpm=100;
+	l_motor.rpm=MAX_RPM;
+	r_motor.rpm=MAX_RPM;
+// 	l_motor.ref_rpm=190;
+// 	r_motor.ref_rpm=200;
 }

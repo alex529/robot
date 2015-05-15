@@ -21,6 +21,7 @@
 #define increment_pulse_timer(x) { if(++x>9){x=0;}}
 
 volatile status_t status;
+volatile enable_features_t enable_features;
 volatile uint32_t system_tic;
 volatile uint16_t p_r, p_l;
 /**
