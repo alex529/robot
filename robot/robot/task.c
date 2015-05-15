@@ -104,10 +104,6 @@ uint32_t get_task_number(void)
 void add_task(task_t *task)
 {
 	if(task==NULL) return;
-	if (task_count>50)
-	{
-		return;
-	}
 	
 	struct node *temp_node = malloc(1*sizeof(*temp_node));
 	//task_t *temp_task = malloc(1*sizeof(*temp_task));

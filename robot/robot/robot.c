@@ -82,7 +82,7 @@ int main(void)
 	enable_features.find_line=false;
 	enable_features.controller=false;
 	
-	status.system.connected = true;
+	
 	
 	sei();
 	
@@ -138,8 +138,6 @@ int main(void)
 			{
 				run_clock = false;
 				clock_tick();
-				task_t debug = {.data.command = DEBUG11, .data.value = get_task_number()};
-				USART_transmit_command(&debug);
 				
 			}
 			if (run_com_prot)

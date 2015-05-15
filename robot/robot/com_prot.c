@@ -38,16 +38,6 @@ void communication_init(task_t *task)
 		task_t comm_init = {.data.command = ACK_INIT_CONN, .data.value = PINA};
 		status.system.connected = true;
 		clear_task_fifo();
-		//add_task(&comm_init);
-		add_task(&comm_init);
-		add_task(&comm_init);
-		add_task(&comm_init);
-		add_task(&comm_init);
-		add_task(&comm_init);
-		add_task(&comm_init);
-		add_task(&comm_init);
-		add_task(&comm_init);
-		add_task(&comm_init);
 		add_task(&comm_init);
 	}
 }
@@ -83,7 +73,7 @@ void ping(void)
 {
 	task_t ping = {.data.command = PING, .data.value = status.byte[1]};
 	
-	add_task(&ping);
+//	add_task(&ping);
 	tmr_start(&ping_tmr,SEC1);//TODO: change back to SEC1
 }
 
