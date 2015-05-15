@@ -180,6 +180,12 @@
     <Compile Include="state_machine_event_buffer.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="take_over.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="take_over.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="task.c">
       <SubType>compile</SubType>
     </Compile>

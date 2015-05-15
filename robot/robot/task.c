@@ -18,6 +18,7 @@
 #include "usart.h"
 #include "com_prot.h"
 #include "motor.h"
+#include "take_over.h"
 
 uint8_t task_count;
 task_function_ptr do_task[FUNCTION_POINTER_SIZE];
@@ -52,7 +53,9 @@ void recive_task_init(void)
 	
 	do_task[MOTOR_L]        = &set_left;
 	do_task[MOTOR_R]        = &set_right;
-	do_task[MOTOR_X_Y]        = &set_motors;
+	do_task[MOTOR_X_Y]      = &set_motors;
+	do_task[TAKE_OVER]		= &take_over_command;	
+	do_task[GIVE_BACK_CONTROL] =&give_back_control_command;
 //
 	//do_task[PID_ERROR]       = &set_year;
 //
