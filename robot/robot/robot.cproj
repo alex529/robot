@@ -126,6 +126,12 @@
     <Compile Include="com_prot.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="control_logic.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="control_logic.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="led.c">
       <SubType>compile</SubType>
     </Compile>
@@ -178,6 +184,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="state_machine_event_buffer.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="switch_value_eval.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="switch_value_eval.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="take_over.c">

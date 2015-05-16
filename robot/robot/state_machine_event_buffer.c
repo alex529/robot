@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include "state_machine.h"
 
-#define MAX_QUEUE_SIZE 10
+#define MAX_QUEUE_SIZE 30
 
 event_t events [MAX_QUEUE_SIZE];
 int8_t front = -1;

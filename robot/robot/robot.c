@@ -26,15 +26,16 @@
 #define start(x){do_handler = true; x=true;}
 
 // 1 represents 10 ms
-#define CLOCK_INTERVAL		100
-#define COMM_PROT_INTERVAL	20
-#define MOTOR_INTERVAL		1
-#define LED_INTERVAL		7
-#define PING_INTERVAL		100
-#define COMM_PROT_INTERVAL	20
-#define ADC_INTERVAL		50
-#define SEND_ADC_VALUE		50
-#define STATE_MACHINE		5
+#define CLOCK_INTERVAL				100
+#define COMM_PROT_INTERVAL			20
+#define MOTOR_INTERVAL				1
+#define LED_INTERVAL				7
+#define PING_INTERVAL				100
+#define COMM_PROT_INTERVAL			20
+#define ADC_INTERVAL				50
+#define SEND_ADC_VALUE_INTERVAL		50
+#define STATE_MACHINE_INTERVAL		5
+#define SENSOR_INTERVAL				10
 
 volatile bool run_card_reader = false;
 timer_t test;
@@ -55,8 +56,8 @@ int main(void)
 	uint8_t adc_timer			= COMM_PROT_INTERVAL;
 	uint8_t motor_timer			= MOTOR_INTERVAL;
 	uint8_t led_timer			= LED_INTERVAL;
-	uint8_t send_adc_value_timer= SEND_ADC_VALUE;
-	uint8_t state_machine_value_timer = STATE_MACHINE;
+	uint8_t send_adc_value_timer= SEND_ADC_VALUE_INTERVAL;
+	uint8_t state_machine_value_timer = STATE_MACHINE_INTERVAL;
 	
 	bool do_handler				= false;
 	bool run_com_prot			= false;
@@ -67,7 +68,7 @@ int main(void)
 	bool run_state_machine		= false;
 	bool run_clock				= false;
 	
-	DDRB|=(1<<PB0);
+	DDRB|=(1<<PB7);
 	led_off();
 	
 	status.byte[0]=0;
@@ -83,8 +84,6 @@ int main(void)
 	enable_features.send_adc_value=false;
 	enable_features.find_line=false;
 	enable_features.controller=false;
-	
-	
 	
 	sei();
 	
@@ -111,23 +110,22 @@ int main(void)
 			if(--led_timer == 0)
 			{
 				led_timer = LED_INTERVAL;
-				start(run_led);
 			}
-	/*		if(enable_features.adc == true && --adc_timer == 0)
+			if(enable_features.adc == true && --adc_timer == 0)
 			{
 				adc_timer = ADC_INTERVAL;
 				start(run_adc);
 			}
-			if(enable_features.send_adc_value == true && --send_adc_value_timer == 0)//TODO: adam check the if statement if its correct 
+			if(enable_features.send_adc_value == true && --send_adc_value_timer == 0)
 			{
-				send_adc_value = SEND_ADC_VALUE;
+				send_adc_value_timer = SEND_ADC_VALUE_INTERVAL;
 				start(run_send_adc_value);
 			}
-			if(--state_machine_value_timer == 0)//TODO: adam check the if statement if its correct 
+			if(--state_machine_value_timer == 0)
 			{
-				state_machine_value = STATE_MACHINE;
+				state_machine_value_timer = STATE_MACHINE_INTERVAL;
 				start(run_state_machine);
-			}*/
+			}
 			
 		}
 		if(do_handler)/*get_line_error();*/
@@ -155,7 +153,7 @@ int main(void)
 				get_line_error();
 			}
 			
-		/*	if (run_adc)
+			if (run_adc)
 			{
 				run_adc = false;
 				handleMeasurement();
@@ -171,7 +169,7 @@ int main(void)
 				run_state_machine = false;
 				state_machine();
 			}
-			*/
+			
 		}
 		
 		

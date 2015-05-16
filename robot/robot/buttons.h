@@ -3,7 +3,7 @@
 
 #include "state_machine.h"
 
-void set_state_to_find_track();
-void set_state_to_idle();
+void find_track_state_change();
+void idle_state_change();
 
 #endif // BUTTONS_H_INCLUDED

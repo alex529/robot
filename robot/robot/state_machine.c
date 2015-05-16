@@ -11,8 +11,8 @@ typedef struct {
 } transition_t;
 
 transition_t transition_table[] = {
-    {STATE_IDLE,  EVENT_BUTTON_START, &set_state_to_find_track},
-    {STATE_FIND_TRACK, EVENT_BUTTON_RESET, &set_state_to_idle}
+    {STATE_IDLE,  EVENT_BUTTON_START, &find_track_state_change},
+    {STATE_FIND_TRACK, EVENT_BUTTON_RESET, &idle_state_change}
 };
 
 #define TRANS_COUNT (sizeof(transition_table)/sizeof(*transition_table))

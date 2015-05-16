@@ -16,15 +16,15 @@
 /**
  * \brief Toggles the LED that is present on port b pin 0.
  */
-#define toggle_led()		{PORTB^=(1<<PB0);}
+#define toggle_led()		{PORTB^=(1<<PB7);}
 /*
  * Sets the LED on.
  */
-#define led_on()			{PORTB&=~(1<<PB0);}
+#define led_on()			{PORTB&=~(1<<PB7);}
 /*
  * Sets the LED off.
  */
-#define led_off()			{PORTB|=(1<<PB0);}
+#define led_off()			{PORTB|=(1<<PB7);}
 /**
  * \brief Used for copying task buffers to the UART, copies first 5 bits of a buffer.
  */
