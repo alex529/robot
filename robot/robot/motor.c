@@ -177,7 +177,7 @@ void set_motors(task_t *task)
 {
 	u32_union temp;
 	temp.dw=task->data.value;
-	drive(temp.b[2],temp.b[3],temp.b[1]);
+	drive(temp.b[3],temp.b[2],temp.b[1]);
 }
 
 void motors_init(void)
@@ -186,8 +186,12 @@ void motors_init(void)
 	init_pwm();
 	set_l_forward();
 	set_r_forward();
+	l_motor.rpm=0;
+	r_motor.rpm=0;
+	/*
 	l_motor.rpm=MAX_RPM;
 	r_motor.rpm=MAX_RPM;
+	*/
 // 	l_motor.ref_rpm=190;
 // 	r_motor.ref_rpm=200;
 }

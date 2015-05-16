@@ -106,6 +106,11 @@ void add_task(task_t *task)
 {
 	if(task==NULL) return;
 	
+	if(task_count>99)
+	{
+		delete_task();
+	}//if new data should be lost return instead of deleting task
+	
 	struct node *temp_node = malloc(1*sizeof(*temp_node));
 	//task_t *temp_task = malloc(1*sizeof(*temp_task));
 

@@ -144,12 +144,6 @@
     <Compile Include="math_Q.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="proximity_lookup.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="proximity_lookup.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="motor.c">
       <SubType>compile</SubType>
     </Compile>
