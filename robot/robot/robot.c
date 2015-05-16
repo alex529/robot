@@ -23,6 +23,8 @@
 #include "adc.h"
 #include "state_machine.h"
 
+#define start(x){do_handler = true; x=true;}
+
 // 1 represents 10 ms
 #define CLOCK_INTERVAL		100
 #define COMM_PROT_INTERVAL	20
@@ -65,7 +67,7 @@ int main(void)
 	bool run_state_machine		= false;
 	bool run_clock				= false;
 	
-	DDRB|=(1<<PB7);
+	DDRB|=(1<<PB0);
 	led_off();
 	
 	status.byte[0]=0;
@@ -94,52 +96,47 @@ int main(void)
 			if(--clock_timer == 0)
 			{
 				clock_timer = CLOCK_INTERVAL;
-				run_clock = true;
-				do_handler = true;
+				start(run_clock);
 			}
 			if(--com_prot_timer == 0)
 			{
 				com_prot_timer = COMM_PROT_INTERVAL;
-				run_com_prot = true;
-				do_handler = true;
+				start(run_com_prot);
 			}
 			if(--motor_timer == 0)
 			{
 				motor_timer = MOTOR_INTERVAL;
-				run_motor = true;
-				do_handler = true;
+				start(run_motor);
 			}
 			if(--led_timer == 0)
 			{
 				led_timer = LED_INTERVAL;
-				run_led = true;
-				do_handler = true;
+				start(run_led);
 			}
-// 			if(enable_features.adc == true && --adc_timer == 0)
-// 			{
-// 				adc_timer = ADC_INTERVAL;
-// 				run_adc = true;
-// 			}
-// 			if(enable_features.send_adc_value == true && --run_send_adc_value == 0)
-// 			{
-// 				send_adc_value = SEND_ADC_VALUE;
-// 				run_send_adc_value = true;
-// 			}
-// 			if(--run_state_machine == 0)
-// 			{
-// 				state_machine_value = STATE_MACHINE;
-// 				run_state_machine = true;
-// 			}
+			if(enable_features.adc == true && --adc_timer == 0)
+			{
+				adc_timer = ADC_INTERVAL;
+				start(run_adc);
+			}
+			if(enable_features.send_adc_value == true && --run_send_adc_value == 0)//TODO: adam check the if statement if its correct 
+			{
+				send_adc_value = SEND_ADC_VALUE;
+				start(run_send_adc_value);
+			}
+			if(--run_state_machine == 0)//TODO: adam check the if statement if its correct 
+			{
+				state_machine_value = STATE_MACHINE;
+				start(run_state_machine);
+			}
 			
 		}
 		if(do_handler)/*get_line_error();*/
 		{
+			do_handler = false;
 			if (run_clock)
 			{
 				run_clock = false;
 				clock_tick();
-				task_t debug = {.data.command = DEBUG11, .data.value = get_task_number()};
-				USART_transmit_command(&debug);
 				
 			}
 			if (run_com_prot)
@@ -155,7 +152,7 @@ int main(void)
 			if (run_led)
 			{
 				run_led = false;
-				//get_line_error();
+				get_line_error();
 			}
 			
 			if (run_adc)

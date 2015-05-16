@@ -32,10 +32,9 @@ timer_t ping_tmr;
 */
 void communication_init(task_t *task)
 {
-	toggle_led();
 	if (task->data.value == 0)
 	{
-		task_t comm_init = {.data.command = ACK_INIT_CONN, .data.value = PINA};
+		task_t comm_init = {.data.command = ACK_INIT_CONN, .data.value = get_task_number()};
 		status.system.connected = true;
 		clear_task_fifo();
 		add_task(&comm_init);
@@ -71,10 +70,8 @@ void stop(task_t *task)
 */
 void ping(void)
 {
-	task_t ping = {.data.command = PING, .data.value = status.byte[1]};
-	
-//	add_task(&ping);
-	tmr_start(&ping_tmr,SEC1);//TODO: change back to SEC1
+	task_t ping = {.data.command = PING, .data.value = get_task_number()};	
+	add_task(&ping);
 }
 
 
@@ -97,6 +94,7 @@ void com_prot_task(void)
 		{
 			tmr_start(&ping_tmr,SEC1);
 			ping();
+			led_off();
 		}
 		if (status.system.sending_task == false) //check if a transmission is in progress
 		{
@@ -107,6 +105,7 @@ void com_prot_task(void)
 				if (tx_task->data.command == STRING)
 				{
 					USART_transmit_string(tx_task->data.str);
+					toggle_led();
 				}
 				else
 				{

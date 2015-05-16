@@ -13,19 +13,18 @@
 #include "timer.h"
 #include "task.h"
 
-
 /**
  * \brief Toggles the LED that is present on port b pin 0.
  */
-#define toggle_led()		{PORTB^=(1<<PB7);}
+#define toggle_led()		{PORTB^=(1<<PB0);}
 /*
  * Sets the LED on.
  */
-#define led_on()			{PORTB&=~(1<<PB7);}
+#define led_on()			{PORTB&=~(1<<PB0);}
 /*
  * Sets the LED off.
  */
-#define led_off()			{PORTB|=(1<<PB7);}
+#define led_off()			{PORTB|=(1<<PB0);}
 /**
  * \brief Used for copying task buffers to the UART, copies first 5 bits of a buffer.
  */
@@ -43,8 +42,8 @@
 /**
  * Used for debug porpoises it sends an INIT_CONN command with a desired value attached to it.
  */
-task_t test_task;
-#define debug_task(u32_value)							{test_task.data.command = INIT_CONN;	test_task.data.value = u32_value;	USART_transmit_command(&test_task);}
+// task_t test_task;
+// #define debug_task(u32_value)							{test_task.data.command = INIT_CONN;	test_task.data.value = u32_value;	USART_transmit_command(&test_task);}
 	
 /**
  * Returns the size of an buffer

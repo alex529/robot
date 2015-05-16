@@ -46,7 +46,7 @@ typedef enum
 * Represents the maximum number off commands acceptable by the com port.
 * NOTE!!! if new commands are added to task_command_t MAX_FUNCTION_POINTER_INDEX has to be updated.
 */
-#define FUNCTION_POINTER_SIZE	18
+#define FUNCTION_POINTER_SIZE	255
 
 /**
 * Clears the task queue.

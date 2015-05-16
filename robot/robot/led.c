@@ -127,7 +127,6 @@ void get_line_error(void)
 		}
 		break;
 	}
-	toggle_led();
 	p_factor = 0;///*Kp**/error;
 	i_factor = /*Ki**/(error+last_error)>>1;
 	last_error = error;

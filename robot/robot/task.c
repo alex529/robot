@@ -20,7 +20,8 @@
 #include "motor.h"
 #include "take_over.h"
 
-uint8_t task_count;
+uint8_t task_count=0;
+
 task_function_ptr do_task[FUNCTION_POINTER_SIZE];
 
 
