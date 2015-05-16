@@ -35,7 +35,7 @@
 #define ADC_INTERVAL				50
 #define SEND_ADC_VALUE_INTERVAL		50
 #define STATE_MACHINE_INTERVAL		5
-#define SENSOR_INTERVAL				10
+#define SENSOR_EVAL_INTERVAL		30
 
 volatile bool run_card_reader = false;
 timer_t test;
@@ -58,6 +58,7 @@ int main(void)
 	uint8_t led_timer			= LED_INTERVAL;
 	uint8_t send_adc_value_timer= SEND_ADC_VALUE_INTERVAL;
 	uint8_t state_machine_value_timer = STATE_MACHINE_INTERVAL;
+	uint8_t sensor_eval_timer	=SENSOR_EVAL_INTERVAL;
 	
 	bool do_handler				= false;
 	bool run_com_prot			= false;
@@ -67,6 +68,7 @@ int main(void)
 	bool run_led				= false;
 	bool run_state_machine		= false;
 	bool run_clock				= false;
+	bool run_sensor_eval		= false;
 	
 	DDRB|=(1<<PB7);
 	led_off();
@@ -126,6 +128,11 @@ int main(void)
 				state_machine_value_timer = STATE_MACHINE_INTERVAL;
 				start(run_state_machine);
 			}
+			if(--sensor_eval_timer == 0)
+			{
+				sensor_eval_timer = SENSOR_EVAL_INTERVAL;
+				start(run_sensor_eval);
+			}
 			
 		}
 		if(do_handler)/*get_line_error();*/
@@ -168,6 +175,11 @@ int main(void)
 			{
 				run_state_machine = false;
 				state_machine();
+			}
+			if (run_sensor_eval)
+			{
+				run_sensor_eval = false;
+				eval();
 			}
 			
 		}

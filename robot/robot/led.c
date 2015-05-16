@@ -13,6 +13,7 @@
 #include "math_Q.h"
 #include "task.h"
 #include "common.h"
+#include "state_machine.h"
 
 //TODO: check if this works
 #define read_switch(x)	(PINA & (1<<PA##x))
@@ -33,6 +34,8 @@
 #define Kp 30
 #define Ki 20
 #define ERROR_STEP 50
+
+#define ALL_SENSORS_BLACK 0 
 
 //TODO: delete either 0 or 7
 #define read_switches(){led.array = 0b01111111&(~(PINA));/*led.switches.sw0=SW0;\
@@ -179,6 +182,16 @@ void get_line_error(void)
 	{
 		info_timer=5;
 		//send_led_info();
+	}
+}
+
+void eval() {
+	read_switches();
+	send_led_info();
+	uint8_t sensor_value = led.array; 
+	if (sensor_value == ALL_SENSORS_BLACK)
+	{
+		add_event(EVENT_ALL_SENSORS_BLACK);
 	}
 }
 

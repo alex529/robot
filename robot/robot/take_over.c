@@ -13,12 +13,14 @@
 #include "state_machine_event_buffer.h"
 
 void take_over_command(task_t *task) {
+	drive(0,0,0);
 	state = STATE_TAKE_OVER;
 	add_event(EVENT_TAKE_OVER_COMMAND);
-	//TODO turn off automatic movement control
 	enable_features.controller = false;
 	task_t confirm_take_over_task = {.data.command = TAKE_OVER_ACK, .data.timestamp=0, .data.value=0};
 	add_task(&confirm_take_over_task);
+	task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_TAKE_OVER};
+	add_task(&system_state);
 }
 
 void give_back_control_command(task_t *task) {

@@ -31,14 +31,13 @@ typedef enum
 	PID_ERROR=40,			
 	
 	ADC1=60,
-	ADC2=63,
 	ADC_PI_ERROR=61,
 	LED=62,
-	SENSOR=63,
 	TAKE_OVER = 80,
 	TAKE_OVER_ACK = 81,
 	GIVE_BACK_CONTROL = 82,
 	GIVE_BACK_CONTROL_ACK = 83,
+	STATE_COMMAND = 84,
 	DEBUG11=84
 	// NOTE!!! if new commands are added to task_command_t MAX_FUNCTION_POINTER_INDEX has to be updated.
 } task_command_t;
