@@ -55,8 +55,8 @@ int main(void)
 	uint8_t adc_timer			= COMM_PROT_INTERVAL;
 	uint8_t motor_timer			= MOTOR_INTERVAL;
 	uint8_t led_timer			= LED_INTERVAL;
-	uint8_t send_adc_value		= SEND_ADC_VALUE;
-	uint8_t state_machine_value = STATE_MACHINE;
+	uint8_t send_adc_value_timer= SEND_ADC_VALUE;
+	uint8_t state_machine_value_timer = STATE_MACHINE;
 	
 	bool do_handler				= false;
 	bool run_com_prot			= false;
@@ -118,12 +118,12 @@ int main(void)
 				adc_timer = ADC_INTERVAL;
 				start(run_adc);
 			}
-			if(enable_features.send_adc_value == true && --run_send_adc_value == 0)//TODO: adam check the if statement if its correct 
+			if(enable_features.send_adc_value == true && --send_adc_value_timer == 0)//TODO: adam check the if statement if its correct 
 			{
 				send_adc_value = SEND_ADC_VALUE;
 				start(run_send_adc_value);
 			}
-			if(--run_state_machine == 0)//TODO: adam check the if statement if its correct 
+			if(--state_machine_value_timer == 0)//TODO: adam check the if statement if its correct 
 			{
 				state_machine_value = STATE_MACHINE;
 				start(run_state_machine);
@@ -165,13 +165,7 @@ int main(void)
 			{
 				run_send_adc_value = false;
 				send_adc_value_to_pc();
-			}
-			if (run_adc)
-			{
-				run_adc = false;
-				handleMeasurement();
-			}
-			
+			}			
 			if (run_state_machine)
 			{
 				run_state_machine = false;
