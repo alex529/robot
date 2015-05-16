@@ -14,18 +14,20 @@
 #include "task.h"
 
 
+
+#define LED PB0
 /**
  * \brief Toggles the LED that is present on port b pin 0.
  */
-#define toggle_led()		{PORTB^=(1<<PB0);}
+#define toggle_led()		{PORTB^=(1<<LED);}
 /*
  * Sets the LED on.
  */
-#define led_on()			{PORTB&=~(1<<PB0);}
+#define led_on()			{PORTB&=~(1<<LED);}
 /*
  * Sets the LED off.
  */
-#define led_off()			{PORTB|=(1<<PB0);}
+#define led_off()			{PORTB|=(1<<LED);}
 /**
  * \brief Used for copying task buffers to the UART, copies first 5 bits of a buffer.
  */

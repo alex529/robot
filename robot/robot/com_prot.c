@@ -69,10 +69,8 @@ void stop(task_t *task)
 */
 void ping(void)
 {
-	task_t ping = {.data.command = PING, .data.value = 0};
-	
+	task_t ping = {.data.command = PING, .data.value = 0};	
 	add_task(&ping);
-	tmr_start(&ping_tmr,SEC1);
 }
 
 

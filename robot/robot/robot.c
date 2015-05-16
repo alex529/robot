@@ -58,6 +58,8 @@ int main(void)
 	
 	sei();
 	
+	//status.system.connected = true;
+	
 	while(1)
 	{
 		if(system_tic == true) // 1millisecond has passed
