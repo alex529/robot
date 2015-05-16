@@ -50,7 +50,7 @@ void USART_init(void)
     //URSEL: Register Select
     //UCSZ1:0: Character Size 8bit frame size
     UCSRC|=(1<<URSEL)|(1<<UCSZ1)|(1<<UCSZ0);
-	//PORTD |= (1<<PD0);
+	PORTD |= (1<<PD0);
 }
 
 

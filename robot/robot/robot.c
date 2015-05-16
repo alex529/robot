@@ -113,7 +113,7 @@ int main(void)
 				led_timer = LED_INTERVAL;
 				start(run_led);
 			}
-			if(enable_features.adc == true && --adc_timer == 0)
+	/*		if(enable_features.adc == true && --adc_timer == 0)
 			{
 				adc_timer = ADC_INTERVAL;
 				start(run_adc);
@@ -127,7 +127,7 @@ int main(void)
 			{
 				state_machine_value = STATE_MACHINE;
 				start(run_state_machine);
-			}
+			}*/
 			
 		}
 		if(do_handler)/*get_line_error();*/
@@ -155,7 +155,7 @@ int main(void)
 				get_line_error();
 			}
 			
-			if (run_adc)
+		/*	if (run_adc)
 			{
 				run_adc = false;
 				handleMeasurement();
@@ -171,7 +171,7 @@ int main(void)
 				run_state_machine = false;
 				state_machine();
 			}
-			
+			*/
 		}
 		
 		
