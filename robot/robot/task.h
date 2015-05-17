@@ -18,28 +18,30 @@
 */
 typedef enum
 {
-	STRING=0,
-	INIT_CONN=1,    
-	ACK_INIT_CONN=2,
-	PING=3,			
-	STOP_CONN=4,
+	STRING=0,							//0x00
+	INIT_CONN=1,						//0x01
+	ACK_INIT_CONN=2,					//0x02
+	PING=3,								//0x03
+	STOP_CONN=4,						//0x04
 	
-	MOTOR_X_Y=20,
-	MOTOR_R=21,
-	MOTOR_L=22,
+	MOTOR_X_Y=20,						//0x14
+	MOTOR_R=21,							//0x15
+	MOTOR_L=22,							//0x16
 	
-	PID_ERROR=40,			
+	PID_ERROR=40,						//0x28
 	
-	ADC1=60,
-	ADC_PI_ERROR=61,
-	LED=62,
-	TAKE_OVER = 80,
-	TAKE_OVER_ACK = 81,
-	GIVE_BACK_CONTROL = 82,
-	GIVE_BACK_CONTROL_ACK = 83,
-	STATE_COMMAND = 84,
-	SET_SPEED =85,
-	DEBUG11=84//TODO: check number you overwrite commands
+	ADC1=60,							//0x3C
+	ADC_PI_ERROR=61,					//0x3D
+	LED=62,								//0x3E
+	
+	TAKE_OVER = 80,						//0x50
+	TAKE_OVER_ACK = 81,					//0x51
+	GIVE_BACK_CONTROL = 82,				//0x52
+	GIVE_BACK_CONTROL_ACK = 83,			//0x53
+	STATE_COMMAND = 84,					//0x54
+	SET_SPEED =85,						//0x55
+	
+	DEBUG11=100							//0x64
 	// NOTE!!! if new commands are added to task_command_t MAX_FUNCTION_POINTER_INDEX has to be updated.
 } task_command_t;
 
