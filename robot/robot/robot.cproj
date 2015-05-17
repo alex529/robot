@@ -168,6 +168,12 @@
     <Compile Include="isr.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="state_logics.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="state_logics.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="state_machine.c">
       <SubType>compile</SubType>
     </Compile>
