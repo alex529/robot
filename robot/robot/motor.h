@@ -36,6 +36,7 @@ void motors_init(void);
 void set_left(task_t *task);
 void set_right(task_t *task);
 void set_motors(task_t *task);
+void set_speed(task_t *task);
 void motors_controoler(void);
 
 #endif /* MOTOR_H_ */

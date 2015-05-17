@@ -195,3 +195,7 @@ void motors_init(void)
 // 	l_motor.ref_rpm=190;
 // 	r_motor.ref_rpm=200;
 }
+
+void set_speed(task_t *task) {
+	uint8_t speed = task->data.u8[0];
+}
