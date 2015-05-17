@@ -44,11 +44,13 @@
 #define set_l_backward(){mot_left_port	|=(1<<mot_left_back); mot_left_port &=~(1<<mot_left_forw);}
 #define set_r_forward()	{mot_right_port	|=(1<<mot_right_forw);mot_right_port&=~(1<<mot_right_back);}
 #define set_r_backward(){mot_right_port	|=(1<<mot_right_back);mot_right_port&=~(1<<mot_right_forw);}
-#define set_l_stop()	{mot_left_port	|=(1<<mot_left_back); mot_left_port |=(1<<mot_left_forw);}
-#define set_r_stop()	{mot_right_port	&=~(1<<mot_right_forw);mot_right_port&=~(1<<mot_right_back);}
+#define set_l_stop()	{set_left_m(0)	;mot_left_port	|=(1<<mot_left_back); mot_left_port |=(1<<mot_left_forw);}
+#define set_r_stop()	{set_right_m(0)	;mot_right_port	|=(1<<mot_right_forw);mot_right_port|=(1<<mot_right_back);}
 
 #define is_in_bounds(x) (x<255&&x>>-255)
 
+#define send_left_m(x) {task_t m_info = {.data.command = MOTOR_L, .data.value = get_left_m()};add_task(&m_info);}
+#define send_right_m(x){task_t m_info = {.data.command = MOTOR_R, .data.value = get_right_m()};add_task(&m_info);}
 
 motor_t l_motor, r_motor;
 
@@ -128,8 +130,10 @@ void motors_controoler(void)
 
 void drive(int8_t x,int8_t y, uint8_t mag)
 {
-	int16_t l_ref, r_ref;
+	int16_t l_ref = 0, r_ref = 0;
 	mag = mag<<1;
+	x=x<<1;
+	y=y<<1;
 	if(x>0&&y>0)
 	{
 		r_ref = x+y;
@@ -151,6 +155,11 @@ void drive(int8_t x,int8_t y, uint8_t mag)
 		set_r_backward();
 		set_l_backward();
 	}
+	else if (x == 0&&y==0)//TODO more advanced stopping procedure is needed
+	{
+		set_l_stop();
+		set_r_stop();		
+	}
 	else
 	{
 		r_ref = x+int16_abs_Q(y);
@@ -158,9 +167,12 @@ void drive(int8_t x,int8_t y, uint8_t mag)
 		set_r_backward();
 		set_l_backward();
 	}
-
-	l_motor.rpm=(l_ref*MAX_RPM)>>7;
-	r_motor.rpm=(r_ref*MAX_RPM)>>7;
+	set_left_m(l_ref);
+	set_right_m(r_ref);
+	
+	send_left_m();
+	send_left_m();
+	
 }
 
 void set_left(task_t *task)

@@ -28,6 +28,7 @@ typedef union
 
 void led_init(void);
 void get_line_error(void);
+void eval(void);
 
 
 #endif /* LED_H_ */

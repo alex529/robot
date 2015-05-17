@@ -112,6 +112,7 @@ int main(void)
 			if(--led_timer == 0)
 			{
 				led_timer = LED_INTERVAL;
+				start(run_led);
 			}
 			if(enable_features.adc == true && --adc_timer == 0)
 			{

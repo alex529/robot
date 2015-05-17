@@ -14,6 +14,7 @@
 #include "task.h"
 #include "common.h"
 #include "state_machine.h"
+#include "state_machine_event_buffer.h"
 
 //TODO: check if this works
 #define read_switch(x)	(PINA & (1<<PA##x))
@@ -185,7 +186,7 @@ void get_line_error(void)
 	}
 }
 
-void eval() {
+void eval(void) {
 	read_switches();
 	send_led_info();
 	uint8_t sensor_value = led.array; 
