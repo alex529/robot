@@ -4,6 +4,7 @@
 #include "state_machine.h"
 
 #define MAX_QUEUE_SIZE 30
+#define ERROR 255
 
 event_t events [MAX_QUEUE_SIZE];
 int8_t front = -1;
@@ -21,7 +22,7 @@ uint8_t delete_event() {
         }
         return event;
         } else {
-            return -1;
+            return ERROR;
         }
     }
 

@@ -5,6 +5,8 @@
 #include "state_machine_event_buffer.h"
 #include "state_logics.h"
 
+#define ERROR 255
+
 typedef struct {
     int st;
     int ev;
@@ -30,10 +32,8 @@ state_t state = STATE_IDLE;
 void state_machine() {
     event_t current_event;
     current_event = delete_event();
-    if (current_event == -1) {
-        return;
-    }
     int i;
+	while (current_event != ERROR) {
     for (i = 0; i < TRANS_COUNT; i++) {
         if ((state == transition_table[i].st || transition_table[i].st ==  STATE_ANY) ) {
             if ((current_event == transition_table[i].ev)) {
@@ -42,6 +42,8 @@ void state_machine() {
             }
         }
     }
+	current_event = delete_event();
+	}
 }
 
 
