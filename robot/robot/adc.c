@@ -84,6 +84,7 @@ void measure() {
 		
 		stage = PINA0;
 		new_data_available = true;
+		new_data_available_to_transmit = true;
 	}
 	
 }
@@ -114,9 +115,9 @@ void disable_adc() {
 }
  
 void send_adc_value_to_pc() {	
-	if (new_data_available)
+	if (new_data_available_to_transmit)
 	{
-		new_data_available = false;
+		new_data_available_to_transmit = false;
 		task_t adc_value_task;
 		adc_value_task.data.command = ADC1;
 		adc_value_task.data.timestamp = 0;

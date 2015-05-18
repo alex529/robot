@@ -141,8 +141,7 @@ ISR(ADC_vect) {
 		stage = PINA1;
 		l_ch0==ADCL;
 		h_ch0==ADCH;
-		setChannel(PINA1);
-		ADCSRA |= (1<<ADSC);
+		conversionIsInProgress = false;
 		return;
 	}
 	
