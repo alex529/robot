@@ -82,7 +82,7 @@ typedef union
 		uint8_t not_used6 : 1;
 		uint8_t not_used7 : 1;
 	} system;
-	uint8_t byte[2];
+	uint8_t byte[4];
 } status_t;
 
 timer_t test_timer;
