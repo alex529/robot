@@ -179,4 +179,5 @@ void led_init(void)
 	set_pin_as_input(A,4);
 	set_pin_as_input(A,5);
 	set_pin_as_input(A,6);
+	status.system.motor_forward = true;
 }
