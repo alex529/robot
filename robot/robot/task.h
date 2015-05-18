@@ -31,6 +31,7 @@ typedef enum
 	MOTOR_MAGNITUDE=24,                 //0x18
 	MOTOR_F=25,                         //0x19
 	MOTOR_B=26,                         //0x1A
+	MOTOR_RPM=27,                       //0x1B
 	
 	PID_ERROR=40,						//0x28
 	

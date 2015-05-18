@@ -51,6 +51,7 @@ void recive_task_init(void)
 	//do_task[PING]			= &ack_ping;
 	do_task[STOP_CONN]        = &stop;
 	//do_task[SET_SPEED]		= &set_speed; //TODO find referent to it in git hist
+	do_task[MOTOR_RPM]		=&set_rpm;
 	
 	do_task[MOTOR_L]        = &set_left;
 	do_task[MOTOR_R]        = &set_right;

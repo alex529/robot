@@ -27,11 +27,9 @@
 
 // 1 represents 10 ms
 #define CLOCK_INTERVAL				100
-#define COMM_PROT_INTERVAL			20
+#define COMM_PROT_INTERVAL			10
 #define MOTOR_INTERVAL				1
 #define LED_INTERVAL				7
-#define PING_INTERVAL				100
-#define COMM_PROT_INTERVAL			20
 #define ADC_INTERVAL				50
 #define SEND_ADC_VALUE_INTERVAL		50
 #define STATE_MACHINE_INTERVAL		5
@@ -51,14 +49,14 @@ timer_t test;
 */
 int main(void)
 {
-	uint8_t clock_timer			= CLOCK_INTERVAL;
-	uint8_t com_prot_timer		= COMM_PROT_INTERVAL;
-	uint8_t adc_timer			= COMM_PROT_INTERVAL;
-	uint8_t motor_timer			= MOTOR_INTERVAL;
-	uint8_t led_timer			= LED_INTERVAL;
-	uint8_t send_adc_value_timer= SEND_ADC_VALUE_INTERVAL;
-	uint8_t state_machine_value_timer = STATE_MACHINE_INTERVAL;
-	uint8_t sensor_eval_timer	=SENSOR_EVAL_INTERVAL;
+	uint8_t clock_timer					= CLOCK_INTERVAL;
+	uint8_t com_prot_timer				= COMM_PROT_INTERVAL;
+	uint8_t adc_timer					= ADC_INTERVAL;
+	uint8_t motor_timer					= MOTOR_INTERVAL;
+	uint8_t led_timer					= LED_INTERVAL;
+	uint8_t send_adc_value_timer		= SEND_ADC_VALUE_INTERVAL;
+	uint8_t state_machine_value_timer	= STATE_MACHINE_INTERVAL;
+	uint8_t sensor_eval_timer			= SENSOR_EVAL_INTERVAL;
 	
 	bool do_handler				= false;
 	bool run_com_prot			= false;
@@ -74,8 +72,8 @@ int main(void)
 	led_off();
 	
 	status.byte[0]=0;
-// 	enableADC();
-// 	adc_measurement_init();
+	enableADC();
+	adc_measurement_init();
 	USART_init();
 	timer1_init();
 	recive_task_init();

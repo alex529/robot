@@ -38,6 +38,7 @@ void set_right(task_t *task);
 void set_forward(task_t *task);
 void set_backward(task_t *task);
 void set_motors(task_t *task);
+void set_rpm(task_t *task);
 void motors_controoler(void);
 void drive(uint8_t a, int8_t mag);
 
