@@ -14,6 +14,7 @@
 #include "task.h"
 #include "common.h"
 #include "state_machine.h"
+#include "state_machine_event_buffer.h"
 
 //TODO: check if this works
 #define read_switch(x)	(PINA & (1<<PA##x))
@@ -32,7 +33,7 @@
 #define send_led_info(){task_t led_info = {.data.command = LED, .data.value = led.array};add_task(&led_info);}
 	
 #define Kp 30
-#define Ki 20
+#define Ki 4
 #define ERROR_STEP 50
 
 #define ALL_SENSORS_BLACK 0 
@@ -61,6 +62,7 @@ void get_line_error(void)
 	static int16_t last_error;
 	int16_t error = 0, p_factor, i_factor=0;
 	read_switches();
+	toggle_led();
 	switch (led.array)
 	{
 		case 0b00011100 : //0
@@ -73,9 +75,6 @@ void get_line_error(void)
 // 			l_motor.rpm += 33;
 // 		}
 // 			return;
-
-		l_motor.rpm=90;
-		r_motor.rpm=100;
 
 		break;
 		case 0b00011000 : //-1
@@ -119,8 +118,8 @@ void get_line_error(void)
 		r_motor.rpm=200;
 		break;
 		case 0b01111111:
-		l_motor.rpm=0;
-		r_motor.rpm=0;
+// 		l_motor.rpm=0;
+// 		r_motor.rpm=0;
 		break;
 		//more cases for the special lines
 		default:
@@ -131,56 +130,32 @@ void get_line_error(void)
 		break;
 	}
 	p_factor = 0;///*Kp**/error;
-	i_factor = /*Ki**/(error+last_error)>>1;
+	i_factor = Ki*(error+last_error);
 	last_error = error;
 	status.byte[1]=i_factor;
 	int16_t new_rpm;
-	new_rpm = r_motor.ref_rpm + i_factor-p_factor;
+	new_rpm = r_motor.ref_rpm + i_factor/*-p_factor*/;
 	if (new_rpm<33)
 	{
 		new_rpm = 33;
 	}
 	r_motor.rpm = new_rpm;
-	new_rpm = l_motor.ref_rpm - i_factor+p_factor;
+	new_rpm = l_motor.ref_rpm - i_factor/*+p_factor*/;
 	if (new_rpm<33)
 	{
 		new_rpm = 33;
 	}
 	l_motor.rpm = new_rpm;
-	
-// 	int16_t new_rpm;
-// 		if (error<0)
-// 		{
-// 			new_rpm = r_motor.rpm+p_factor/*-int8_abs_Q(i_factor)*/;
-// 			if (new_rpm<33)
-// 			{
-// 				new_rpm = 33;
-// 			}
-// 			r_motor.rpm = new_rpm;
-// // 			if(error+last_error<-10)
-// // 			{
-// // 				r_motor.rpm-=ERROR_STEP;
-// // 				l_motor.rpm-=ERROR_STEP;
-// // 			}
-// 		}
-// 		else
-// 		{
-// 			new_rpm = l_motor.rpm-p_factor/*-int8_abs_Q(i_factor)*/;
-// 			if (new_rpm<33)
-// 			{
-// 				new_rpm = 33;
-// 			}
-// 			l_motor.rpm = new_rpm;
-// // 			if(error+last_error>10)
-// // 			{
-// // 				l_motor.rpm-=ERROR_STEP;
-// // 				r_motor.rpm-=ERROR_STEP;
-// // 			}
-// 		}
-	static uint8_t info_timer=5;//5*20ms = 100ms
+
+	static uint8_t info_timer=5;//5*70ms = 350ms
 	if(--info_timer==0)
 	{
-		info_timer=5;
+		info_timer=10;
+		
+		task_t l_t = {.data.command = MOTOR_L, .data.value = l_motor.rpm};
+		add_task(&l_t);
+		task_t r_t = {.data.command = MOTOR_R, .data.value = r_motor.rpm};
+		add_task(&r_t);
 		//send_led_info();
 	}
 }

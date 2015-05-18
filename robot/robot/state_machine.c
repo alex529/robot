@@ -22,7 +22,7 @@ state_t state = STATE_IDLE;
 void state_machine() {
     event_t current_event;
     current_event = delete_event();
-    if (current_event == -1) {
+    if (current_event == -1) {//TODO it looks bad refactor delete_event gives an uint8 maybe bettter create an eva t that covers this case
         return;
     }
     int i;

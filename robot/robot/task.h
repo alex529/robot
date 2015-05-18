@@ -27,6 +27,8 @@ typedef enum
 	MOTOR_X_Y=20,
 	MOTOR_R=21,
 	MOTOR_L=22,
+	MOTOR_ANGLE=23,
+	MOTOR_MAGNITUDE=24,
 	
 	PID_ERROR=40,			
 	

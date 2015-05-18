@@ -11,9 +11,10 @@
 #include "take_over.h"
 #include "state_machine.h"
 #include "state_machine_event_buffer.h"
+#include "motor.h"
 
 void take_over_command(task_t *task) {
-	drive(0,0,0);
+	drive(0,0);
 	state = STATE_TAKE_OVER;
 	add_event(EVENT_TAKE_OVER_COMMAND);
 	enable_features.controller = false;

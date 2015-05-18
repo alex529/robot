@@ -74,8 +74,8 @@ int main(void)
 	led_off();
 	
 	status.byte[0]=0;
-	enableADC();
-	adc_measurement_init();
+// 	enableADC();
+// 	adc_measurement_init();
 	USART_init();
 	timer1_init();
 	recive_task_init();
@@ -91,7 +91,7 @@ int main(void)
 	
 	while(1)
 	{
-		if(system_tic == true) // 1millisecond has passed
+		if(system_tic == true) // 10 millisecond has passed
 		{
 			system_tic = false;
 			if(--clock_timer == 0)
@@ -112,27 +112,28 @@ int main(void)
 			if(--led_timer == 0)
 			{
 				led_timer = LED_INTERVAL;
+				start(run_led);
 			}
-			if(enable_features.adc == true && --adc_timer == 0)
-			{
-				adc_timer = ADC_INTERVAL;
-				start(run_adc);
-			}
-			if(enable_features.send_adc_value == true && --send_adc_value_timer == 0)
-			{
-				send_adc_value_timer = SEND_ADC_VALUE_INTERVAL;
-				start(run_send_adc_value);
-			}
-			if(--state_machine_value_timer == 0)
-			{
-				state_machine_value_timer = STATE_MACHINE_INTERVAL;
-				start(run_state_machine);
-			}
-			if(--sensor_eval_timer == 0)
-			{
-				sensor_eval_timer = SENSOR_EVAL_INTERVAL;
-				start(run_sensor_eval);
-			}
+// 			if(enable_features.adc == true && --adc_timer == 0)
+// 			{
+// 				adc_timer = ADC_INTERVAL;
+// 				start(run_adc);
+// 			}
+// 			if(enable_features.send_adc_value == true && --send_adc_value_timer == 0)
+// 			{
+// 				send_adc_value_timer = SEND_ADC_VALUE_INTERVAL;
+// 				start(run_send_adc_value);
+// 			}
+// 			if(--state_machine_value_timer == 0)
+// 			{
+// 				state_machine_value_timer = STATE_MACHINE_INTERVAL;
+// 				start(run_state_machine);
+// 			}
+// 			if(--sensor_eval_timer == 0)
+// 			{
+// 				sensor_eval_timer = SENSOR_EVAL_INTERVAL;
+// 				start(run_sensor_eval);
+// 			}
 			
 		}
 		if(do_handler)/*get_line_error();*/
@@ -157,30 +158,30 @@ int main(void)
 			if (run_led)
 			{
 				run_led = false;
-				//get_line_error();
+				get_line_error();
 			}
 			
-			if (run_adc)
-			{
-				run_adc = false;
-				handleMeasurement();
-			}
-			
-			if (run_send_adc_value)
-			{
-				run_send_adc_value = false;
-				send_adc_value_to_pc();
-			}			
-			if (run_state_machine)
-			{
-				run_state_machine = false;
-				state_machine();
-			}
-			if (run_sensor_eval)
-			{
-				run_sensor_eval = false;
-				eval();
-			}
+// 			if (run_adc)
+// 			{
+// 				run_adc = false;
+// 				handleMeasurement();
+// 			}
+// 			
+// 			if (run_send_adc_value)
+// 			{
+// 				run_send_adc_value = false;
+// 				send_adc_value_to_pc();
+// 			}			
+// 			if (run_state_machine)
+// 			{
+// 				run_state_machine = false;
+// 				state_machine();
+// 			}
+// 			if (run_sensor_eval)
+// 			{
+// 				run_sensor_eval = false;
+// 				eval();
+// 			}
 			
 		}
 		

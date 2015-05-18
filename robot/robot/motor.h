@@ -19,7 +19,7 @@
 #define int0_toggle_edge()		{MCUCR ^=  (1 << ISC00);}
 	
 	
-	#define MAX_RPM 300
+	#define MAX_RPM 200
 
 typedef struct
 {
@@ -37,5 +37,6 @@ void set_left(task_t *task);
 void set_right(task_t *task);
 void set_motors(task_t *task);
 void motors_controoler(void);
+void drive(uint8_t a, int8_t mag);
 
 #endif /* MOTOR_H_ */
