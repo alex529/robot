@@ -74,9 +74,9 @@ typedef union
 		
 		uint8_t sending_task : 1;
 		uint8_t task_received : 1;
+
+		uint8_t motor_forward : 1;
 		
-		//not used
-		uint8_t java_in_control : 1;
 		uint8_t not_used4 : 1;		
 		uint8_t not_used5 : 1;		
 		uint8_t not_used6 : 1;

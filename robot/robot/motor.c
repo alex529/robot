@@ -42,6 +42,8 @@
 
 #define set_l_forward()	{mot_left_port	|=(1<<mot_left_forw); mot_left_port &=~(1<<mot_left_back);}
 #define set_l_backward(){mot_left_port	|=(1<<mot_left_back); mot_left_port &=~(1<<mot_left_forw);}
+#define set_m_forward()	{set_l_forward() ;set_r_forward() ;status.system.motor_forward =true;}
+#define set_m_backward(){set_l_backward();set_r_backward();status.system.motor_forward =false;}
 #define set_r_forward()	{mot_right_port	|=(1<<mot_right_forw);mot_right_port&=~(1<<mot_right_back);}
 #define set_r_backward(){mot_right_port	|=(1<<mot_right_back);mot_right_port&=~(1<<mot_right_forw);}
 #define set_l_stop()	{mot_left_port	|=(1<<mot_left_back); mot_left_port |=(1<<mot_left_forw);}
@@ -51,7 +53,7 @@
 #define ANGLE 248
 
 static const uint16_t rpm_speed[30]={15,29,44,58,73,87,102,116,131,145,160,174,189,203,218,233,247,262,276,291,305,320,334,349,363,378,392,407,422};
- 
+
 motor_t l_motor, r_motor;
 
 /**
@@ -98,7 +100,14 @@ void motors_controoler(void)
 	int16_t motor = get_left_m()+((Kp*l_motor.error)>>7);
 	if (motor<0||l_motor.error<0)
 	{
-		set_l_backward();
+		if (status.system.motor_forward == true)
+		{
+			set_l_backward();
+		}
+		else
+		{
+			set_l_forward();
+		}
 		motor = 20;
 	}
 	else if(motor>255)
@@ -107,15 +116,28 @@ void motors_controoler(void)
 	}
 	else
 	{
-		set_l_forward();
+		if (status.system.motor_forward == true)
+		{
+			set_l_forward();
+		}
+		else
+		{
+			set_l_backward();
+		}
 	}
 	set_left_m(motor);
 
 	motor = get_right_m()+((Kp*r_motor.error)>>7);
 	if (motor<0||r_motor.error<0)
 	{
-
-		set_r_backward();
+		if (status.system.motor_forward == true)
+		{
+			set_l_backward();
+		}
+		else
+		{
+			set_l_forward();
+		}
 		motor = 19;
 	} else if(motor>255)
 	{
@@ -123,7 +145,14 @@ void motors_controoler(void)
 	}
 	else
 	{
-		set_r_forward();
+		if (status.system.motor_forward == true)
+		{
+			set_l_forward();
+		}
+		else
+		{
+			set_l_backward();
+		}
 	}
 	set_right_m(motor);
 }
@@ -133,38 +162,16 @@ void drive(uint8_t a, int8_t mag)
 	int16_t l_ref, r_ref;
 	if (mag>0)
 	{
-		if (a<90)
-		{			
-			r_ref = a;
-			l_ref = ANGLE-a;
-			set_r_forward();
-			set_l_forward();
-		}
-		else
-		{
-			l_ref = a;
-			r_ref = ANGLE-a;
-			set_r_forward();
-			set_l_forward();			
-		}
+		r_ref = a;
+		l_ref = ANGLE-a;
+		set_m_forward();
 	}
 	else
 	{
-		if (a<90)
-		{			
-			r_ref = a;
-			l_ref = ANGLE-a;
-			set_r_backward();
-			set_l_backward();
-		}
-		else
-		{
-			l_ref = a;
-			r_ref = ANGLE-a;
-			set_r_backward();
-			set_l_backward();		
-		}
-}
+		l_ref = a;
+		r_ref = ANGLE-a;
+		set_m_backward();
+	}
 	
 	mag = int8_abs_Q(mag);
 	l_motor.rpm=(((l_ref*mag)/128));
@@ -188,6 +195,18 @@ void set_left(task_t *task)
 void set_right(task_t *task)
 {
 	set_right_m(task->data.value);
+}
+
+void set_forward(task_t *task)
+{
+	set_l_forward();
+	set_r_forward();
+}
+
+void set_backward(task_t *task)
+{
+	set_l_backward();
+	set_r_backward();
 }
 
 void set_motors(task_t *task)
