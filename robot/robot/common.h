@@ -42,8 +42,8 @@
 /**
  * Used for debug porpoises it sends an INIT_CONN command with a desired value attached to it.
  */
-// task_t test_task;
-// #define debug_task(u32_value)							{test_task.data.command = INIT_CONN;	test_task.data.value = u32_value;	USART_transmit_command(&test_task);}
+task_t test_task;
+#define debug_task(u32_value)							{test_task.data.command = INIT_CONN;	test_task.data.value = u32_value;	USART_transmit_command(&test_task);}
 	
 /**
  * Returns the size of an buffer
@@ -74,15 +74,15 @@ typedef union
 		
 		uint8_t sending_task : 1;
 		uint8_t task_received : 1;
+
+		uint8_t motor_forward : 1;
 		
-		//not used
-		uint8_t java_in_control : 1;
 		uint8_t not_used4 : 1;		
 		uint8_t not_used5 : 1;		
 		uint8_t not_used6 : 1;
 		uint8_t not_used7 : 1;
 	} system;
-	uint8_t byte[2];
+	uint8_t byte[4];
 } status_t;
 
 timer_t test_timer;

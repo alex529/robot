@@ -52,10 +52,12 @@
 #define is_in_bounds(x) (x<255&&x>>-255)
 #define ANGLE 248
 
+<<<<<<< HEAD
 #define send_left_m(x) {task_t m_info = {.data.command = MOTOR_L, .data.value = get_left_m()};add_task(&m_info);}
 #define send_right_m(x){task_t m_info = {.data.command = MOTOR_R, .data.value = get_right_m()};add_task(&m_info);}
-
+=======
 static const uint16_t rpm_speed[30]={15,29,44,58,73,87,102,116,131,145,160,174,189,203,218,233,247,262,276,291,305,320,334,349,363,378,392,407,422};
+>>>>>>> test
 
 motor_t l_motor, r_motor;
 
@@ -133,7 +135,6 @@ void motors_controoler(void)
 	motor = get_right_m()+((Kp*r_motor.error)>>7);
 	if (motor<0||r_motor.error<0)
 	{
-
 		if (status.system.motor_forward == true)
 		{
 			set_r_backward();
@@ -163,12 +164,39 @@ void motors_controoler(void)
 
 void drive(uint8_t a, int8_t mag)
 {
+<<<<<<< HEAD
+	int16_t l_ref = 0, r_ref = 0;
+	mag = mag<<1;
+	x=x<<1;
+	y=y<<1;
+	if(x>0&&y>0)
+	{
+		r_ref = x+y;
+		l_ref = mag-x-y;
+		set_r_forward();
+		set_l_forward();
+	}
+	else if(x<0&&y>0)
+	{
+		r_ref = mag-y+x;
+		l_ref = y+int16_abs_Q(x);
+		set_r_forward();
+		set_l_forward();
+	}
+	else if(x<0&&y<0)
+=======
 	int16_t l_ref, r_ref;
 	if (mag>0)
+>>>>>>> test
 	{
 		r_ref = a;
 		l_ref = ANGLE-a;
 		set_m_forward();
+	}
+	else if (x == 0&&y==0)//TODO more advanced stopping procedure is needed
+	{
+		set_l_stop();
+		set_r_stop();		
 	}
 	else
 	{
@@ -176,7 +204,14 @@ void drive(uint8_t a, int8_t mag)
 		r_ref = ANGLE-a;
 		set_m_backward();
 	}
-
+<<<<<<< HEAD
+	set_left_m(l_ref);
+	set_right_m(r_ref);
+	
+	send_left_m();
+	send_left_m();
+	
+=======
 	
 	mag = int8_abs_Q(mag);
 	l_motor.rpm=(((l_ref*mag)/128));
@@ -190,6 +225,7 @@ void drive(uint8_t a, int8_t mag)
 	add_task(&motor2);
 	task_t motor3 = {.data.command = MOTOR_R, .data.value = r_motor.rpm};
 	add_task(&motor3);
+>>>>>>> test
 }
 
 void set_left(task_t *task)
@@ -227,6 +263,21 @@ void motors_init(void)
 	init_pwm();
 	set_l_forward();
 	set_r_forward();
+<<<<<<< HEAD
+	l_motor.rpm=0;
+	r_motor.rpm=0;
+	/*
+	l_motor.rpm=MAX_RPM;
+	r_motor.rpm=MAX_RPM;
+	*/
+// 	l_motor.ref_rpm=190;
+// 	r_motor.ref_rpm=200;
+}
+
+void set_speed(task_t *task) {
+	uint8_t speed = task->data.u8[0];
+=======
 	l_motor.ref_rpm=100;
 	r_motor.ref_rpm=100;
+>>>>>>> test
 }

@@ -42,20 +42,13 @@
 
 #define set_l_forward()	{mot_left_port	|=(1<<mot_left_forw); mot_left_port &=~(1<<mot_left_back);}
 #define set_l_backward(){mot_left_port	|=(1<<mot_left_back); mot_left_port &=~(1<<mot_left_forw);}
-#define set_m_forward()	{set_l_forward() ;set_r_forward() ;status.system.motor_forward =true;}
-#define set_m_backward(){set_l_backward();set_r_backward();status.system.motor_forward =false;}
 #define set_r_forward()	{mot_right_port	|=(1<<mot_right_forw);mot_right_port&=~(1<<mot_right_back);}
 #define set_r_backward(){mot_right_port	|=(1<<mot_right_back);mot_right_port&=~(1<<mot_right_forw);}
-#define set_l_stop()	{set_left_m(0)	;mot_left_port	|=(1<<mot_left_back); mot_left_port |=(1<<mot_left_forw);}
-#define set_r_stop()	{set_right_m(0)	;mot_right_port	|=(1<<mot_right_forw);mot_right_port|=(1<<mot_right_back);}
+#define set_l_stop()	{mot_left_port	|=(1<<mot_left_back); mot_left_port |=(1<<mot_left_forw);}
+#define set_r_stop()	{mot_right_port	&=~(1<<mot_right_forw);mot_right_port&=~(1<<mot_right_back);}
 
 #define is_in_bounds(x) (x<255&&x>>-255)
-#define ANGLE 248
 
-#define send_left_m(x) {task_t m_info = {.data.command = MOTOR_L, .data.value = get_left_m()};add_task(&m_info);}
-#define send_right_m(x){task_t m_info = {.data.command = MOTOR_R, .data.value = get_right_m()};add_task(&m_info);}
-
-static const uint16_t rpm_speed[30]={15,29,44,58,73,87,102,116,131,145,160,174,189,203,218,233,247,262,276,291,305,320,334,349,363,378,392,407,422};
 
 motor_t l_motor, r_motor;
 
@@ -101,16 +94,9 @@ void motors_controoler(void)
 	r_motor.error = r_ref_pulses-r_motor.pulses;
 	
 	int16_t motor = get_left_m()+((Kp*l_motor.error)>>7);
-	if (motor<0||l_motor.error<0)
+	if (motor<0)
 	{
-		if (status.system.motor_forward == true)
-		{
-			set_l_backward();
-		}
-		else
-		{
-			set_l_forward();
-		}
+		set_l_backward();
 		motor = 20;
 	}
 	else if(motor>255)
@@ -119,29 +105,15 @@ void motors_controoler(void)
 	}
 	else
 	{
-		if (status.system.motor_forward == true)
-		{
-			set_l_forward();
-		}
-		else
-		{
-			set_l_backward();
-		}
+		set_l_forward();
 	}
 	set_left_m(motor);
 
 	motor = get_right_m()+((Kp*r_motor.error)>>7);
-	if (motor<0||r_motor.error<0)
+	if (motor<0)
 	{
 
-		if (status.system.motor_forward == true)
-		{
-			set_r_backward();
-		}
-		else
-		{
-			set_r_forward();
-		}
+		set_r_backward();
 		motor = 19;
 	} else if(motor>255)
 	{
@@ -149,47 +121,46 @@ void motors_controoler(void)
 	}
 	else
 	{
-		if (status.system.motor_forward == true)
-		{
-			set_r_forward();
-		}
-		else
-		{
-			set_r_backward();
-		}
+		set_r_forward();
 	}
 	set_right_m(motor);
 }
 
-void drive(uint8_t a, int8_t mag)
+void drive(int8_t x,int8_t y, uint8_t mag)
 {
 	int16_t l_ref, r_ref;
-	if (mag>0)
+	mag = mag<<1;
+	if(x>0&&y>0)
 	{
-		r_ref = a;
-		l_ref = ANGLE-a;
-		set_m_forward();
+		r_ref = x+y;
+		l_ref = mag-x-y;
+		set_r_forward();
+		set_l_forward();
+	}
+	else if(x<0&&y>0)
+	{
+		r_ref = mag-y+x;
+		l_ref = y+int16_abs_Q(x);
+		set_r_forward();
+		set_l_forward();
+	}
+	else if(x<0&&y<0)
+	{
+		r_ref = mag+x+y;
+		l_ref = int16_abs_Q(x+y);
+		set_r_backward();
+		set_l_backward();
 	}
 	else
 	{
-		l_ref = a;
-		r_ref = ANGLE-a;
-		set_m_backward();
+		r_ref = x+int16_abs_Q(y);
+		l_ref = mag-x+y;
+		set_r_backward();
+		set_l_backward();
 	}
 
-	
-	mag = int8_abs_Q(mag);
-	l_motor.rpm=(((l_ref*mag)/128));
-	r_motor.rpm=(((r_ref*mag)/128));
-	
-	task_t motor = {.data.command = MOTOR_ANGLE, .data.value = a};
-	add_task(&motor);
-	task_t motor1 = {.data.command = MOTOR_MAGNITUDE, .data.value = mag};
-	add_task(&motor1);
-	task_t motor2 = {.data.command = MOTOR_L, .data.value = l_motor.rpm};
-	add_task(&motor2);
-	task_t motor3 = {.data.command = MOTOR_R, .data.value = r_motor.rpm};
-	add_task(&motor3);
+	l_motor.rpm=(l_ref*MAX_RPM)>>7;
+	r_motor.rpm=(r_ref*MAX_RPM)>>7;
 }
 
 void set_left(task_t *task)
@@ -202,23 +173,11 @@ void set_right(task_t *task)
 	set_right_m(task->data.value);
 }
 
-void set_forward(task_t *task)
-{
-	set_l_forward();
-	set_r_forward();
-}
-
-void set_backward(task_t *task)
-{
-	set_l_backward();
-	set_r_backward();
-}
-
 void set_motors(task_t *task)
 {
 	u32_union temp;
 	temp.dw=task->data.value;
-	drive(temp.b[3],temp.b[2]);
+	drive(temp.b[3],temp.b[2],temp.b[1]);
 }
 
 void motors_init(void)
@@ -227,6 +186,12 @@ void motors_init(void)
 	init_pwm();
 	set_l_forward();
 	set_r_forward();
-	l_motor.ref_rpm=100;
-	r_motor.ref_rpm=100;
+	l_motor.rpm=0;
+	r_motor.rpm=0;
+	/*
+	l_motor.rpm=MAX_RPM;
+	r_motor.rpm=MAX_RPM;
+	*/
+// 	l_motor.ref_rpm=190;
+// 	r_motor.ref_rpm=200;
 }

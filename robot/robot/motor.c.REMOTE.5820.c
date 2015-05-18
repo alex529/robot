@@ -46,14 +46,11 @@
 #define set_m_backward(){set_l_backward();set_r_backward();status.system.motor_forward =false;}
 #define set_r_forward()	{mot_right_port	|=(1<<mot_right_forw);mot_right_port&=~(1<<mot_right_back);}
 #define set_r_backward(){mot_right_port	|=(1<<mot_right_back);mot_right_port&=~(1<<mot_right_forw);}
-#define set_l_stop()	{set_left_m(0)	;mot_left_port	|=(1<<mot_left_back); mot_left_port |=(1<<mot_left_forw);}
-#define set_r_stop()	{set_right_m(0)	;mot_right_port	|=(1<<mot_right_forw);mot_right_port|=(1<<mot_right_back);}
+#define set_l_stop()	{mot_left_port	|=(1<<mot_left_back); mot_left_port |=(1<<mot_left_forw);}
+#define set_r_stop()	{mot_right_port	&=~(1<<mot_right_forw);mot_right_port&=~(1<<mot_right_back);}
 
 #define is_in_bounds(x) (x<255&&x>>-255)
 #define ANGLE 248
-
-#define send_left_m(x) {task_t m_info = {.data.command = MOTOR_L, .data.value = get_left_m()};add_task(&m_info);}
-#define send_right_m(x){task_t m_info = {.data.command = MOTOR_R, .data.value = get_right_m()};add_task(&m_info);}
 
 static const uint16_t rpm_speed[30]={15,29,44,58,73,87,102,116,131,145,160,174,189,203,218,233,247,262,276,291,305,320,334,349,363,378,392,407,422};
 
@@ -133,7 +130,6 @@ void motors_controoler(void)
 	motor = get_right_m()+((Kp*r_motor.error)>>7);
 	if (motor<0||r_motor.error<0)
 	{
-
 		if (status.system.motor_forward == true)
 		{
 			set_r_backward();
@@ -176,7 +172,6 @@ void drive(uint8_t a, int8_t mag)
 		r_ref = ANGLE-a;
 		set_m_backward();
 	}
-
 	
 	mag = int8_abs_Q(mag);
 	l_motor.rpm=(((l_ref*mag)/128));

@@ -50,10 +50,12 @@ void recive_task_init(void)
 	do_task[INIT_CONN]        = &communication_init;
 	//do_task[PING]			= &ack_ping;
 	do_task[STOP_CONN]        = &stop;
-	do_task[SET_SPEED]		= &set_speed;
+	//do_task[SET_SPEED]		= &set_speed; //TODO find referent to it in git hist
 	
 	do_task[MOTOR_L]        = &set_left;
 	do_task[MOTOR_R]        = &set_right;
+	do_task[MOTOR_F]        = &set_forward;
+	do_task[MOTOR_B]        = &set_backward;
 	do_task[MOTOR_X_Y]      = &set_motors;
 	do_task[TAKE_OVER]		= &take_over_command;	
 	do_task[GIVE_BACK_CONTROL] =&give_back_control_command;

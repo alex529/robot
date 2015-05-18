@@ -38,7 +38,12 @@ void set_right(task_t *task);
 void set_forward(task_t *task);
 void set_backward(task_t *task);
 void set_motors(task_t *task);
+void set_speed(task_t *task);
 void motors_controoler(void);
+<<<<<<< HEAD
+void drive(int8_t x,int8_t y, uint8_t mag);
+=======
 void drive(uint8_t a, int8_t mag);
+>>>>>>> test
 
 #endif /* MOTOR_H_ */

@@ -24,13 +24,19 @@ typedef enum
 	PING=3,								//0x03
 	STOP_CONN=4,						//0x04
 	
+<<<<<<< HEAD
 	MOTOR_X_Y=20,						//0x14
 	MOTOR_R=21,							//0x15
 	MOTOR_L=22,							//0x16
-	MOTOR_ANGLE=23,                     //0x17
-	MOTOR_MAGNITUDE=24,                 //0x18
-	MOTOR_F=25,                         //0x19
-	MOTOR_B=26,                         //0x1A
+=======
+	MOTOR_X_Y=20,
+	MOTOR_R=21,
+	MOTOR_L=22,
+	MOTOR_ANGLE=23,
+	MOTOR_MAGNITUDE=24,
+	MOTOR_F=25,
+	MOTOR_B=26,
+>>>>>>> test
 	
 	PID_ERROR=40,						//0x28
 	

@@ -14,7 +14,7 @@
 #include "motor.h"
 
 void take_over_command(task_t *task) {
-	drive(0,0,0);
+	drive(0,0);
 	state = STATE_TAKE_OVER;
 	enable_features.controller = false;
 	task_t confirm_take_over_task = {.data.command = TAKE_OVER_ACK, .data.timestamp=0, .data.value=0};
