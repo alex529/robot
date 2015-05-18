@@ -158,7 +158,7 @@ int main(void)
 			if (run_led)
 			{
 				run_led = false;
-				get_line_error();
+				//get_line_error();
 			}
 			
 // 			if (run_adc)
