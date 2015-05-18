@@ -50,8 +50,7 @@
 #define is_in_bounds(x) (x<255&&x>>-255)
 
 static const uint16_t rpm_speed[30]={15,29,44,58,73,87,102,116,131,145,160,174,189,203,218,233,247,262,276,291,305,320,334,349,363,378,392,407,422};
-
-
+ 
 motor_t l_motor, r_motor;
 
 /**
@@ -172,12 +171,12 @@ void drive(uint8_t a, int8_t mag)
 	
 	task_t motor = {.data.command = MOTOR_ANGLE, .data.value = a};
 	add_task(&motor);
-	motor.data.command = MOTOR_MAGNITUDE;motor.data.value = mag;
-	add_task(&motor);
-	motor.data.command = MOTOR_L;motor.data.value = l_motor.rpm;
-	add_task(&motor);
-	motor.data.command = MOTOR_R;motor.data.value = r_motor.rpm;
-	add_task(&motor);
+	task_t motor1 = {.data.command = MOTOR_MAGNITUDE, .data.value = mag};
+	add_task(&motor1);
+	task_t motor2 = {.data.command = MOTOR_L, .data.value = l_motor.rpm};
+	add_task(&motor2);
+	task_t motor3 = {.data.command = MOTOR_R, .data.value = r_motor.rpm};
+	add_task(&motor3);
 }
 
 void set_left(task_t *task)
