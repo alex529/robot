@@ -167,8 +167,8 @@ void drive(uint8_t a, int8_t mag)
 }
 	
 	mag = int8_abs_Q(mag);
-	l_motor.rpm=(((l_ref*mag)>>7)*MAX_RPM);
-	r_motor.rpm=(((r_ref*mag)>>7)*MAX_RPM);
+	l_motor.rpm=(((l_ref*mag)/128));
+	r_motor.rpm=(((r_ref*mag)/128));
 	
 	task_t motor = {.data.command = MOTOR_ANGLE, .data.value = a};
 	add_task(&motor);
