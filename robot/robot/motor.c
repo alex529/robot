@@ -48,6 +48,7 @@
 #define set_r_stop()	{mot_right_port	&=~(1<<mot_right_forw);mot_right_port&=~(1<<mot_right_back);}
 
 #define is_in_bounds(x) (x<255&&x>>-255)
+#define ANGLE 248
 
 static const uint16_t rpm_speed[30]={15,29,44,58,73,87,102,116,131,145,160,174,189,203,218,233,247,262,276,291,305,320,334,349,363,378,392,407,422};
  
@@ -135,14 +136,14 @@ void drive(uint8_t a, int8_t mag)
 		if (a<90)
 		{			
 			r_ref = a;
-			l_ref = 254-a;
+			l_ref = ANGLE-a;
 			set_r_forward();
 			set_l_forward();
 		}
 		else
 		{
 			l_ref = a;
-			r_ref = 254-a;
+			r_ref = ANGLE-a;
 			set_r_forward();
 			set_l_forward();			
 		}
@@ -152,14 +153,14 @@ void drive(uint8_t a, int8_t mag)
 		if (a<90)
 		{			
 			r_ref = a;
-			l_ref = 254-a;
+			l_ref = ANGLE-a;
 			set_r_backward();
 			set_l_backward();
 		}
 		else
 		{
 			l_ref = a;
-			r_ref = 254-a;
+			r_ref = ANGLE-a;
 			set_r_backward();
 			set_l_backward();		
 		}
