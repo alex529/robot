@@ -19,7 +19,7 @@
 #define int0_toggle_edge()		{MCUCR ^=  (1 << ISC00);}
 	
 	
-	#define MAX_RPM 200
+	#define MAX_RPM 200u
 
 typedef struct
 {

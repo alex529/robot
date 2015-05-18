@@ -140,8 +140,7 @@ int main(void)
 			if (run_clock)
 			{
 				run_clock = false;
-				clock_tick();
-				
+				clock_tick();				
 			}
 			if (run_com_prot)
 			{

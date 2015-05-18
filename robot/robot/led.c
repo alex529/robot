@@ -114,8 +114,8 @@ void get_line_error(void)
 			error = 6;
 		break;
 		case 0b00000000:
-		l_motor.rpm=190;
-		r_motor.rpm=200;
+// 		l_motor.rpm=190;
+// 		r_motor.rpm=200;
 		break;
 		case 0b01111111:
 // 		l_motor.rpm=0;
