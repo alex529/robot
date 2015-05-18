@@ -132,11 +132,11 @@ void motors_controoler(void)
 	{
 		if (status.system.motor_forward == true)
 		{
-			set_l_backward();
+			set_r_backward();
 		}
 		else
 		{
-			set_l_forward();
+			set_r_forward();
 		}
 		motor = 19;
 	} else if(motor>255)
@@ -147,11 +147,11 @@ void motors_controoler(void)
 	{
 		if (status.system.motor_forward == true)
 		{
-			set_l_forward();
+			set_r_forward();
 		}
 		else
 		{
-			set_l_backward();
+			set_r_backward();
 		}
 	}
 	set_right_m(motor);
