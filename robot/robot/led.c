@@ -32,9 +32,9 @@
 
 #define send_led_info(){task_t led_info = {.data.command = LED, .data.value = led.array};add_task(&led_info);}
 	
-#define Kp 30
+/*#define Kp 30*/
 #define Ki 4
-#define ERROR_STEP 50
+/*#define ERROR_STEP 50*/
 
 #define ALL_SENSORS_BLACK 0 
 
@@ -66,15 +66,6 @@ void get_line_error(void)
 	switch (led.array)
 	{
 		case 0b00011100 : //0
-// 		if (r_motor.rpm<MAX_RPM-33)
-// 		{
-// 			r_motor.rpm += 33;
-// 		}
-// 		if (l_motor.rpm<MAX_RPM-33)
-// 		{
-// 			l_motor.rpm += 33;
-// 		}
-// 			return;
 
 		break;
 		case 0b00011000 : //-1
@@ -129,6 +120,7 @@ void get_line_error(void)
 		}
 		break;
 	}
+	
 	p_factor = 0;///*Kp**/error;
 	i_factor = Ki*(error+last_error);
 	last_error = error;
