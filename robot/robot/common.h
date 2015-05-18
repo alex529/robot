@@ -95,8 +95,7 @@ typedef struct
 {
 	bool adc;
 	bool send_adc_value;
-	bool controller;
-	bool find_line;
+	bool send_sensor_values;
 } enable_features_t;
 
  volatile enable_features_t enable_features;

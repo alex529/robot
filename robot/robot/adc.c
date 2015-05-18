@@ -11,12 +11,18 @@
 #include <stdint.h>
 #include "adc.h"
 #include "task.h"
+#include "common.h"
 
-volatile int8_t current_channel;
+volatile uint8_t h_ch0;
+volatile uint8_t l_ch0;
+volatile uint8_t h_ch1;
+volatile uint8_t l_ch1;
+volatile uint16_t results[2];
+volatile bool new_data_available;
+volatile bool new_data_available_to_transmit;
+volatile uint8_t stage;
 volatile bool conversionIsInProgress;
 volatile bool enabled;
-volatile adc_values_t adc_values;
-volatile adc_values_t adc_values_empty;
 
 void adc_measurement_init() {
 	
@@ -40,37 +46,52 @@ void adc_measurement_init() {
 	ADCSRA|=(1<<ADPS0);
 	
 	conversionIsInProgress = false;
-	current_channel = PINA0;
+	stage = PINA0;
 }
 
 // starts the first conversion, the rest will be started in the ISR
 void measure() {
 	
-	//reset adc_values
-	adc_values = adc_values_empty;
+	task_t system_state = {.data.command = DEBUG11, .data.timestamp=0, .data.u8[0]=stage};
+		add_task(&system_state);	
+
+	if (stage==PINA0){
+		setChannel(PINA0);
+		conversionIsInProgress = true;
+		ADCSRA |= (1<<ADSC);		
+	}
 	
-	setChannel(PINA0);
+	if (stage==PINA1){
+		setChannel(PINA1);
+		conversionIsInProgress = true;
+		ADCSRA |= (1<<ADSC);
+	} 
 	
-	// it is set false in the ISR 
-	conversionIsInProgress = true;
+	if (stage==STAGE_FINISH)
+	{
+		uint32_t value=0;
+		uint32_t vstep = 488;
+		
+		value = l_ch0;
+		value = value + (h_ch0<<8);
+		results[0] = value * vstep / 100;
+		
+		value=0;
+		
+		value = l_ch1;
+		value = value + (h_ch1<<8);
+		results[1] = value * vstep / 100;
+		
+		stage = PINA0;
+		new_data_available = true;
+	}
 	
-	 /** starting conversion */
-	ADCSRA |= (1<<ADSC);
-	// channel is changed in the ISR 
-	// ISR is located in the ISR.c file
 }
 
-void enableADC() {
-	enabled = true;
-}
-
-void disableADC() {
-	enabled = false;
-}
 
 void handleMeasurement() {
-
-	 if (enabled)
+	
+	 if (enable_features.adc)
 	{
 
 		if (conversionIsInProgress==false)
@@ -83,9 +104,27 @@ void handleMeasurement() {
 	
 }
 
-void send_adc_value_to_pc() {
-	
-	task_t adc_value = {.data.command = ADC1, .data.timestamp = 0, .data.u8[0] = adc_values.results[0], .data.u8[1] = adc_values.results[1]};
-	add_task(&adc_value);
+void enable_adc() {
+	stage=PINA0;
+	enable_features.adc = true;
+}
+
+void disable_adc() {
+	enable_features.adc=false;
+}
+ 
+void send_adc_value_to_pc() {	
+	if (new_data_available)
+	{
+		new_data_available = false;
+		task_t adc_value_task;
+		adc_value_task.data.command = ADC1;
+		adc_value_task.data.timestamp = 0;
+		adc_value_task.data.u8[0] = results[0] & 0xff;
+		adc_value_task.data.u8[1] = results[0]>>8; 
+		adc_value_task.data.u8[2] = results[1] & 0xff;
+		adc_value_task.data.u8[3] = results[1]>>8;
+		add_task(&adc_value_task);	
+	}
 }
 

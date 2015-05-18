@@ -10,18 +10,21 @@
 #define ADC_H_
 
 #define setChannel(pin_number){ADMUX= ((pin_number && 0x1F) | (ADMUX&0xE0));}
+#define STAGE_FINISH 99
 
-typedef struct {
-	uint16_t results[2];
-	bool new_data_available; 
-}adc_values_t;
 
-extern volatile int8_t current_channel;
+extern volatile uint8_t h_ch0;
+extern volatile uint8_t l_ch0;
+extern volatile	uint8_t h_ch1;
+extern volatile uint8_t l_ch1;
+extern volatile	uint16_t results[2];
+extern volatile bool new_data_available;
+extern volatile bool new_data_available_to_transmit;
+extern volatile uint8_t stage;
 extern volatile bool conversionIsInProgress;
-extern volatile adc_values_t adc_values;
 
-void disableADC();
-void enableADC();
+void enable_adc();
+void disable_adc();
 void handleMeasurement();
 void measureWithBothKindOfSensors();
 void measureWithItr8307sOnly();

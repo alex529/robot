@@ -137,24 +137,20 @@ ISR(INT1_vect){
 
 ISR(ADC_vect) {
 	
-	uint32_t value=0;
-	uint32_t vstep = 488;
-
-	//the measured value is 2+8 bits long. The following 2 lines creates a 10bit value from the 2+8 bit values
-	value = ADCL;
-	value = value + (ADCH<<8);
-	value = value * 488;
+	if (stage==PINA0) {		
+		stage = PINA1;
+		l_ch0==ADCL;
+		h_ch0==ADCH;
+		setChannel(PINA1);
+		ADCSRA |= (1<<ADSC);
+		return;
+	}
 	
-	adc_values.results[current_channel] = value * vstep / 100;
-	
-		if (current_channel == PINA0 ){
-			setChannel(PINA1);
-			// starting next conversion
-			ADCSRA |= (1<<ADSC);			
-		} else {
-			setChannel(PINA0);	
-		}
-	conversionIsInProgress = false;
-	adc_values.new_data_available = true;
-	
+	if (stage==PINA1){
+		stage=STAGE_FINISH;
+		l_ch1==ADCL;
+		h_ch1==ADCH;
+		conversionIsInProgress = false;
+		return;
+	}
 }

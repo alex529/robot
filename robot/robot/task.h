@@ -39,7 +39,7 @@ typedef enum
 	GIVE_BACK_CONTROL_ACK = 83,
 	STATE_COMMAND = 84,
 	SET_SPEED =85,
-	DEBUG11=84
+	DEBUG11=86
 	// NOTE!!! if new commands are added to task_command_t MAX_FUNCTION_POINTER_INDEX has to be updated.
 } task_command_t;
 
