@@ -19,28 +19,28 @@ void enter_state_idle() {
 }
 
 void enter_state_find_track() {
-	//set control logic
+	control =&state_find_track_control_logic;
 	state = STATE_FIND_TRACK;
 	task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_FIND_TRACK};
 	add_task(&system_state);
 }
 
 void enter_state_follow_track_1() {
-	//set control logic
+	control =&state_follow_track_1_control_logic;
 	state = STATE_FOLLOW_TRACK_1;
 	task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_FOLLOW_TRACK_1};
 	add_task(&system_state);
 }
 
 void enter_state_y_intersection() {
-	//set control logic
+	control =&state_y_intersection_control_logic;
 	state = STATE_Y_INTERSECTION;
 	task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_Y_INTERSECTION};
 	add_task(&system_state);
 }
 
 void enter_state_follow_track_2() {
-	//set control logic
+	control =&state_follow_track_2_control_logic;
 	state = STATE_FOLLOW_TRACK_2;
 	task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_FOLLOW_TRACK_2};
 	add_task(&system_state);

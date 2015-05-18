@@ -27,6 +27,7 @@ void take_over_command(task_t *task) {
 
 void give_back_control_command(task_t *task) {
 	enable_features.adc = false;
+	enable_features.send_adc_value = false;
 	uint8_t event = task->data.u8[0];
 	add_event(event);
 	task_t confirm_give_back_control_task = {.data.command = GIVE_BACK_CONTROL_ACK, .data.timestamp=0, .data.value=event};

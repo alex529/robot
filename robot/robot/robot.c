@@ -22,6 +22,7 @@
 #include "led.h"
 #include "adc.h"
 #include "state_machine.h"
+#include "control_logic.h"
 
 #define start(x){do_handler = true; x=true;}
 
@@ -36,7 +37,7 @@
 #define SEND_ADC_VALUE_INTERVAL		100
 #define STATE_MACHINE_INTERVAL		5
 #define SEND_SENSOR_INTERVAL		3000
-#define CONTROL_LOGIC_INTERVAL		3000
+#define CONTROL_LOGIC_INTERVAL		500
 
 volatile bool run_card_reader = false;
 volatile void (*control)();
@@ -88,6 +89,8 @@ int main(void)
 	enable_features.adc=false;
 	enable_features.send_adc_value=false;
 	enable_features.send_sensor_values=false;
+	
+	control=&state_idle_control_logic;
 	
 	sei();
 	
