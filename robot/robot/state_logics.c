@@ -8,9 +8,11 @@
 #include "state_logics.h"
 #include "state_machine.h"
 #include "task.h"
+#include "common.h"
+#include "control_logic.h"
 
 void enter_state_idle() {
-	//set control logic
+	control = &state_idle_control_logic;
 	state = STATE_IDLE;
 	task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_IDLE};
 	add_task(&system_state);

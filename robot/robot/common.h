@@ -99,5 +99,6 @@ typedef struct
 } enable_features_t;
 
  volatile enable_features_t enable_features;
+ extern volatile void (*control)();
 
 #endif /* COMMON_H_ */

@@ -17,7 +17,7 @@ extern volatile uint8_t h_ch0;
 extern volatile uint8_t l_ch0;
 extern volatile	uint8_t h_ch1;
 extern volatile uint8_t l_ch1;
-extern volatile	uint16_t results[2];
+extern volatile	uint16_t result;
 extern volatile bool new_data_available;
 extern volatile bool new_data_available_to_transmit;
 extern volatile uint8_t stage;

@@ -137,19 +137,14 @@ ISR(INT1_vect){
 
 ISR(ADC_vect) {
 	
-	if (stage==PINA0) {		
-		stage = PINA1;
-		l_ch0==ADCL;
-		h_ch0==ADCH;
+		uint32_t value=0;
+		uint32_t vstep = 488;
+		
+		value = ADCL;
+		value = value + (ADCH<<8);
+		result = value * vstep / 100;
+		
 		conversionIsInProgress = false;
-		return;
-	}
-	
-	if (stage==PINA1){
-		stage=STAGE_FINISH;
-		l_ch1==ADCL;
-		h_ch1==ADCH;
-		conversionIsInProgress = false;
-		return;
-	}
+		new_data_available = true;
+		new_data_available_to_transmit = true;
 }

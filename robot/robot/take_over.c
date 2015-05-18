@@ -14,7 +14,7 @@
 #include "adc.h"
 
 void take_over_command(task_t *task) {
-	enable_adc();
+	enable_features.adc = true;
 	enable_features.send_adc_value = true;
 	drive(0,0,0);
 	state = STATE_TAKE_OVER;
@@ -26,7 +26,7 @@ void take_over_command(task_t *task) {
 }
 
 void give_back_control_command(task_t *task) {
-	disable_adc();
+	enable_features.adc = false;
 	uint8_t event = task->data.u8[0];
 	add_event(event);
 	task_t confirm_give_back_control_task = {.data.command = GIVE_BACK_CONTROL_ACK, .data.timestamp=0, .data.value=event};
