@@ -28,7 +28,8 @@ typedef union
 
 void led_init(void);
 void get_line_error(void);
-void eval(void);
+void sensor_eval(void);
+void send_sensor_values(void);
 
 
 #endif /* LED_H_ */

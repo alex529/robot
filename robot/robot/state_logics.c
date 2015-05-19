@@ -23,6 +23,8 @@ void enter_state_find_track() {
 	state = STATE_FIND_TRACK;
 	task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_FIND_TRACK};
 	add_task(&system_state);
+	state_find_track_data_t state_find_track_data_empty;
+	state_find_track_data = state_find_track_data_empty;
 }
 
 void enter_state_follow_track_1() {

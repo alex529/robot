@@ -103,7 +103,7 @@ typedef struct
 	bool send_adc_value;
 	bool send_sensor_values;
 	bool controller;
-	bool find_line;
+	bool generate_events;
 } enable_features_t;
 
 volatile enable_features_t enable_features;

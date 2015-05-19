@@ -36,7 +36,7 @@
 #define Ki 4
 #define ERROR_STEP 50
 
-#define ALL_SENSORS_BLACK 0 
+#define LINE_FOUND 127 
 
 //TODO: delete either 0 or 7
 #define read_switches(){led.array = 0b01111111&(~(PINA));/*led.switches.sw0=SW0;\
@@ -160,13 +160,16 @@ void get_line_error(void)
 	}
 }
 
-void eval(void) {
+void send_sensor_values(void) {
 	read_switches();
 	send_led_info();
+}
+
+void sensor_eval(void) {
 	uint8_t sensor_value = led.array; 
-	if (sensor_value == ALL_SENSORS_BLACK)
+	if (sensor_value == LINE_FOUND)
 	{
-		add_event(EVENT_ALL_SENSORS_BLACK);
+		add_event(EVENT_LINE_FOUND);
 	}
 }
 

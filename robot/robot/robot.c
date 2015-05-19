@@ -36,7 +36,8 @@
 #define STATE_MACHINE_INTERVAL		5
 #define SENSOR_EVAL_INTERVAL		30
 #define SEND_SENSOR_INTERVAL		3000
-#define CONTROL_LOGIC_INTERVAL		500
+#define CONTROL_LOGIC_INTERVAL		20
+
 
 volatile bool run_card_reader = false;
 volatile void (*control)();
@@ -63,7 +64,7 @@ int main(void)
 	uint8_t send_sensor_timer	=SEND_SENSOR_INTERVAL;
 	uint8_t sensor_eval_timer			= SENSOR_EVAL_INTERVAL;
 	uint8_t control_logic_timer	=CONTROL_LOGIC_INTERVAL;
-	
+
 	bool do_handler				= false;
 	bool run_com_prot			= false;
 	bool run_adc				= false;
@@ -74,6 +75,7 @@ int main(void)
 	bool run_clock				= false;
 	bool run_send_sensor		= false;
 	bool run_control_logic		= false;
+	bool run_sensor_eval		= false;
 	
 	DDRB|=(1<<PB7);
 	led_off();
@@ -144,7 +146,12 @@ int main(void)
 				control_logic_timer = SEND_SENSOR_INTERVAL;
 				start(run_control_logic);
 			}
-			
+			if(--sensor_eval_timer == 0)
+			{
+				sensor_eval_timer = SENSOR_EVAL_INTERVAL;
+				start(run_sensor_eval);
+			}
+		
 		}
 		if(do_handler)/*get_line_error();*/
 		{
@@ -187,15 +194,20 @@ int main(void)
 				state_machine();
 			}
 			if (run_send_sensor)
-// 			{
+ 			{
 				run_send_sensor = false;
-// 				eval();
+ 				send_sensor_values();
 			}
 			if (run_control_logic)
 			{
 				run_control_logic = false;
 				(*control)();
-			
+			}
+			if (run_sensor_eval)
+			{
+				run_sensor_eval = false;
+				
+			}
 		}
 		
 		

@@ -2,7 +2,7 @@
  * control_logic.h
  *
  * Created: 5/16/2015 3:38:45 PM
- *  Author: adam
+ *  Author: Adam Orosz, s134615
  */ 
 
 
@@ -16,5 +16,10 @@ void state_y_intersection_control_logic();
 void state_follow_track_2_control_logic(); 
 void state_take_over_control_logic();
 
+typedef struct  
+{
+	bool init;
+} state_find_track_data_t;
 
+extern volatile state_find_track_data_t state_find_track_data;
 #endif /* CONTROL_LOGIC_H_ */

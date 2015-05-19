@@ -14,8 +14,9 @@ typedef struct {
 } transition_t;
 
 transition_t transition_table[] = {
-    {STATE_IDLE,  EVENT_BUTTON_START, &find_track_state_change},
-    {STATE_FIND_TRACK, EVENT_BUTTON_RESET, &idle_state_change},
+    {STATE_IDLE,  EVENT_BUTTON_START, &enter_state_find_track},
+    {STATE_ANY, EVENT_BUTTON_RESET, &enter_state_idle},
+	{STATE_FIND_TRACK, EVENT_LINE_FOUND, &enter_state_follow_track_1},
 	{STATE_ANY, JAVA_IDLE, &enter_state_idle},
 	{STATE_ANY, JAVA_FIND_TRACK, &enter_state_find_track},
 	{STATE_ANY, JAVA_FOLLOW_TRACK_1, &enter_state_follow_track_1},
