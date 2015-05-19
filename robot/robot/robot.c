@@ -79,7 +79,6 @@ int main(void)
 	led_off();
 	
 	status.byte[0]=0;
-	enableADC();
 	adc_measurement_init();
 	USART_init();
 	timer1_init();
