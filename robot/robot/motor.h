@@ -23,7 +23,7 @@
 
 typedef struct
 {
-	uint16_t pulses;
+	uint8_t pulses;
 	int16_t error;
 	bool direction;
 	int16_t rpm;

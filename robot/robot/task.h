@@ -34,10 +34,11 @@ typedef enum
 	MOTOR_RPM=27,                       //0x1B
 	
 	PID_ERROR=40,						//0x28
-	
+		
 	ADC1=60,							//0x3C
 	ADC_PI_ERROR=61,					//0x3D
 	LED=62,								//0x3E
+	START_LINE=63,						//0x3F
 	
 	TAKE_OVER = 80,						//0x50
 	TAKE_OVER_ACK = 81,					//0x51

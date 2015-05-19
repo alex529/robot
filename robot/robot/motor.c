@@ -13,7 +13,7 @@
 * \brief Kp for the motor controller
 * the actual coefisient has to be multiplied by 128 and an integer value has to be provided
 */
-#define Kp 256
+#define Kp 48
 
 #include <avr/io.h>
 #include "motor.h"
@@ -51,6 +51,7 @@
 
 #define is_in_bounds(x) (x<255&&x>>-255)
 #define ANGLE 248
+#define BREAK_VALUE 10
 
 #define send_left_m(x) {task_t m_info = {.data.command = MOTOR_L, .data.value = get_left_m()};add_task(&m_info);}
 #define send_right_m(x){task_t m_info = {.data.command = MOTOR_R, .data.value = get_right_m()};add_task(&m_info);}
@@ -102,9 +103,15 @@ void motors_controoler(void)
 	l_motor.error = l_ref_pulses-l_motor.pulses;
 	r_motor.error = r_ref_pulses-r_motor.pulses;
 	
-	int16_t motor = get_left_m()+((Kp*l_motor.error)>>7);
+	int16_t motor;
+	//motor = get_left_m()+l_motor.error;//((Kp*l_motor.error)/128);
+	motor= get_left_m();
+	if (l_motor.error<0)
+		motor--;
+	else
+		motor++;
 	{
-		if (motor<-1||l_motor.error<-1)
+		if (motor<0||(l_motor.error<0))
 		{
 			if (status.system.motor_forward == true)
 			{
@@ -114,10 +121,11 @@ void motors_controoler(void)
 			{
 				set_l_forward();
 			}
-			motor = 20;
+			motor = BREAK_VALUE;
 		}
 		else if(motor<1)
 		{
+			motor= 0;
 			set_l_stop();
 		}
 		else if (motor<255)
@@ -131,7 +139,7 @@ void motors_controoler(void)
 				set_l_backward();
 			}
 		}
-		else		
+		else
 		{
 			if (status.system.motor_forward == true)
 			{
@@ -144,11 +152,16 @@ void motors_controoler(void)
 			motor = 255;
 		}
 		set_left_m(motor);
-}
+	}
 	//TODO maybe refactor in separate functions
-			motor = get_right_m()+((Kp*r_motor.error)>>7);
+	//motor = get_right_m()+r_motor.error;//((Kp*r_motor.error)/128);
+	motor = get_right_m();
+	if (r_motor.error<0)
+		motor--;
+	else
+		motor++;
 	{
-		if (motor<-1||r_motor.error<-1)
+		if (motor<0||(r_motor.error<0))
 		{
 			if (status.system.motor_forward == true)
 			{
@@ -158,12 +171,13 @@ void motors_controoler(void)
 			{
 				set_r_forward();
 			}
-			motor = 20;
-		} 
+			motor = BREAK_VALUE;
+		}
 		else if (motor<1)
 		{
 			set_r_stop();
-		} 
+			motor=0;
+		}
 		else if(motor<255)
 		{
 			if (status.system.motor_forward == true)
@@ -227,9 +241,20 @@ void set_rpm(task_t *task)
 {
 	u32_union temp;
 	temp.dw = task->data.value;
+	int16_t l = (int16_t)temp.w[1],r = (int16_t)temp.w[0];
 	
-	l_motor.rpm = temp.w[1];
-	r_motor.rpm = temp.w[0];
+	if (l>=0)
+	{
+		set_m_forward()
+		l_motor.rpm = l;
+		r_motor.rpm = r;
+	}
+	else
+	{
+		set_m_backward()
+		l_motor.rpm = int16_abs_Q(l);
+		r_motor.rpm = int16_abs_Q(r);
+	}
 	task_t motor2 = {.data.command = MOTOR_L, .data.value = l_motor.rpm};
 	add_task(&motor2);
 	task_t motor3 = {.data.command = MOTOR_R, .data.value = r_motor.rpm};

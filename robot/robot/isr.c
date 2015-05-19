@@ -121,8 +121,7 @@ ISR(TIMER1_COMPA_vect)
 		sys_timer = 0;
 		system_tic = true;
 	}
-	
-	+milliseconds++;
+	milliseconds++;
 }
 
 ISR(INT0_vect){

@@ -19,6 +19,7 @@
 #include "com_prot.h"
 #include "motor.h"
 #include "take_over.h"
+#include "led.h"
 
 uint8_t task_count=0;
 
@@ -58,8 +59,9 @@ void recive_task_init(void)
 	do_task[MOTOR_F]        = &set_forward;
 	do_task[MOTOR_B]        = &set_backward;
 	do_task[MOTOR_X_Y]      = &set_motors;
-	do_task[TAKE_OVER]		= &take_over_command;	
+	do_task[TAKE_OVER]		= &take_over_command;
 	do_task[GIVE_BACK_CONTROL] =&give_back_control_command;
+	do_task[START_LINE] =&start_line;
 //
 	//do_task[PID_ERROR]       = &set_year;
 //
@@ -109,9 +111,10 @@ void add_task(task_t *task)
 {
 	if(task==NULL) return;
 	
-	if(task_count>99)
+	if(task_count>50)
 	{
-		delete_task();
+		clear_task_fifo();
+		task_count=0;
 	}//if new data should be lost return instead of deleting task
 	
 	struct node *temp_node = malloc(1*sizeof(*temp_node));
