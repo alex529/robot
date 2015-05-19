@@ -62,7 +62,7 @@ void get_line_error(void)
 	if (status.system.start_line)
 {
 	static int16_t last_error;
-		int16_t error = 0, p_factor, i_factor=0;
+		int8_t error = 0, p_factor, i_factor=0;
 		read_switches();
 		toggle_led();
 		switch (led.array)
@@ -123,34 +123,17 @@ void get_line_error(void)
 			break;
 		}
 		
-		p_factor = 0;///*Kp**/error;
-		i_factor = Ki*(error+last_error);
-		last_error = error;
-		status.byte[1]=i_factor;
+		
 		int16_t new_rpm;
-		new_rpm = r_motor.ref_rpm + i_factor/*-p_factor*/;
-		if (new_rpm<33)
-		{
-			new_rpm = 33;
-		}
-		r_motor.rpm = new_rpm;
-		new_rpm = l_motor.ref_rpm - i_factor/*+p_factor*/;
-		if (new_rpm<33)
-		{
-			new_rpm = 33;
-		}
-		l_motor.rpm = new_rpm;
+		new_rpm = r_motor.ref_rpm;
+		if(error<0)r_motor.rpm=r_motor.ref_rpm+(error*16);
+		else l_motor.rpm = l_motor.ref_rpm-(error*16);
 	
 		static uint8_t info_timer=5;//5*70ms = 350ms
 		if(--info_timer==0)
 		{
 			info_timer=10;
-			
-			task_t l_t = {.data.command = MOTOR_L, .data.value = l_motor.rpm};
-			add_task(&l_t);
-			task_t r_t = {.data.command = MOTOR_R, .data.value = r_motor.rpm};
-			add_task(&r_t);
-			//send_led_info();
+			send_led_info();
 		}
 }
 }
