@@ -35,6 +35,18 @@ typedef enum
 	
 	PID_ERROR=40,						//0x28
 	
+<<<<<<< HEAD
+	ADC1=60,
+	ADC_PI_ERROR=61,
+	LED=62,
+	TAKE_OVER = 80,
+	TAKE_OVER_ACK = 81,
+	GIVE_BACK_CONTROL = 82,
+	GIVE_BACK_CONTROL_ACK = 83,
+	STATE_COMMAND = 84,
+	SET_SPEED =85,
+	DEBUG11=86
+=======
 	ADC1=60,							//0x3C
 	ADC_PI_ERROR=61,					//0x3D
 	LED=62,								//0x3E
@@ -47,6 +59,7 @@ typedef enum
 	SET_SPEED =85,						//0x55
 	
 	DEBUG11=100							//0x64
+>>>>>>> 33db8d20379dccd076
 	// NOTE!!! if new commands are added to task_command_t MAX_FUNCTION_POINTER_INDEX has to be updated.
 } task_command_t;
 

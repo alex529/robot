@@ -11,15 +11,21 @@
 #include "take_over.h"
 #include "state_machine.h"
 #include "state_machine_event_buffer.h"
+<<<<<<< HEAD
 #include "adc.h"
-#include "motor.h"
 
 void take_over_command(task_t *task) {
 	enable_features.adc = true;
-	drive(0,0);
 	enable_features.send_adc_value = true;
+	drive(0,0,0);
+=======
+#include "motor.h"
+
+void take_over_command(task_t *task) {
+	drive(0,0);
+>>>>>>> 33db8d20379dccd076
 	state = STATE_TAKE_OVER;
-	enable_features.controller = false;
+	//turn off controller
 	task_t confirm_take_over_task = {.data.command = TAKE_OVER_ACK, .data.timestamp=0, .data.value=0};
 	add_task(&confirm_take_over_task);
 	task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_TAKE_OVER};

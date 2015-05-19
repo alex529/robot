@@ -102,11 +102,13 @@ typedef struct
 	bool adc;
 	bool send_adc_value;
 	bool send_sensor_values;
-	bool controller;
-	bool find_line;
 } enable_features_t;
 
-volatile enable_features_t enable_features;
+<<<<<<< HEAD
+ volatile enable_features_t enable_features;
  extern volatile void (*control)();
+=======
+volatile enable_features_t enable_features;
+>>>>>>> 33db8d20379dccd076
 
 #endif /* COMMON_H_ */

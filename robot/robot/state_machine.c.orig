@@ -23,6 +23,8 @@ transition_t transition_table[] = {
 	{STATE_ANY, JAVA_FOLLOW_TRACK_2, &enter_state_follow_track_2}
 };
 
+
+
 #define TRANS_COUNT (sizeof(transition_table)/sizeof(*transition_table))
 
 state_t state = STATE_IDLE;
@@ -30,9 +32,12 @@ state_t state = STATE_IDLE;
 void state_machine() {
     event_t current_event;
     current_event = delete_event();
-    if (current_event == -1) {
+<<<<<<< HEAD
+=======
+    if (current_event == -1) {//TODO it looks bad refactor delete_event gives an uint8 maybe bettter create an eva t that covers this case
         return;
     }
+>>>>>>> test
     int i;
 	while (current_event != ERROR) {
     for (i = 0; i < TRANS_COUNT; i++) {
@@ -43,7 +48,7 @@ void state_machine() {
             }
         }
     }
-	current_event = delete_event();//TODO im not sure if you need this mege thing
+	current_event = delete_event();
 	}
 }
 
