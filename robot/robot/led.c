@@ -31,9 +31,15 @@
 #define OFF 0
 
 #define send_led_info(){task_t led_info = {.data.command = LED, .data.value = led.array};add_task(&led_info);}
+#define send_pid(x){task_t pid_err = {.data.command = PID_ERROR, .data.value = x};add_task(&pid_err);}
 	
-/*#define Kp 30*/
-#define Ki 4
+// #define Kp 16
+// #define Ki 0
+// #define Kd 0
+
+uint16_t Kp=16, Ki=0, Kd=0;
+
+#define aplie_kd(x)(((x)*Kd)>>7)
 /*#define ERROR_STEP 50*/
 
 #define ALL_SENSORS_BLACK 0 
@@ -59,10 +65,10 @@ led_t led;
 */
 void get_line_error(void)
 {
-	if (status.system.start_line)
-{
-	static int16_t last_error;
-		int8_t error = 0, p_factor, i_factor=0;
+	//if (status.system.start_line)//TODO if java tool is used uncomment
+	{
+		static int16_t i_factor,last_error,d_factor,p_factor, pid;
+		int8_t error = 0;
 		read_switches();
 		toggle_led();
 		switch (led.array)
@@ -123,11 +129,17 @@ void get_line_error(void)
 			break;
 		}
 		
+		p_factor = error*Kp;
+		i_factor += Ki*error;
+		d_factor =aplie_kd(error-last_error);
+		pid=p_factor+i_factor+d_factor;
 		
-		int16_t new_rpm;
-		new_rpm = r_motor.ref_rpm;
-		if(error<0)r_motor.rpm=r_motor.ref_rpm+(error*16);
-		else l_motor.rpm = l_motor.ref_rpm-(error*16);
+		if(error<0)
+			r_motor.rpm = r_motor.ref_rpm + pid;
+		else 
+			l_motor.rpm = l_motor.ref_rpm - pid;
+			
+		send_pid(pid);
 	
 		static uint8_t info_timer=5;//5*70ms = 350ms
 		if(--info_timer==0)
@@ -151,6 +163,21 @@ void eval(void) {
 void start_line(task_t *task)
 {
 	status.system.start_line=task->data.value;
+}
+
+void set_Kp(task_t *task)
+{
+	Kp=task->data.value;
+}
+
+void set_Ki(task_t *task)
+{
+	Ki=task->data.value;
+}
+
+void set_Kd(task_t *task)
+{
+	Kd=task->data.value;
 }
 
 void led_init(void)

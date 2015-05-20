@@ -111,7 +111,7 @@ void motors_controoler(void)
 	else
 		motor++;
 	{
-		if (motor<0||(l_motor.error<0))
+		if (motor<-1||(l_motor.error<-1))
 		{
 			if (status.system.motor_forward == true)
 			{
@@ -161,7 +161,7 @@ void motors_controoler(void)
 	else
 		motor++;
 	{
-		if (motor<0||(r_motor.error<0))
+		if (motor<-1||(r_motor.error<-1))
 		{
 			if (status.system.motor_forward == true)
 			{
@@ -286,6 +286,6 @@ void motors_init(void)
 	init_pwm();
 	set_l_forward();
 	set_r_forward();
-	l_motor.ref_rpm=100;
-	r_motor.ref_rpm=100;
+	l_motor.ref_rpm=130;
+	r_motor.ref_rpm=130;
 }

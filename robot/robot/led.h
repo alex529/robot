@@ -30,6 +30,9 @@ void led_init(void);
 void get_line_error(void);
 void eval(void);
 void start_line(task_t *task);
+void set_Kp(task_t *task);
+void set_Kd(task_t *task);
+void set_Ki(task_t *task);
 
 
 #endif /* LED_H_ */
