@@ -86,8 +86,6 @@ void init_pwm(void){
 
 void motors_controoler(void)
 {
-	
-	static uint8_t x=0;
 	if (l_motor.rpm>MAX_RPM)
 	{
 		l_motor.rpm=MAX_RPM;

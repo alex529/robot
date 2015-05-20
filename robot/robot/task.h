@@ -37,6 +37,8 @@ typedef enum
 	PID_KP=41,							//0x29
 	PID_KD=42,							//0x2A
 	PID_KI=43,							//0x2B
+	PID=44,								//0x2C
+	PID_INT=45,							//0x2D
 		
 	ADC1=60,							//0x3C
 	ADC_PI_ERROR=61,					//0x3D

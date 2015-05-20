@@ -29,7 +29,7 @@
 #define CLOCK_INTERVAL				100
 #define COMM_PROT_INTERVAL			10
 #define MOTOR_INTERVAL				1
-#define LED_INTERVAL				4
+#define LED_INTERVAL				15
 #define ADC_INTERVAL				50
 #define SEND_ADC_VALUE_INTERVAL		50
 #define STATE_MACHINE_INTERVAL		5
@@ -37,6 +37,13 @@
 
 volatile bool run_card_reader = false;
 timer_t test;
+
+uint8_t led_int = 15;
+
+void set_pid_int(task_t *task)
+{
+	led_int=task->data.value;
+}
 
 /**
 * \brief Represents a scheduler implementation the scheduler ticking every 100ms.
@@ -109,7 +116,7 @@ int main(void)
 			}
 			if(--led_timer == 0)
 			{
-				led_timer = LED_INTERVAL;
+				led_timer = led_int;
 				start(run_led);
 			}
 // 			if(enable_features.adc == true && --adc_timer == 0)

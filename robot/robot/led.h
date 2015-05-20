@@ -33,6 +33,7 @@ void start_line(task_t *task);
 void set_Kp(task_t *task);
 void set_Kd(task_t *task);
 void set_Ki(task_t *task);
+void set_pid(task_t *task);
 
 
 #endif /* LED_H_ */

@@ -33,6 +33,9 @@
 #define send_led_info(){task_t led_info = {.data.command = LED, .data.value = led.array};add_task(&led_info);}
 #define send_pid(x){task_t pid_err = {.data.command = PID_ERROR, .data.value = x};add_task(&pid_err);}
 	
+#define send_left_m(x) {task_t m_info = {.data.command = MOTOR_L, .data.value = l_motor.rpm};add_task(&m_info);}
+#define send_right_m(x){task_t m_info = {.data.command = MOTOR_R, .data.value = r_motor.rpm};add_task(&m_info);}
+	
 // #define Kp 16
 // #define Ki 0
 // #define Kd 0
@@ -130,22 +133,35 @@ void get_line_error(void)
 		}
 		
 		p_factor = error*Kp;
-		i_factor += Ki*error;
+		i_factor =i_factor+( Ki*error);
+		if (i_factor<-32)
+		{
+			i_factor=-32;
+		} 
+		else if (i_factor>32)
+		{
+			i_factor=32;
+		}
 		d_factor =aplie_kd(error-last_error);
 		pid=p_factor+i_factor+d_factor;
 		
-		if(error<0)
+		if(error<=0)
 			r_motor.rpm = r_motor.ref_rpm + pid;
-		else 
+		if(error>=0) 
 			l_motor.rpm = l_motor.ref_rpm - pid;
 			
-		send_pid(pid);
 	
 		static uint8_t info_timer=5;//5*70ms = 350ms
 		if(--info_timer==0)
 		{
 			info_timer=10;
-			send_led_info();
+// 			send_led_info();
+// 			send_left_m();
+// 			send_right_m();
+ 			send_pid(pid);
+ 			task_t led_info  = {.data.command = PID_KP, .data.value = p_factor};add_task(&led_info);
+ 			task_t led_info1 = {.data.command = PID_KI, .data.value = i_factor};add_task(&led_info1);
+ 			task_t led_info2 = {.data.command = PID_KD, .data.value = d_factor};add_task(&led_info2);
 		}
 }
 }
@@ -178,6 +194,15 @@ void set_Ki(task_t *task)
 void set_Kd(task_t *task)
 {
 	Kd=task->data.value;
+}
+void set_pid(task_t *task)
+{
+	Kp=task->data.u8[0];
+	Ki=task->data.u8[1];
+	Kd=task->data.u8[2];
+	task_t led_info  = {.data.command = PID_KP, .data.value = Kp};add_task(&led_info);
+	task_t led_info1 = {.data.command = PID_KI, .data.value = Ki};add_task(&led_info1);
+	task_t led_info2 = {.data.command = PID_KD, .data.value = Kd};add_task(&led_info2);
 }
 
 void led_init(void)
