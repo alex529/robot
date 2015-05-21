@@ -32,10 +32,8 @@
 #define LED_INTERVAL				13
 #define ADC_INTERVAL				50
 #define SEND_ADC_VALUE_INTERVAL		50
-#define STATE_MACHINE_INTERVAL		10
-#define SENSOR_EVAL_INTERVAL		10
 #define SEND_SENSOR_INTERVAL		3000
-#define CONTROL_LOGIC_INTERVAL		10
+#define CONTROL_LOGIC_INTERVAL		1
 
 volatile void (*control)();
 timer_t test;
@@ -64,10 +62,7 @@ int main(void)
 	uint8_t motor_timer					= MOTOR_INTERVAL;
 	uint8_t led_timer					= LED_INTERVAL;
 	uint8_t send_adc_value_timer		= SEND_ADC_VALUE_INTERVAL;
-	uint8_t state_machine_value_timer	= STATE_MACHINE_INTERVAL;
 	uint8_t send_sensor_timer			= SEND_SENSOR_INTERVAL;
-	uint8_t sensor_eval_timer			= SENSOR_EVAL_INTERVAL;
-	uint8_t control_logic_timer			= CONTROL_LOGIC_INTERVAL;
 
 	bool do_handler				= false;
 	bool run_com_prot			= false;
@@ -75,11 +70,10 @@ int main(void)
 	bool run_send_adc_value		= false;
 	bool run_motor				= false;
 	bool run_led				= false;
-	bool run_state_machine		= false;
 	bool run_clock				= false;
 	bool run_send_sensor		= false;
 	bool run_control_logic		= false;
-	bool run_sensor_eval		= false;
+	
 	
 	DDRB|=(1<<PB7);
 	led_off();
@@ -95,9 +89,8 @@ int main(void)
 	enable_features.adc=false;
 	enable_features.send_adc_value=false;
 	enable_features.send_sensor_values=false;
-	enable_features.generate_events = false;
 	
-	control=&state_idle_control_logic;
+	control = &state_idle_control_logic;
 	
 	sei();
 	
@@ -121,36 +114,26 @@ int main(void)
 				motor_timer = MOTOR_INTERVAL;
 				start(run_motor);
 			}
-// 			if(--led_timer == 0)
-// 			{
-// 				led_timer = led_int;
-// 				start(run_led);
-// 			}
-// 			if(enable_features.adc == true && --adc_timer == 0)
-// 			{
-// 				adc_timer = ADC_INTERVAL;
-// 				start(run_adc);
-// 			}
-// 			if(enable_features.send_adc_value == true && --send_adc_value_timer == 0)
-// 			{
-// 				send_adc_value_timer = SEND_ADC_VALUE_INTERVAL;
-// 				start(run_send_adc_value);
-// 			}
-// 			if(--send_sensor_timer == 0)
-// 			{
-// 				send_sensor_timer = SEND_SENSOR_INTERVAL;
-// 				start(run_send_sensor);
-// 			}
-			if(--control_logic_timer == 0)
-			{
-				control_logic_timer = SEND_SENSOR_INTERVAL;
-				start(run_control_logic);
-			}
-			if(--sensor_eval_timer == 0)
-			{
-				sensor_eval_timer = SENSOR_EVAL_INTERVAL;
-				start(run_sensor_eval);
-			}
+ 			if(--led_timer == 0)
+ 			{
+ 				led_timer = led_int;
+ 				start(run_led);
+ 			}
+ 			if(enable_features.adc == true && --adc_timer == 0)
+ 			{
+ 				adc_timer = ADC_INTERVAL;
+ 				start(run_adc);
+ 			}
+ 			if(enable_features.send_adc_value == true && --send_adc_value_timer == 0)
+ 			{
+ 				send_adc_value_timer = SEND_ADC_VALUE_INTERVAL;
+ 				start(run_send_adc_value);
+ 			}
+ 			if(--send_sensor_timer == 0)
+ 			{
+ 				send_sensor_timer = SEND_SENSOR_INTERVAL;
+ 				start(run_send_sensor);
+ 			}
 		
 		}
 		if(do_handler)/*get_line_error();*/
@@ -171,40 +154,31 @@ int main(void)
 				run_motor = false;
 				motors_controoler();
 			}
-// 			if (run_led)
-// 			{
-// 				run_led = false;
-// 				//get_line_error();
-// 			}
-// 			
-//  			if (run_adc)
-//  			{
-//  				run_adc = false;
-//  				handleMeasurement();
-//  			}
-//  			
-//  			if (run_send_adc_value)
-//  			{
-//  				run_send_adc_value = false;
-//  				send_adc_value_to_pc();
-//  			}			
+ 			if (run_led)
+ 			{
+ 				run_led = false;
+ 				//get_line_error();
+ 			}
+ 			
+  			if (run_adc)
+  			{
+  				run_adc = false;
+  				handleMeasurement();
+  			}
+  			
+  			if (run_send_adc_value)
+  			{
+  				run_send_adc_value = false;
+  				send_adc_value_to_pc();
+  			}			
 		
- 			if (run_sensor_eval && enable_features.generate_events == true)
- 			{
- 				run_sensor_eval = false;
- 				sensor_eval();
- 			}
-// 			if (run_send_sensor)
-//  			{
-//  				run_send_sensor = false;
-//  				send_sensor_values();
-//  			}
-			if (run_control_logic)
- 			{
- 				run_control_logic = false;
- 				(*control)();
- 			}
-			
+ 			if (run_send_sensor)
+  			{
+  				run_send_sensor = false;
+  				send_sensor_values();
+  			}
+
+			(*control)();
 		}
 		
 		
