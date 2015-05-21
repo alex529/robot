@@ -21,7 +21,6 @@
 #include "motor.h"
 #include "led.h"
 #include "adc.h"
-#include "state_machine.h"
 #include "control_logic.h"
 
 #define start(x){do_handler = true; x=true;}
@@ -38,7 +37,6 @@
 #define SEND_SENSOR_INTERVAL		3000
 #define CONTROL_LOGIC_INTERVAL		10
 
-volatile bool run_card_reader = false;
 volatile void (*control)();
 timer_t test;
 
@@ -138,11 +136,6 @@ int main(void)
 // 				send_adc_value_timer = SEND_ADC_VALUE_INTERVAL;
 // 				start(run_send_adc_value);
 // 			}
-			if(--state_machine_value_timer == 0)
-			{
-				state_machine_value_timer = STATE_MACHINE_INTERVAL;
-				start(run_state_machine);
-			}
 // 			if(--send_sensor_timer == 0)
 // 			{
 // 				send_sensor_timer = SEND_SENSOR_INTERVAL;
@@ -195,11 +188,7 @@ int main(void)
 //  				run_send_adc_value = false;
 //  				send_adc_value_to_pc();
 //  			}			
-			if (run_state_machine)
- 			{
- 				run_state_machine = false;
- 				state_machine();
- 			}
+		
  			if (run_sensor_eval && enable_features.generate_events == true)
  			{
  				run_sensor_eval = false;

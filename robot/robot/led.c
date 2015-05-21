@@ -13,8 +13,6 @@
 #include "math_Q.h"
 #include "task.h"
 #include "common.h"
-#include "state_machine.h"
-#include "state_machine_event_buffer.h"
 #include "control_logic.h"
 
 //TODO: check if this works
@@ -176,8 +174,8 @@ void sensor_eval(void) {
 	read_switches();
 	if ((sensor_value & 0x7e)!= 0)
 	{	
-		control =&state_follow_track_1_control_logic;
-		state = STATE_FOLLOW_TRACK_1;
+		control = &state_follow_track_1_control_logic;
+		
 		task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_FOLLOW_TRACK_1};
 		add_task(&system_state);
 	}

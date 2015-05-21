@@ -16,7 +16,6 @@
 #include "usart.h"
 #include "com_prot.h"
 #include "motor.h"
-#include "state_machine.h"
 
 timer_t ping_tmr;
 
@@ -39,9 +38,6 @@ void communication_init(task_t *task)
 		status.system.connected = true;
 		clear_task_fifo();
 		add_task(&comm_init);
-		
-		task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=state};
-		add_task(&system_state);
 	}
 }
 
