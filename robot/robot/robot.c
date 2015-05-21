@@ -33,10 +33,10 @@
 #define LED_INTERVAL				13
 #define ADC_INTERVAL				50
 #define SEND_ADC_VALUE_INTERVAL		50
-#define STATE_MACHINE_INTERVAL		10
-#define SENSOR_EVAL_INTERVAL		10
+#define STATE_MACHINE_INTERVAL		5
+#define SENSOR_EVAL_INTERVAL		5
 #define SEND_SENSOR_INTERVAL		3000
-#define CONTROL_LOGIC_INTERVAL		10
+#define CONTROL_LOGIC_INTERVAL		5
 
 volatile bool run_card_reader = false;
 volatile void (*control)();

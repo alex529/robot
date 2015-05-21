@@ -175,11 +175,8 @@ void sensor_eval(void) {
 	uint8_t sensor_value = led.array; 
 	read_switches();
 	if ((sensor_value & 0x7e)!= 0)
-	{	
-		control =&state_follow_track_1_control_logic;
-		state = STATE_FOLLOW_TRACK_1;
-		task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_FOLLOW_TRACK_1};
-		add_task(&system_state);
+	{	add_event(EVENT_LINE_FOUND);
+		
 	}
 }
 

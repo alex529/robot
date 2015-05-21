@@ -40,9 +40,9 @@ void state_find_track_control_logic() {
 }
 
 void state_follow_track_1_control_logic() {
-		set_m_forward()
-		l_motor.rpm = 0;
-		r_motor.rpm = 0;
+		set_m_backward()
+		l_motor.rpm = 100;
+		r_motor.rpm = 100;
 }
 
 void state_y_intersection_control_logic() {
