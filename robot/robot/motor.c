@@ -86,6 +86,12 @@ void init_pwm(void){
 
 void motors_controoler(void)
 {
+	if (l_motor.rpm == 0 && r_motor.rpm== 0)
+	{
+		set_left_m(0);
+		set_right_m(0);
+		return;
+	}
 	if (l_motor.rpm>MAX_RPM)
 	{
 		l_motor.rpm=MAX_RPM;
