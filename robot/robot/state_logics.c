@@ -25,6 +25,7 @@ void enter_state_find_track() {
 	add_task(&system_state);
 	state_find_track_data_t state_find_track_data_empty;
 	state_find_track_data = state_find_track_data_empty;
+	state_find_track_data.init = true;	
 }
 
 void enter_state_follow_track_1() {

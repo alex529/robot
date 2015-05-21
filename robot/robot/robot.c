@@ -34,7 +34,7 @@
 #define ADC_INTERVAL				100
 #define SEND_ADC_VALUE_INTERVAL		100
 #define STATE_MACHINE_INTERVAL		5
-#define SENSOR_EVAL_INTERVAL		30
+#define SENSOR_EVAL_INTERVAL		100
 #define SEND_SENSOR_INTERVAL		3000
 #define CONTROL_LOGIC_INTERVAL		20
 
@@ -61,9 +61,9 @@ int main(void)
 	uint8_t led_timer					= LED_INTERVAL;
 	uint8_t send_adc_value_timer		= SEND_ADC_VALUE_INTERVAL;
 	uint8_t state_machine_value_timer	= STATE_MACHINE_INTERVAL;
-	uint8_t send_sensor_timer	=SEND_SENSOR_INTERVAL;
+	uint8_t send_sensor_timer			= SEND_SENSOR_INTERVAL;
 	uint8_t sensor_eval_timer			= SENSOR_EVAL_INTERVAL;
-	uint8_t control_logic_timer	=CONTROL_LOGIC_INTERVAL;
+	uint8_t control_logic_timer			= CONTROL_LOGIC_INTERVAL;
 
 	bool do_handler				= false;
 	bool run_com_prot			= false;
@@ -203,13 +203,12 @@ int main(void)
 				run_control_logic = false;
 				(*control)();
 			}
-			if (run_sensor_eval)
+			if (run_sensor_eval & enable_features.generate_events==true)
 			{
 				run_sensor_eval = false;
 				
 			}
 		}
-		
 		
 	}
 	return 1;

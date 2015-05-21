@@ -167,6 +167,8 @@ void send_sensor_values(void) {
 
 void sensor_eval(void) {
 	uint8_t sensor_value = led.array; 
+	task_t system_state = {.data.command = DEBUG11, .data.timestamp=0, .data.value=led.array};
+	add_task(&system_state);
 	if (sensor_value == LINE_FOUND)
 	{
 		add_event(EVENT_LINE_FOUND);

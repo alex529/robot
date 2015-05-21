@@ -38,7 +38,7 @@ void state_find_track_control_logic() {
 }
 
 void state_follow_track_1_control_logic() {
-	
+	drive(372,-127);
 }
 
 void state_y_intersection_control_logic() {
