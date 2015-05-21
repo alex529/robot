@@ -15,6 +15,7 @@
 #include "common.h"
 #include "state_machine.h"
 #include "state_machine_event_buffer.h"
+#include "control_logic.h"
 
 //TODO: check if this works
 #define read_switch(x)	(PINA & (1<<PA##x))
@@ -45,7 +46,6 @@ uint16_t Kp=16, Ki=0, Kd=0;
 #define aplie_kd(x)(((x)*Kd)>>7)
 /*#define ERROR_STEP 50*/
 
-#define LINE_FOUND 127 
 
 //TODO: delete either 0 or 7
 #define read_switches(){led.array = 0b01111111&(~(PINA));/*led.switches.sw0=SW0;\
@@ -173,11 +173,13 @@ void send_sensor_values(void) {
 
 void sensor_eval(void) {
 	uint8_t sensor_value = led.array; 
-	task_t system_state = {.data.command = DEBUG11, .data.timestamp=0, .data.value=led.array};
-	add_task(&system_state);
-	if (sensor_value == LINE_FOUND)
-	{
-		add_event(EVENT_LINE_FOUND);
+	read_switches();
+	if ((sensor_value & 0x7e)!= 0)
+	{	
+		control =&state_follow_track_1_control_logic;
+		state = STATE_FOLLOW_TRACK_1;
+		task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_FOLLOW_TRACK_1};
+		add_task(&system_state);
 	}
 }
 

@@ -19,7 +19,7 @@ void enter_state_idle() {
 }
 
 void enter_state_find_track() {
-	control =&state_find_track_control_logic;
+	control =& state_find_track_control_logic;
 	state = STATE_FIND_TRACK;
 	task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_FIND_TRACK};
 	add_task(&system_state);

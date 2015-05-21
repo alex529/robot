@@ -54,7 +54,7 @@ void recive_task_init(void)
 	
 	//do_task[SET_SPEED]		= &set_speed; //TODO find referent to it in git hist
 	
-	do_task[MOTOR_RPM]		=&set_rpm;	
+	do_task[MOTOR_RPM]		= &set_rpm;	
 	do_task[MOTOR_L]        = &set_left;
 	do_task[MOTOR_R]        = &set_right;
 	do_task[MOTOR_F]        = &set_forward;
@@ -68,8 +68,8 @@ void recive_task_init(void)
 	do_task[PID_INT]		= &set_pid_int;
 	
 	do_task[TAKE_OVER]		= &take_over_command;
-	do_task[GIVE_BACK_CONTROL] =&give_back_control_command;
-	do_task[START_LINE] =&start_line;
+	do_task[GIVE_BACK_CONTROL] = &give_back_control_command;
+	do_task[START_LINE] = &start_line;
 //
 	//do_task[PID_ERROR]       = &set_year;
 //

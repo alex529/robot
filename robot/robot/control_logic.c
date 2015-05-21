@@ -24,7 +24,9 @@ void state_idle_control_logic() {
 void state_find_track_control_logic() {
 	if (state_find_track_data.init == true){
 		state_find_track_data.init = false;
-		drive(124,127);
+		set_m_forward()
+		l_motor.rpm = 100;
+		r_motor.rpm = 100;
 		enable_features.generate_events=false;
 		//can I restart timer without redeclaration
 		tmr_start(&state_find_track_sensor_blackout_timer,STATE_FIND_TRACK_SENSOR_BLACKOUT_INTERVAL); 
@@ -38,7 +40,9 @@ void state_find_track_control_logic() {
 }
 
 void state_follow_track_1_control_logic() {
-	drive(372,-127);
+		set_m_forward()
+		l_motor.rpm = 0;
+		r_motor.rpm = 0;
 }
 
 void state_y_intersection_control_logic() {

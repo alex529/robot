@@ -22,32 +22,8 @@
 #include "math_Q.h"
 
 
-#define set_int1_to_rising()	{MCUCR |= (1 << ISC11) | (1 << ISC10);}
-#define set_int1_to_falling()	{MCUCR &=  ~(1 << ISC10);}
-#define set_int0_to_rising()	{MCUCR |= (1 << ISC01) | (1 << ISC00);}
-#define set_int0_to_falling()	{MCUCR &=  ~(1 << ISC00);}
-#define toggle_edges()			{int0_toggle_edge();int1_toggle_edge();}
-#define eneable_external_int()	{GICR |= (1 << INT0) | (1 << INT1);}
 
-#define set_left_m(x)	{OCR2 = x;}
-#define set_right_m(x)	{OCR0 = x;}
-#define get_left_m()	(OCR2)
-#define get_right_m()	(OCR0)
-#define mot_right_forw	PC6
-#define mot_right_back	PC7
-#define mot_left_forw	PB4
-#define mot_left_back	PB1
-#define mot_left_port	PORTB
-#define mot_right_port	PORTC
 
-#define set_l_forward()	{mot_left_port	|=(1<<mot_left_forw); mot_left_port &=~(1<<mot_left_back);}
-#define set_l_backward(){mot_left_port	|=(1<<mot_left_back); mot_left_port &=~(1<<mot_left_forw);}
-#define set_r_forward()	{mot_right_port	|=(1<<mot_right_forw);mot_right_port&=~(1<<mot_right_back);}
-#define set_r_backward(){mot_right_port	|=(1<<mot_right_back);mot_right_port&=~(1<<mot_right_forw);}
-#define set_m_forward()	{set_l_forward() ;set_r_forward() ;status.system.motor_forward =true;}
-#define set_m_backward(){set_l_backward();set_r_backward();status.system.motor_forward =false;}
-#define set_l_stop()	{set_left_m(0)	;mot_left_port	|=(1<<mot_left_back); mot_left_port |=(1<<mot_left_forw);}
-#define set_r_stop()	{set_right_m(0)	;mot_right_port	|=(1<<mot_right_forw);mot_right_port|=(1<<mot_right_back);}
 
 #define is_in_bounds(x) (x<255&&x>>-255)
 #define ANGLE 248
@@ -58,7 +34,7 @@
 
 static const uint16_t rpm_speed[30]={15,29,44,58,73,87,102,116,131,145,160,174,189,203,218,233,247,262,276,291,305,320,334,349,363,378,392,407,422};
 
-motor_t l_motor, r_motor;
+volatile motor_t l_motor, r_motor;
 
 /**
 * \brief
@@ -86,12 +62,12 @@ void init_pwm(void){
 
 void motors_controoler(void)
 {
-	if (l_motor.rpm == 0 && r_motor.rpm== 0)
-	{
-		set_left_m(0);
-		set_right_m(0);
-		return;
-	}
+// 	if (l_motor.rpm == 0 && r_motor.rpm== 0)
+// 	{
+// 		set_left_m(0);
+// 		set_right_m(0);
+// 		return;
+// 	}
 	if (l_motor.rpm>MAX_RPM)
 	{
 		l_motor.rpm=MAX_RPM;
