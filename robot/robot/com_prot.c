@@ -74,7 +74,7 @@ void stop(task_t *task)
 */
 void ping(void)
 {
-	task_t ping = {.data.command = PING, .data.value = status.byte[1]};	
+	task_t ping = {.data.command = PING, .data.value = get_task_number()};	
 	add_task(&ping);
 }
 

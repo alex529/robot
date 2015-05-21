@@ -30,18 +30,24 @@
 #define CLOCK_INTERVAL				100
 #define COMM_PROT_INTERVAL			10
 #define MOTOR_INTERVAL				1
-#define LED_INTERVAL				7
-#define ADC_INTERVAL				100
-#define SEND_ADC_VALUE_INTERVAL		100
+#define LED_INTERVAL				15
+#define ADC_INTERVAL				50
+#define SEND_ADC_VALUE_INTERVAL		50
 #define STATE_MACHINE_INTERVAL		5
-#define SENSOR_EVAL_INTERVAL		100
+#define SENSOR_EVAL_INTERVAL		30
 #define SEND_SENSOR_INTERVAL		3000
-#define CONTROL_LOGIC_INTERVAL		20
-
+#define CONTROL_LOGIC_INTERVAL		10
 
 volatile bool run_card_reader = false;
 volatile void (*control)();
 timer_t test;
+
+uint8_t led_int = 15;
+
+void set_pid_int(task_t *task)
+{
+	led_int=task->data.value;
+}
 
 /**
 * \brief Represents a scheduler implementation the scheduler ticking every 100ms.
@@ -118,7 +124,7 @@ int main(void)
 			}
 			if(--led_timer == 0)
 			{
-				led_timer = LED_INTERVAL;
+				led_timer = led_int;
 				start(run_led);
 			}
 			if(enable_features.adc == true && --adc_timer == 0)
@@ -177,38 +183,30 @@ int main(void)
 				//get_line_error();
 			}
 			
-			if (run_adc)
-			{
-				run_adc = false;
-				handleMeasurement();
-			}
+// 			if (run_adc)
+// 			{
+// 				run_adc = false;
+// 				handleMeasurement();
+// 			}
+// 			
+// 			if (run_send_adc_value)
+// 			{
+// 				run_send_adc_value = false;
+// 				send_adc_value_to_pc();
+// 			}			
+// 			if (run_state_machine)
+// 			{
+// 				run_state_machine = false;
+// 				state_machine();
+// 			}
+// 			if (run_sensor_eval)
+// 			{
+// 				run_sensor_eval = false;
+// 				eval();
+// 			}
 			
-			if (run_send_adc_value)
-			{
-				run_send_adc_value = false;
-				send_adc_value_to_pc();
-			}			
-			if (run_state_machine)
-			{
-				run_state_machine = false;
-				state_machine();
-			}
-			if (run_send_sensor)
- 			{
-				run_send_sensor = false;
- 				send_sensor_values();
-			}
-			if (run_control_logic)
-			{
-				run_control_logic = false;
-				(*control)();
-			}
-			if (run_sensor_eval & enable_features.generate_events==true)
-			{
-				run_sensor_eval = false;
-				
-			}
 		}
+		
 		
 	}
 	return 1;

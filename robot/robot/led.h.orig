@@ -28,14 +28,17 @@ typedef union
 
 void led_init(void);
 void get_line_error(void);
+<<<<<<< HEAD
 void sensor_eval(void);
-void eval(void);
 void send_sensor_values(void);
+=======
+void eval(void);
 void start_line(task_t *task);
 void set_Kp(task_t *task);
 void set_Kd(task_t *task);
 void set_Ki(task_t *task);
 void set_pid(task_t *task);
+>>>>>>> origin/led_control
 
 
 #endif /* LED_H_ */

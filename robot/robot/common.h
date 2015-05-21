@@ -83,7 +83,8 @@ typedef union
 
 		uint8_t motor_forward : 1;
 		
-		uint8_t not_used4 : 1;
+		uint8_t start_line : 1;
+		
 		uint8_t not_used5 : 1;
 		uint8_t not_used6 : 1;
 		uint8_t not_used7 : 1;
@@ -93,6 +94,7 @@ typedef union
 
 timer_t test_timer;
 task_t tes1_task;
+void set_pid_int(task_t *task);
 
 extern volatile status_t status;
 extern volatile bool run_card_reader;
