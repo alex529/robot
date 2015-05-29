@@ -14,12 +14,9 @@
 #include "common.h"
 #include "task.h"
 #include "date.h"
-#include "task.h"
 #include "usart.h"
 #include "com_prot.h"
 #include "motor.h"
-#include "take_over.h"
-#include "led.h"
 
 uint8_t task_count=0;
 
@@ -61,15 +58,15 @@ void recive_task_init(void)
 	do_task[MOTOR_B]        = &set_backward;
 	do_task[MOTOR_X_Y]      = &set_motors;
 	
-	do_task[PID_KD]			= &set_Kd;
-	do_task[PID_KI]			= &set_Ki;
-	do_task[PID_KP]			= &set_Kp;
-	do_task[PID]			= &set_pid;
+// 	do_task[PID_KD]			= &set_Kd;
+// 	do_task[PID_KI]			= &set_Ki;
+// 	do_task[PID_KP]			= &set_Kp;
+// 	do_task[PID]			= &set_pid;
 	do_task[PID_INT]		= &set_pid_int;
 	
-	do_task[TAKE_OVER]		= &take_over_command;
-	do_task[GIVE_BACK_CONTROL] = &give_back_control_command;
-	do_task[START_LINE] = &start_line;
+// 	do_task[TAKE_OVER]		= &take_over_command;
+// 	do_task[GIVE_BACK_CONTROL] = &give_back_control_command;
+/*	do_task[START_LINE] = &start_line;*/
 //
 	//do_task[PID_ERROR]       = &set_year;
 //

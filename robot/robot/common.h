@@ -81,7 +81,7 @@ typedef union
 		uint8_t sending_task : 1;
 		uint8_t task_received : 1;
 
-		uint8_t motor_forward : 1;
+		uint8_t not_used4 : 1;
 		
 		uint8_t start_line : 1;
 		
