@@ -49,45 +49,45 @@ void give_back_control_command(task_t *task) {
 			control = &state_follow_track_2_control_logic;
 			break;
 		case 5:
-			control = &state_wait_before_corner;
+			control = &state_wait_before_corner_logic;
 			state_wait_before_corner_data.not_first_run=false;
 			state_wait_before_corner_data.exp=false;
 			break;
 		case 6:
-			control = &state_approach_corner;
+			control = &state_approach_corner_logic;
 			break;
 		case 7:
-			control = &state_turn_after_found_corner;
+			control = &state_turn_after_found_corner_logic;
 			break;
 		case 8:
-			control = &state_go_ahead_after_turn;
+			control = &state_go_ahead_after_turn_logic;
 			break;
 		case 9:
-			control = &state_go_a_bit_more;
+			control = &state_go_a_bit_more_logic;
 			break;
 		case 10:
-			control = &state_second_left_turn;
+			control = &state_second_left_turn_logic;
 			break;
 		case 11:
-			control = &state_second_go_ahead;
+			control = &state_second_go_ahead_logic;
 			break;
 		case 12:
-			control = &state_second_go_a_bit_more;
+			control = &state_second_go_a_bit_more_logic;
 			break;
 		case 13:
-			control = &state_third_left_turn;
+			control = &state_third_left_turn_logic;
 			break;
 		case 14:
-			control = &state_third_go_ahead;
+			control = &state_third_go_ahead_logic;
 			break;
 		case 15:
-			control = &state_right_turn;
+			control = &state_right_turn_logic;
 			break;
 		case 16:
-			control = &state_last_go_ahead;
+			control = &state_last_go_ahead_logic;
 			break;
 		case 17:
-			control = &state_finish;
+			control = &state_finish_logic;
 			break;
 		default:
 			control = &state_take_over_control_logic;
