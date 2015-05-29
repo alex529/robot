@@ -14,14 +14,25 @@
 #include "led.h"
 
 #define STATE_FIND_TRACK_SENSOR_BLACKOUT_INTERVAL	2000
-#define STATE_WAIT_BEFORE_CORNER_INTERVAL	5000
-#define STATE_APPROACH_CORNER_INTERVAL 5000 // to be deleted
-#define STATE_TURN_AFTER_FOUND_CORNER_TURNING_INTERVAL	500
+#define STATE_WAIT_BEFORE_CORNER_INTERVAL	3000
+#define STATE_APPROACH_CORNER_INTERVAL 3000 // to be deleted
+#define STATE_TURN_AFTER_FOUND_CORNER_TURNING_INTERVAL	1000
+#define STATE_GO_AHEAD_AFTER_TURN_INTERVAL	3000 // to be deleted
+#define STATE_GO_A_BIT_MORE_INTERVAL	500
 
 timer_t state_find_track_sensor_blackout_timer;
 timer_t state_wait_before_corner_timer;
 timer_t state_approach_corner_timer; // to be deleted
 timer_t state_turn_after_found_corner_timer;
+timer_t state_go_ahead_after_turn_timer; // to be deleted
+timer_t state_go_a_bit_more_timer;
+timer_t state_second_left_turn_timer;
+timer_t state_second_go_ahead_timer; // to be deleted
+timer_t state_second_go_a_bit_more_timer;
+timer_t state_third_left_turn_timer;
+timer_t state_third_go_ahead_timer; //to be deleted
+timer_t state_right_turn_timer;
+timer_t state_last_go_ahead_timer; //to be deleted
 
 volatile state_find_track_data_t state_find_track_data;
 volatile state_wait_before_corner_data_t state_wait_before_corner_data;
@@ -99,9 +110,6 @@ void state_wait_before_corner_logic() {
 	
 	if (state_wait_before_corner_data.exp == true || tmr_exp(&state_wait_before_corner_timer)){
 		state_wait_before_corner_data.exp = true;
-		set_m_forward()
-		l_motor.rpm = 100;
-		r_motor.rpm = 100;
 		control = &state_approach_corner_logic;
 		state_approach_corner_data.not_first_run=false;
 		state_approach_corner_data.exp=false;
@@ -114,6 +122,9 @@ void state_approach_corner_logic() {
 		state_approach_corner_data.not_first_run = true;
 		task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_APPROACH_CORNER};
 		add_task(&system_state);
+		set_m_forward()
+		l_motor.rpm = 100;
+		r_motor.rpm = 100;
 		state_approach_corner_data.exp == false;
 		tmr_start(&state_approach_corner_timer,STATE_APPROACH_CORNER_INTERVAL);
 	}
@@ -137,31 +148,68 @@ void state_turn_after_found_corner_logic() {
 		add_task(&system_state);
 		state_turn_after_found_corner_data.exp == false;
 		tmr_start(&state_turn_after_found_corner_timer,STATE_TURN_AFTER_FOUND_CORNER_TURNING_INTERVAL);
-		set_l_backward()
-		set_r_forward()
-		r_motor.rpm = 50;
-		l_motor.rpm = 50;
+		set_l_forward()
+		set_r_backward()
+		r_motor.rpm = 100;
+		l_motor.rpm = 100;
 	}
 	
 	if (state_turn_after_found_corner_data.exp == true || tmr_exp(&state_turn_after_found_corner_timer)){
 		state_turn_after_found_corner_data.exp = true;
-		set_r_backward()
-		set_l_forward()
+		set_l_backward()		
+		set_r_forward()
 		r_motor.rpm = 0;
 		l_motor.rpm = 0;
-		state_go_ahead_after_turn_data.not_first_run=true;
-		state_go_ahead_after_turn_data.exp=true;
+		state_go_ahead_after_turn_data.not_first_run=false;
+		state_go_ahead_after_turn_data.exp=false;
 		control = &state_go_ahead_after_turn_logic;
 		return;
 	}	
 }
 
 void state_go_ahead_after_turn_logic() {
-	
+		if (state_go_ahead_after_turn_data.not_first_run == false){
+			state_go_ahead_after_turn_data.not_first_run = true;
+			task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_GO_AHEAD_AFTER_TURN};
+			add_task(&system_state);
+			state_go_ahead_after_turn_data.exp == false;
+			tmr_start(&state_go_ahead_after_turn_timer,STATE_GO_AHEAD_AFTER_TURN_INTERVAL);
+			set_m_forward()
+			r_motor.rpm = 100;
+			l_motor.rpm = 100;
+		}
+		
+		if (state_go_ahead_after_turn_data.exp == true || tmr_exp(&state_go_ahead_after_turn_timer)){
+			state_go_ahead_after_turn_data.exp = true;
+			state_go_a_bit_more_data.not_first_run=false;
+			state_go_a_bit_more_data.exp=false;
+			control = &state_go_a_bit_more_logic;
+			return;
+		}
 }
 
 void state_go_a_bit_more_logic() {
-	
+		if (state_go_a_bit_more_data.not_first_run == false){
+			state_go_a_bit_more_data.not_first_run = true;
+			task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_GO_A_BIT_MORE};
+			add_task(&system_state);
+			state_go_a_bit_more_data.exp == false;
+			tmr_start(&state_go_a_bit_more_timer,STATE_GO_A_BIT_MORE_INTERVAL);
+			set_m_forward()
+			r_motor.rpm = 100;
+			l_motor.rpm = 100;
+		}
+		
+		if (state_go_a_bit_more_data.exp == true || tmr_exp(&state_go_a_bit_more_timer)){
+			state_go_a_bit_more_data.exp = true;
+			set_m_backward()
+			r_motor.rpm = 0;
+			l_motor.rpm = 0;
+			state_second_left_turn_data.not_first_run=false;
+			state_second_left_turn_data.exp=false;
+			control = &state_go_a_bit_more_logic;
+			return;
+		}
 }
 
 void state_second_left_turn_logic() {
