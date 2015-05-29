@@ -13,13 +13,19 @@
 #include "timer.h"
 #include "led.h"
 
-#define STATE_FIND_TRACK_SENSOR_BLACKOUT_INTERVAL	2000
-#define STATE_WAIT_BEFORE_CORNER_INTERVAL	3000
-#define STATE_APPROACH_CORNER_INTERVAL 3000 // to be deleted
+#define STATE_FIND_TRACK_SENSOR_BLACKOUT_INTERVAL		2000
+#define STATE_WAIT_BEFORE_CORNER_INTERVAL				3000
+#define STATE_APPROACH_CORNER_INTERVAL					3000 // to be deleted
 #define STATE_TURN_AFTER_FOUND_CORNER_TURNING_INTERVAL	1000
-#define STATE_GO_AHEAD_AFTER_TURN_INTERVAL	3000 // to be deleted
-#define STATE_GO_A_BIT_MORE_INTERVAL	500
-#define STATE_SECOND_LEFT_TURN_INTERVAL	1000
+#define STATE_GO_AHEAD_AFTER_TURN_INTERVAL				3000 // to be deleted
+#define STATE_GO_A_BIT_MORE_INTERVAL					500
+#define STATE_SECOND_LEFT_TURN_INTERVAL					1000
+#define STATE_SECOND_GO_AHEAD_INTERVAL					500  // to be deleted
+#define STATE_SECOND_GO_A_BIT_MORE_INTERVAL				500
+#define STATE_THIRD_LEFT_TURN_INTERVAL					1000
+#define STATE_THIRD_GO_AHEAD_INTERVAL					2000 // to be deleted
+#define STATE_RIGHT_TURN_INTERVAL						1000
+#define STATE_LAST_GO_AHEAD_INTERVAL					2000 // to be deleted
 
 timer_t state_find_track_sensor_blackout_timer;
 timer_t state_wait_before_corner_timer;
@@ -233,31 +239,157 @@ void state_second_left_turn_logic() {
 }
 
 void state_second_go_ahead_logic() {
+		if (state_second_go_ahead_data.not_first_run == false){
+			state_second_go_ahead_data.not_first_run = true;
+			task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_SECOND_GO_AHEAD};
+			add_task(&system_state);
+			state_second_go_ahead_data.exp == false;
+			tmr_start(&state_second_go_ahead_timer,STATE_SECOND_GO_AHEAD_INTERVAL);
+			set_m_forward()
+			r_motor.rpm = 100;
+			l_motor.rpm = 100;
+		}
+		
+		if (state_second_go_ahead_data.exp == true || tmr_exp(&state_second_go_ahead_timer)){
+			state_second_go_ahead_data.exp = true;
+			set_m_backward()
+			r_motor.rpm = 0;
+			l_motor.rpm = 0;
+			state_second_go_a_bit_more_data.not_first_run=false;
+			control = &state_second_go_a_bit_more_logic;
+			return;
+		}	
 	
 }
 
 void state_second_go_a_bit_more_logic() {
-	
+	if (state_second_go_a_bit_more_data.not_first_run == false){
+			state_second_go_a_bit_more_data.not_first_run = true;
+			task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_SECOND_GO_A_BIT_MORE};
+			add_task(&system_state);
+			state_second_go_a_bit_more_data.exp == false;
+			tmr_start(&state_second_go_a_bit_more_timer,STATE_SECOND_GO_A_BIT_MORE_INTERVAL);
+			set_m_forward()
+			r_motor.rpm = 100;
+			l_motor.rpm = 100;
+		}
+		
+		if (state_second_go_a_bit_more_data.exp == true || tmr_exp(&state_second_go_a_bit_more_timer)){
+			state_second_go_a_bit_more_data.exp = true;
+			set_m_backward()
+			r_motor.rpm = 0;
+			l_motor.rpm = 0;
+			state_third_left_turn_data.not_first_run=false;
+			control = &state_third_left_turn_logic;
+			return;
+		}	
 }
 
 void state_third_left_turn_logic() {
-	
+	if (state_third_left_turn_data.not_first_run == false){
+			state_third_left_turn_data.not_first_run = true;
+			task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_THIRD_LEFT_TURN};
+			add_task(&system_state);
+			state_third_left_turn_data.exp == false;
+			tmr_start(&state_third_left_turn_timer,STATE_THIRD_LEFT_TURN_INTERVAL);
+			set_l_backward()
+			set_r_forward()
+			r_motor.rpm = 100;
+			l_motor.rpm = 100;
+		}
+		
+		if (state_third_left_turn_data.exp == true || tmr_exp(&state_third_left_turn_timer)){
+			state_third_left_turn_data.exp = true;
+			set_l_forward()
+			set_r_backward()
+			r_motor.rpm = 0;
+			l_motor.rpm = 0;
+			state_third_go_ahead_data.not_first_run=false;
+			control = &state_third_go_ahead_logic;
+			return;
+		}
 }
 
 void state_third_go_ahead_logic() {
-	
+	if (state_third_go_ahead_data.not_first_run == false){
+			state_third_go_ahead_data.not_first_run = true;
+			task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_THIRD_GO_AHEAD};
+			add_task(&system_state);
+			state_third_go_ahead_data.exp == false;
+			tmr_start(&state_third_go_ahead_timer,STATE_THIRD_GO_AHEAD_INTERVAL);
+			set_m_forward()
+			r_motor.rpm = 100;
+			l_motor.rpm = 100;
+		}
+		
+		if (state_third_go_ahead_data.exp == true || tmr_exp(&state_third_go_ahead_timer)){
+			state_third_go_ahead_data.exp = true;
+			set_m_backward()
+			r_motor.rpm = 0;
+			l_motor.rpm = 0;
+			state_right_turn_data.not_first_run=false;
+			control = &state_right_turn_logic;
+			return;
+		}
 }
 
 void state_right_turn_logic() {
-	
+	if (state_right_turn_data.not_first_run == false){
+			state_right_turn_data.not_first_run = true;
+			task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_RIGHT_TURN};
+			add_task(&system_state);
+			state_right_turn_data.exp == false;
+			tmr_start(&state_right_turn_timer,STATE_RIGHT_TURN_INTERVAL);
+			set_l_forward()
+			set_r_backward()
+			r_motor.rpm = 100;
+			l_motor.rpm = 100;
+		}
+		
+		if (state_right_turn_data.exp == true || tmr_exp(&state_right_turn_timer)){
+			state_right_turn_data.exp = true;
+			set_l_backward()
+			set_r_forward()
+			r_motor.rpm = 0;
+			l_motor.rpm = 0;
+			state_last_go_ahead_data.not_first_run=false;
+			control = &state_last_go_ahead_logic;
+			return;
+		}
 }
 
 void state_last_go_ahead_logic() {
-	
+	if (state_last_go_ahead_data.not_first_run == false){
+			state_last_go_ahead_data.not_first_run = true;
+			task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_LAST_GO_AHEAD};
+			add_task(&system_state);
+			state_last_go_ahead_data.exp == false;
+			tmr_start(&state_last_go_ahead_timer,STATE_LAST_GO_AHEAD_INTERVAL);
+			set_m_forward()
+			r_motor.rpm = 100;
+			l_motor.rpm = 100;
+		}
+		
+		if (state_last_go_ahead_data.exp == true || tmr_exp(&state_last_go_ahead_timer)){
+			state_last_go_ahead_data.exp = true;
+			set_m_backward()
+			r_motor.rpm = 0;
+			l_motor.rpm = 0;
+			state_finish_data.not_first_run=false;
+			control = &state_finish_logic;
+			return;
+		}
 }
 
 void state_finish_logic() {
-	
+	if (state_finish_data.not_first_run == false){
+			state_finish_data.not_first_run = true;
+			task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_FINISH};
+			add_task(&system_state);
+			set_m_backward()
+			r_motor.rpm = 0;
+			l_motor.rpm = 0;
+		}
 }
 void state_take_over_control_logic() {
 	
