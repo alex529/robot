@@ -37,7 +37,6 @@ void give_back_control_command(task_t *task) {
 		case 1:
 			control = &state_find_track_control_logic;
 			state_find_track_data.not_first_run=false;
-			state_find_track_data.exp=false;
 			break;
 		case 2:
 			control = &state_follow_track_1_control_logic;
@@ -50,67 +49,54 @@ void give_back_control_command(task_t *task) {
 			break;
 		case 5:
 			state_wait_before_corner_data.not_first_run=false;
-			state_wait_before_corner_data.exp=false;
 			control = &state_wait_before_corner_logic;
 			break;
 		case 6:
 			state_approach_corner_data.not_first_run=false;
-			state_approach_corner_data.exp=false;
 			control = &state_approach_corner_logic;
 			break;
 		case 7:
 			state_turn_after_found_corner_data.not_first_run=false;
-			state_turn_after_found_corner_data.exp=false;
 			control = &state_turn_after_found_corner_logic;
 			break;
 		case 8:
 			state_go_ahead_after_turn_data.not_first_run=false;
-			state_go_ahead_after_turn_data.exp=false;
 			control = &state_go_ahead_after_turn_logic;
 			break;
 		case 9:
 			state_go_a_bit_more_data.not_first_run=false;
-			state_go_a_bit_more_data.exp=false;
 			control = &state_go_a_bit_more_logic;
 			break;
 		case 10:
 			state_second_left_turn_data.not_first_run=false;
-			state_second_left_turn_data.exp=false;
 			control = &state_second_left_turn_logic;
 			break;
 		case 11:
 			state_second_go_ahead_data.not_first_run=false;
-			state_second_go_ahead_data.exp=false;
 			control = &state_second_go_ahead_logic;
 			break;
 		case 12:
 			state_second_go_a_bit_more_data.not_first_run=false;
-			state_second_go_a_bit_more_data.exp=false;
 			control = &state_second_go_a_bit_more_logic;
 			break;
 		case 13:
 			state_third_left_turn_data.not_first_run=false;
-			state_third_left_turn_data.exp=false;
 			control = &state_third_left_turn_logic;
 			break;
 		case 14:
 			state_third_go_ahead_data.not_first_run=false;
-			state_third_go_ahead_data.exp=false;
 			control = &state_third_go_ahead_logic;
 			break;
 		case 15:
 			state_right_turn_data.not_first_run=false;
-			state_right_turn_data.exp=false;
 			control = &state_right_turn_logic;
 			break;
 		case 16:
 			state_last_go_ahead_data.not_first_run=false;
-			state_last_go_ahead_data.exp=false;
 			control = &state_last_go_ahead_logic;
 			break;
 		case 17:
 			state_finish_data.not_first_run=false;
-			state_finish_data.exp=false;
 			control = &state_finish_logic;
 			break;
 		default:

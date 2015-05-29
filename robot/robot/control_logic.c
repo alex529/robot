@@ -19,6 +19,7 @@
 #define STATE_TURN_AFTER_FOUND_CORNER_TURNING_INTERVAL	1000
 #define STATE_GO_AHEAD_AFTER_TURN_INTERVAL	3000 // to be deleted
 #define STATE_GO_A_BIT_MORE_INTERVAL	500
+#define STATE_SECOND_LEFT_TURN_INTERVAL	1000
 
 timer_t state_find_track_sensor_blackout_timer;
 timer_t state_wait_before_corner_timer;
@@ -72,7 +73,6 @@ void state_find_track_control_logic() {
 		uint8_t sensor_value = led.array;
 		if ((sensor_value & 0x7e)!= 0)
 		{
-			state_wait_before_corner_data.not_first_run=false;
 			state_wait_before_corner_data.exp=false;
 			control = & state_follow_track_1_control_logic;	
 		}
@@ -111,7 +111,6 @@ void state_wait_before_corner_logic() {
 	if (state_wait_before_corner_data.exp == true || tmr_exp(&state_wait_before_corner_timer)){
 		state_wait_before_corner_data.exp = true;
 		control = &state_approach_corner_logic;
-		state_approach_corner_data.not_first_run=false;
 		state_approach_corner_data.exp=false;
 		return;
 	}	
@@ -134,7 +133,6 @@ void state_approach_corner_logic() {
 		set_m_backward()
 		l_motor.rpm = 0;
 		r_motor.rpm = 0;
-		state_turn_after_found_corner_data.not_first_run=false;
 		state_turn_after_found_corner_data.exp=false;
 		control = &state_turn_after_found_corner_logic;
 		return;
@@ -144,9 +142,9 @@ void state_approach_corner_logic() {
 void state_turn_after_found_corner_logic() {
 		if (state_turn_after_found_corner_data.not_first_run == false){
 		state_turn_after_found_corner_data.not_first_run = true;
+		state_turn_after_found_corner_data.exp=false;
 		task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_TURN_AFTER_FOUND_CORNER};
 		add_task(&system_state);
-		state_turn_after_found_corner_data.exp == false;
 		tmr_start(&state_turn_after_found_corner_timer,STATE_TURN_AFTER_FOUND_CORNER_TURNING_INTERVAL);
 		set_l_forward()
 		set_r_backward()
@@ -161,7 +159,6 @@ void state_turn_after_found_corner_logic() {
 		r_motor.rpm = 0;
 		l_motor.rpm = 0;
 		state_go_ahead_after_turn_data.not_first_run=false;
-		state_go_ahead_after_turn_data.exp=false;
 		control = &state_go_ahead_after_turn_logic;
 		return;
 	}	
@@ -182,7 +179,6 @@ void state_go_ahead_after_turn_logic() {
 		if (state_go_ahead_after_turn_data.exp == true || tmr_exp(&state_go_ahead_after_turn_timer)){
 			state_go_ahead_after_turn_data.exp = true;
 			state_go_a_bit_more_data.not_first_run=false;
-			state_go_a_bit_more_data.exp=false;
 			control = &state_go_a_bit_more_logic;
 			return;
 		}
@@ -206,14 +202,34 @@ void state_go_a_bit_more_logic() {
 			r_motor.rpm = 0;
 			l_motor.rpm = 0;
 			state_second_left_turn_data.not_first_run=false;
-			state_second_left_turn_data.exp=false;
 			control = &state_go_a_bit_more_logic;
 			return;
 		}
 }
 
 void state_second_left_turn_logic() {
-	
+		if (state_second_left_turn_data.not_first_run == false){
+			state_second_left_turn_data.not_first_run = true;
+			task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_SECOND_LEFT_TURN};
+			add_task(&system_state);
+			state_second_left_turn_data.exp == false;
+			tmr_start(&state_second_left_turn_timer,STATE_SECOND_LEFT_TURN_INTERVAL);
+			set_l_backward()
+			set_r_forward()
+			r_motor.rpm = 100;
+			l_motor.rpm = 100;
+		}
+		
+		if (state_second_left_turn_data.exp == true || tmr_exp(&state_second_left_turn_timer)){
+			state_second_left_turn_data.exp = true;
+			set_l_forward()
+			set_r_backward()
+			r_motor.rpm = 0;
+			l_motor.rpm = 0;
+			state_second_go_ahead_data.not_first_run=false;
+			control = &state_second_go_ahead_logic;
+			return;
+		}	
 }
 
 void state_second_go_ahead_logic() {
