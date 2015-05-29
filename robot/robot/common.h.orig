@@ -83,8 +83,7 @@ typedef union
 
 		uint8_t motor_forward : 1;
 		
-		uint8_t start_line : 1;
-		
+		uint8_t not_used4 : 1;
 		uint8_t not_used5 : 1;
 		uint8_t not_used6 : 1;
 		uint8_t not_used7 : 1;
@@ -94,7 +93,6 @@ typedef union
 
 timer_t test_timer;
 task_t tes1_task;
-void set_pid_int(task_t *task);
 
 extern volatile status_t status;
 extern volatile bool run_card_reader;
@@ -104,12 +102,13 @@ typedef struct
 	bool adc;
 	bool send_adc_value;
 	bool send_sensor_values;
-	bool controller;
 } enable_features_t;
 
-volatile enable_features_t enable_features;
+<<<<<<< HEAD
+ volatile enable_features_t enable_features;
  extern volatile void (*control)();
-
-typedef enum {STATE_IDLE, STATE_FIND_TRACK, STATE_FOLLOW_TRACK_1, STATE_Y_INTERSECTION, STATE_FOLLOW_TRACK_2, STATE_WAIT_BEFORE_CORNER, STATE_TAKE_OVER} state_t;
+=======
+volatile enable_features_t enable_features;
+>>>>>>> 33db8d20379dccd076
 
 #endif /* COMMON_H_ */

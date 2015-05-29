@@ -21,7 +21,6 @@
 #include "motor.h"
 #include "led.h"
 #include "adc.h"
-#include "state_machine.h"
 #include "control_logic.h"
 
 #define start(x){do_handler = true; x=true;}
@@ -36,7 +35,6 @@
 #define SEND_SENSOR_INTERVAL		3000
 #define CONTROL_LOGIC_INTERVAL		1
 
-volatile bool run_card_reader = false;
 volatile void (*control)();
 timer_t test;
 
@@ -46,6 +44,7 @@ void set_pid_int(task_t *task)
 {
 	led_int=task->data.value;
 }
+
 /**
 * \brief Represents a scheduler implementation the scheduler ticking every 100ms.
 *
@@ -64,16 +63,17 @@ int main(void)
 	uint8_t led_timer					= LED_INTERVAL;
 	uint8_t send_adc_value_timer		= SEND_ADC_VALUE_INTERVAL;
 	uint8_t send_sensor_timer			= SEND_SENSOR_INTERVAL;
+
 	bool do_handler				= false;
 	bool run_com_prot			= false;
 	bool run_adc				= false;
 	bool run_send_adc_value		= false;
 	bool run_motor				= false;
 	bool run_led				= false;
-	bool run_state_machine		= false;
 	bool run_clock				= false;
 	bool run_send_sensor		= false;
 	bool run_control_logic		= false;
+	
 	
 	DDRB|=(1<<PB7);
 	led_off();
@@ -154,6 +154,75 @@ int main(void)
 				run_motor = false;
 				motors_controoler();
 			}
+<<<<<<< HEAD
+			if (run_led)
+			{
+				run_led = false;
+				get_line_error();
+			}
+			
+			if (run_adc)
+			{
+				run_adc = false;
+				handleMeasurement();
+			}
+			
+			if (run_send_adc_value)
+			{
+				run_send_adc_value = false;
+				send_adc_value_to_pc();
+			}			
+			if (run_state_machine)
+			{
+				run_state_machine = false;
+				state_machine();
+			}
+			if (run_send_sensor)
+			{
+				run_send_sensor = false;
+				eval();
+			}
+			if (run_control_logic)
+			{
+				run_control_logic = false;
+				(*control)();
+			}
+			
+||||||| merged common ancestors
+			if (run_led)
+			{
+				run_led = false;
+				//get_line_error();
+			}
+			
+			if (run_adc)
+			{
+				run_adc = false;
+				handleMeasurement();
+			}
+			
+			if (run_send_adc_value)
+			{
+				run_send_adc_value = false;
+				send_adc_value_to_pc();
+			}			
+			if (run_state_machine)
+			{
+				run_state_machine = false;
+				state_machine();
+			}
+			if (run_send_sensor)
+			{
+				run_send_sensor = false;
+				eval();
+			}
+			if (run_control_logic)
+			{
+				run_control_logic = false;
+				(*control)();
+			}
+			
+=======
  			if (run_led)
  			{
  				run_led = false;
@@ -179,6 +248,7 @@ int main(void)
   			}
 
 			(*control)();
+>>>>>>> c47e1da3ff0c172862c417cfb4b84128a376f195
 		}
 		
 		

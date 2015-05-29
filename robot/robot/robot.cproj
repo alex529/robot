@@ -86,6 +86,7 @@
         <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
         <avrgcc.common.outputfiles.eep>True</avrgcc.common.outputfiles.eep>
         <avrgcc.common.outputfiles.srec>True</avrgcc.common.outputfiles.srec>
+        <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
         <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
         <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
         <avrgcc.compiler.symbols.DefSymbols>
@@ -112,12 +113,6 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="adc.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="buttons.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="buttons.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="com_prot.c">
@@ -166,24 +161,6 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="isr.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="state_logics.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="state_logics.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="state_machine.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="state_machine.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="state_machine_event_buffer.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="state_machine_event_buffer.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="take_over.c">

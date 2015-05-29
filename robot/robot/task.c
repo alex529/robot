@@ -19,6 +19,7 @@
 #include "com_prot.h"
 #include "motor.h"
 #include "take_over.h"
+#include "led.h"
 
 uint8_t task_count=0;
 
@@ -50,13 +51,25 @@ void recive_task_init(void)
 	do_task[INIT_CONN]        = &communication_init;
 	//do_task[PING]			= &ack_ping;
 	do_task[STOP_CONN]        = &stop;
-	do_task[SET_SPEED]		= &set_speed;
 	
+	//do_task[SET_SPEED]		= &set_speed; //TODO find referent to it in git hist
+	
+	do_task[MOTOR_RPM]		= &set_rpm;	
 	do_task[MOTOR_L]        = &set_left;
 	do_task[MOTOR_R]        = &set_right;
+	do_task[MOTOR_F]        = &set_forward;
+	do_task[MOTOR_B]        = &set_backward;
 	do_task[MOTOR_X_Y]      = &set_motors;
-	do_task[TAKE_OVER]		= &take_over_command;	
-	do_task[GIVE_BACK_CONTROL] =&give_back_control_command;
+	
+	do_task[PID_KD]			= &set_Kd;
+	do_task[PID_KI]			= &set_Ki;
+	do_task[PID_KP]			= &set_Kp;
+	do_task[PID]			= &set_pid;
+	do_task[PID_INT]		= &set_pid_int;
+	
+	do_task[TAKE_OVER]		= &take_over_command;
+	do_task[GIVE_BACK_CONTROL] = &give_back_control_command;
+	do_task[START_LINE] = &start_line;
 //
 	//do_task[PID_ERROR]       = &set_year;
 //
@@ -106,9 +119,10 @@ void add_task(task_t *task)
 {
 	if(task==NULL) return;
 	
-	if(task_count>99)
+	if(task_count>50)
 	{
-		delete_task();
+		clear_task_fifo();
+		task_count=0;
 	}//if new data should be lost return instead of deleting task
 	
 	struct node *temp_node = malloc(1*sizeof(*temp_node));

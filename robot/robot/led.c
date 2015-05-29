@@ -13,7 +13,7 @@
 #include "math_Q.h"
 #include "task.h"
 #include "common.h"
-#include "state_machine.h"
+#include "control_logic.h"
 
 //TODO: check if this works
 #define read_switch(x)	(PINA & (1<<PA##x))
@@ -30,24 +30,23 @@
 #define OFF 0
 
 #define send_led_info(){task_t led_info = {.data.command = LED, .data.value = led.array};add_task(&led_info);}
+#define send_pid(x){task_t pid_err = {.data.command = PID_ERROR, .data.value = x};add_task(&pid_err);}
 	
-#define Kp 30
-#define Ki 20
-#define ERROR_STEP 50
+#define send_left_m(x) {task_t m_info = {.data.command = MOTOR_L, .data.value = l_motor.rpm};add_task(&m_info);}
+#define send_right_m(x){task_t m_info = {.data.command = MOTOR_R, .data.value = r_motor.rpm};add_task(&m_info);}
+	
+// #define Kp 16
+// #define Ki 0
+// #define Kd 0
 
-#define ALL_SENSORS_BLACK 0 
+uint16_t Kp=16, Ki=0, Kd=0;
 
-//TODO: delete either 0 or 7
-#define read_switches(){led.array = 0b01111111&(~(PINA));/*led.switches.sw0=SW0;\
-	led.switches.sw1=SW1;\
-	led.switches.sw2=SW2;\
-	led.switches.sw3=SW3;\
-	led.switches.sw4=SW4;\
-	led.switches.sw5=SW5;\
-	led.switches.sw6=SW6;\
-/*led.switches.sw7=SW7;*/}
+#define aplie_kd(x)(((x)*Kd)>>7)
+/*#define ERROR_STEP 50*/
 
-led_t led;
+
+
+volatile led_t led;
 
 
 /**
@@ -58,141 +57,136 @@ led_t led;
 */
 void get_line_error(void)
 {
-	static int16_t last_error;
-	int16_t error = 0, p_factor, i_factor=0;
-	read_switches();
-	switch (led.array)
+	//if (status.system.start_line)//TODO if java tool is used uncomment
 	{
-		case 0b00011100 : //0
-// 		if (r_motor.rpm<MAX_RPM-33)
-// 		{
-// 			r_motor.rpm += 33;
-// 		}
-// 		if (l_motor.rpm<MAX_RPM-33)
-// 		{
-// 			l_motor.rpm += 33;
-// 		}
-// 			return;
-
-		l_motor.rpm=90;
-		r_motor.rpm=100;
-
-		break;
-		case 0b00011000 : //-1
-			error = -1;
-		break;
-		case 0b00001100 : //1
-			error = 1;
-		break;
-		case 0b00111000 : //-2
-			error = -2;
-		break;
-		case 0b00001110 : //2
-			error = 2;
-		break;
-		case 0b00110000 : //-3
-			error = -3;
-		break;
-		case 0b00000110: //3
-			error = 3;
-		break;
-		case 0b01110000: //-4
-			error = -4;
-		break;
-		case 0b00000111: //4
-			error = 4;
-		break;
-		case 0b01100000: //-5
-			error = -5;
-		break;
-		case 0b00000011: //5
-			error = 5;
-		break;
-		case 0b01000000: //-6
-			error = -6;
-		break;
-		case 0b00000001: //6
-			error = 6;
-		break;
-		case 0b00000000:
-		l_motor.rpm=190;
-		r_motor.rpm=200;
-		break;
-		case 0b01111111:
-		l_motor.rpm=0;
-		r_motor.rpm=0;
-		break;
-		//more cases for the special lines
-		default:
+		static int16_t i_factor,last_error,d_factor,p_factor, pid;
+		int8_t error = 0;
+		read_switches();
+		toggle_led();
+		switch (led.array)
 		{
-			//error =0;
-			
-		}
-		break;
-	}
-	p_factor = 0;///*Kp**/error;
-	i_factor = /*Ki**/(error+last_error)>>1;
-	last_error = error;
-	status.byte[1]=i_factor;
-	int16_t new_rpm;
-	new_rpm = r_motor.ref_rpm + i_factor-p_factor;
-	if (new_rpm<33)
-	{
-		new_rpm = 33;
-	}
-	r_motor.rpm = new_rpm;
-	new_rpm = l_motor.ref_rpm - i_factor+p_factor;
-	if (new_rpm<33)
-	{
-		new_rpm = 33;
-	}
-	l_motor.rpm = new_rpm;
+			case 0b00011100 : //0
 	
-// 	int16_t new_rpm;
-// 		if (error<0)
-// 		{
-// 			new_rpm = r_motor.rpm+p_factor/*-int8_abs_Q(i_factor)*/;
-// 			if (new_rpm<33)
-// 			{
-// 				new_rpm = 33;
-// 			}
-// 			r_motor.rpm = new_rpm;
-// // 			if(error+last_error<-10)
-// // 			{
-// // 				r_motor.rpm-=ERROR_STEP;
-// // 				l_motor.rpm-=ERROR_STEP;
-// // 			}
-// 		}
-// 		else
-// 		{
-// 			new_rpm = l_motor.rpm-p_factor/*-int8_abs_Q(i_factor)*/;
-// 			if (new_rpm<33)
-// 			{
-// 				new_rpm = 33;
-// 			}
-// 			l_motor.rpm = new_rpm;
-// // 			if(error+last_error>10)
-// // 			{
-// // 				l_motor.rpm-=ERROR_STEP;
-// // 				r_motor.rpm-=ERROR_STEP;
-// // 			}
-// 		}
-	static uint8_t info_timer=5;//5*20ms = 100ms
-	if(--info_timer==0)
-	{
-		info_timer=5;
-		//send_led_info();
-	}
+			break;
+			case 0b00011000 : //-1
+				error = -1;
+			break;
+			case 0b00001100 : //1
+				error = 1;
+			break;
+			case 0b00111000 : //-2
+				error = -2;
+			break;
+			case 0b00001110 : //2
+				error = 2;
+			break;
+			case 0b00110000 : //-3
+				error = -3;
+			break;
+			case 0b00000110: //3
+				error = 3;
+			break;
+			case 0b01110000: //-4
+				error = -4;
+			break;
+			case 0b00000111: //4
+				error = 4;
+			break;
+			case 0b01100000: //-5
+				error = -5;
+			break;
+			case 0b00000011: //5
+				error = 5;
+			break;
+			case 0b01000000: //-6
+				error = -6;
+			break;
+			case 0b00000001: //6
+				error = 6;
+			break;
+			case 0b00000000:
+	// 		l_motor.rpm=190;
+	// 		r_motor.rpm=200;
+			break;
+			case 0b01111111:
+	// 		l_motor.rpm=0;
+	// 		r_motor.rpm=0;
+			break;
+			//more cases for the special lines
+			default:
+			{
+				//error =0;
+				
+			}
+			break;
+		}
+		
+		p_factor = error*Kp;
+		i_factor =i_factor+( Ki*error);
+		if (i_factor<-32)
+		{
+			i_factor=-32;
+		} 
+		else if (i_factor>32)
+		{
+			i_factor=32;
+		}
+		d_factor =aplie_kd(error-last_error);
+		pid=p_factor+i_factor+d_factor;
+		
+		if(error<=0)
+			r_motor.rpm = r_motor.ref_rpm + pid;
+		if(error>=0) 
+			l_motor.rpm = l_motor.ref_rpm - pid;
+			
+	
+		static uint8_t info_timer=5;//5*70ms = 350ms
+		if(--info_timer==0)
+		{
+			info_timer=10;
+// 			send_led_info();
+// 			send_left_m();
+// 			send_right_m();
+ 			send_pid(pid);
+ 			task_t led_info  = {.data.command = PID_KP, .data.value = p_factor};add_task(&led_info);
+ 			task_t led_info1 = {.data.command = PID_KI, .data.value = i_factor};add_task(&led_info1);
+ 			task_t led_info2 = {.data.command = PID_KD, .data.value = d_factor};add_task(&led_info2);
+		}
+}
 }
 
-void eval() {
+void send_sensor_values(void) {
 	read_switches();
 	send_led_info();
-	uint8_t sensor_value = led.array; 
-	if (sensor_value == ALL_SENSORS_BLACK)
-	{
-		add_event(EVENT_ALL_SENSORS_BLACK);
-	}
+}
+
+void start_line(task_t *task)
+{
+	status.system.start_line=task->data.value;
+}
+
+void set_Kp(task_t *task)
+{
+	Kp=task->data.value;
+}
+
+void set_Ki(task_t *task)
+{
+	Ki=task->data.value;
+}
+
+void set_Kd(task_t *task)
+{
+	Kd=task->data.value;
+}
+void set_pid(task_t *task)
+{
+	Kp=task->data.u8[0];
+	Ki=task->data.u8[1];
+	Kd=task->data.u8[2];
+	task_t led_info  = {.data.command = PID_KP, .data.value = Kp};add_task(&led_info);
+	task_t led_info1 = {.data.command = PID_KI, .data.value = Ki};add_task(&led_info1);
+	task_t led_info2 = {.data.command = PID_KD, .data.value = Kd};add_task(&led_info2);
 }
 
 void led_init(void)
@@ -204,4 +198,5 @@ void led_init(void)
 	set_pin_as_input(A,4);
 	set_pin_as_input(A,5);
 	set_pin_as_input(A,6);
+	status.system.motor_forward = true;
 }

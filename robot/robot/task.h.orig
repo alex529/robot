@@ -34,16 +34,22 @@ typedef enum
 	MOTOR_RPM=27,                       //0x1B
 	
 	PID_ERROR=40,						//0x28
-	PID_KP=41,							//0x29
-	PID_KD=42,							//0x2A
-	PID_KI=43,							//0x2B
-	PID=44,								//0x2C
-	PID_INT=45,							//0x2D
-		
+	
+<<<<<<< HEAD
+	ADC1=60,
+	ADC_PI_ERROR=61,
+	LED=62,
+	TAKE_OVER = 80,
+	TAKE_OVER_ACK = 81,
+	GIVE_BACK_CONTROL = 82,
+	GIVE_BACK_CONTROL_ACK = 83,
+	STATE_COMMAND = 84,
+	SET_SPEED =85,
+	DEBUG11=86
+=======
 	ADC1=60,							//0x3C
 	ADC_PI_ERROR=61,					//0x3D
 	LED=62,								//0x3E
-	START_LINE=63,						//0x3F
 	
 	TAKE_OVER = 80,						//0x50
 	TAKE_OVER_ACK = 81,					//0x51
@@ -53,6 +59,7 @@ typedef enum
 	SET_SPEED =85,						//0x55
 	
 	DEBUG11=100							//0x64
+>>>>>>> 33db8d20379dccd076
 	// NOTE!!! if new commands are added to task_command_t MAX_FUNCTION_POINTER_INDEX has to be updated.
 } task_command_t;
 
