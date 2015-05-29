@@ -15,11 +15,15 @@
 
 #define STATE_FIND_TRACK_SENSOR_BLACKOUT_INTERVAL	2000
 #define STATE_WAIT_BEFORE_CORNER_INTERVAL	5000
+#define STATE_APPROACH_CORNER_INTERVAL 5000 // to be deleted
+
 timer_t state_find_track_sensor_blackout_timer;
 timer_t state_wait_before_corner_timer;
+timer_t state_approach_corner_timer; // to be deleted
 
 volatile state_find_track_data_t state_find_track_data;
 volatile state_wait_before_corner_data_t state_wait_before_corner_data;
+volatile state_approach_corner_data_t state_approach_corner_data;
 
 void state_idle_control_logic() {
 	// left bank intentionally 
@@ -44,6 +48,8 @@ void state_find_track_control_logic() {
 		uint8_t sensor_value = led.array;
 		if ((sensor_value & 0x7e)!= 0)
 		{
+			state_wait_before_corner_data.not_first_run=false;
+			state_wait_before_corner_data.exp=false;
 			control = & state_follow_track_1_control_logic;	
 		}
 		return;	
@@ -75,22 +81,38 @@ void state_wait_before_corner() {
 		l_motor.rpm = 0;
 		r_motor.rpm = 0;
 		state_wait_before_corner_data.exp == false;
-		//can I restart timer without redeclaration
 		tmr_start(&state_wait_before_corner_timer,STATE_WAIT_BEFORE_CORNER_INTERVAL);
 	}
 	
-	if (state_wait_before_corner_data.exp == true || tmr_exp(&state_wait_before_corner_data)){
+	if (state_wait_before_corner_data.exp == true || tmr_exp(&state_wait_before_corner_timer)){
 		state_wait_before_corner_data.exp = true;
 		set_m_forward()
 		l_motor.rpm = 100;
 		r_motor.rpm = 100;
 		control = &state_approach_corner;
+		state_approach_corner_data.not_first_run=false;
+		state_approach_corner_data.exp=false;
 		return;
 	}	
 }
 
 void state_approach_corner() {
+		if (state_approach_corner_data.not_first_run == false){
+		state_approach_corner_data.not_first_run = true;
+		task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_APPROACH_CORNER};
+		add_task(&system_state);
+		state_approach_corner_data.exp == false;
+		tmr_start(&state_approach_corner_timer,STATE_APPROACH_CORNER_INTERVAL);
+	}
 	
+	if (state_approach_corner_data.exp == true || tmr_exp(&state_approach_corner_timer)){
+		state_approach_corner_data.exp = true;
+		set_m_backward()
+		l_motor.rpm = 0;
+		r_motor.rpm = 0;
+		control = &state_approach_corner;
+		return;
+	}	
 }
 
 void state_turn_after_found_corner() {

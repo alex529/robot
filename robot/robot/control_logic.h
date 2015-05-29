@@ -14,7 +14,6 @@ void state_find_track_control_logic();
 void state_follow_track_1_control_logic(); 
 void state_y_intersection_control_logic(); 
 void state_follow_track_2_control_logic(); 
-void state_take_over_control_logic();
 void state_wait_before_corner();
 void state_approach_corner();
 void state_turn_after_found_corner();
@@ -28,7 +27,7 @@ void state_third_go_ahead();
 void state_right_turn();
 void state_last_go_ahead();
 void state_finish();
-
+void state_take_over_control_logic();
 
 typedef struct  
 {
@@ -42,6 +41,13 @@ typedef struct
 	bool exp;
 } state_wait_before_corner_data_t;
 
+typedef struct
+{
+	bool not_first_run;
+	bool exp;
+} state_approach_corner_data_t;
+
 extern volatile state_find_track_data_t state_find_track_data;
 extern volatile state_wait_before_corner_data_t state_wait_before_corner_data;
+extern volatile state_approach_corner_data_t state_approach_corner_data;
 #endif /* CONTROL_LOGIC_H_ */
