@@ -18,6 +18,7 @@
 #include "motor.h"
 
 #define increment_pulse_timer(x) { if(++x>9){x=0;}}
+#define check_motor_direction(x){if(##x_motor.direction == FORWARD){set_##x_forward();}else{set_##x_backward();}}
 
 volatile status_t status;
 volatile enable_features_t enable_features;
@@ -103,6 +104,10 @@ ISR(USART_UDRE_vect)
 *
 * \return
 */
+#define Kp 3
+//#define aplie_Kp(x) ((x*Kp)/128)
+#define aplie_Kp(x) ((x*Kp))
+
 ISR(TIMER1_COMPA_vect)
 {
 	static uint8_t pulse_timer = 0,sys_timer = 0;
@@ -115,29 +120,19 @@ ISR(TIMER1_COMPA_vect)
 		l_motor.error = l_motor.ref_pulses - p_l;
 		r_motor.error = r_motor.ref_pulses - p_r;
 		p_r = 0;
-		p_l = 0;
-		
+		p_l = 0;		
 		{//left motor
+			if (l_motor.breaking == OFF)
+			{
+				l_m = get_left_m();
+			}
 			if(l_motor.error<0)//too fast
 			{
-				uint8_t break_val= l_motor.error*2;
-				break_l(0);
-				l_m+=l_motor.error;
-				if (l_m<0)
-				{
-					l_m=0;
-				}
+				l_m+=aplie_Kp(l_motor.error);
+				set_l_stop();
+				l_motor.breaking = ON;
+				//set_left_m(l_m);
 			}
-			// 			else if(l_motor.error<0)
-			// 			{
-			// 				uint16_t motor = get_left_m();
-			// 				motor -= l_motor.error;
-			// 				if (motor<0)
-			// 				{
-			// 					motor=0;
-			// 				}
-			// 				set_left_m(motor);
-			// 			}
 			else if (l_motor.error == 0)// no error keep it going
 			{
 				if (l_motor.ref_pulses==0)//break
@@ -146,8 +141,8 @@ ISR(TIMER1_COMPA_vect)
 					set_left_m(0);
 				}
 				else//motor has the proper speed don't change shit
-				{		
-					if (l_motor.direction == FORWARD)
+				{
+					if(l_motor.direction == FORWARD)
 					{
 						set_l_forward();
 					}
@@ -156,20 +151,10 @@ ISR(TIMER1_COMPA_vect)
 						set_l_backward();
 					}
 				}
-				
 			}
 			else//acceleration needed
 			{
-				if (l_motor.breaking == OFF)
-				{
-					l_m = get_left_m();
-				}
-				l_m += l_motor.error;
-				if (l_m>255)
-				{
-					l_m=255;
-				}
-				if (l_motor.direction == FORWARD)
+				if(l_motor.direction == FORWARD)
 				{
 					set_l_forward();
 				}
@@ -177,23 +162,29 @@ ISR(TIMER1_COMPA_vect)
 				{
 					set_l_backward();
 				}
+				l_m+=aplie_Kp(l_motor.error);
+				if (l_m>255)
+				{
+					l_m=255;
+				}
 				set_left_m(l_m);
 			}
 		}
 		{//right motor
+			if (r_motor.breaking == OFF)
+			{
+				r_m = get_right_m();
+			}
 			if(r_motor.error<0)//too fast
 			{
-				uint8_t break_val= r_motor.error*2;
-				break_r(0);
-				r_m+=r_motor.error;
-				if (r_m<0)
-				{
-					r_m=0;
-				}
+				toggle_led();
+				r_m+=aplie_Kp(r_motor.error);
+				set_r_stop();
+				r_motor.breaking = ON;
+				//set_right_m(r_m);
 			}
 			else if (r_motor.error == 0)// no error keep it going
 			{
-				toggle_led();
 				if (r_motor.ref_pulses==0)//break
 				{
 					set_r_stop();
@@ -201,28 +192,30 @@ ISR(TIMER1_COMPA_vect)
 				}
 				else//motor has the proper speed don't change shit
 				{
-					
+					if(r_motor.direction == FORWARD)
+					{
+						set_r_forward();
+					}
+					else
+					{
+						set_r_backward();
+					}
 				}
-				
 			}
 			else//acceleration needed
 			{
-				if (r_motor.breaking == OFF)
-				{
-					r_m = get_right_m();
-				}
-				r_m += r_motor.error;
-				if (r_m>255)
-				{
-					r_m=255;
-				}
-				if (r_motor.direction == FORWARD)
+				if(r_motor.direction == FORWARD)
 				{
 					set_r_forward();
 				}
 				else
 				{
 					set_r_backward();
+				}
+				r_m+=(r_motor.error);
+				if (r_m>255)
+				{
+					r_m=255;
 				}
 				set_right_m(r_m);
 			}

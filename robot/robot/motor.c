@@ -166,6 +166,6 @@ void motors_init(void)
 	init_pwm();
 	set_l_forward();
 	set_r_forward();
-	l_motor.rpm=130;
-	r_motor.rpm=130;
+	l_motor.rpm=70;
+	r_motor.rpm=70;
 }
