@@ -163,24 +163,6 @@
     <Compile Include="isr.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="state_logics.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="state_logics.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="state_machine.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="state_machine.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="state_machine_event_buffer.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="state_machine_event_buffer.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="take_over.c">
       <SubType>compile</SubType>
     </Compile>

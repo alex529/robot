@@ -18,7 +18,8 @@ void state_take_over_control_logic();
 
 typedef struct  
 {
-	bool init;
+	bool not_first_run;
+	bool exp;
 } state_find_track_data_t;
 
 extern volatile state_find_track_data_t state_find_track_data;

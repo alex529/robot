@@ -13,8 +13,6 @@
 #include "math_Q.h"
 #include "task.h"
 #include "common.h"
-#include "state_machine.h"
-#include "state_machine_event_buffer.h"
 #include "control_logic.h"
 
 //TODO: check if this works
@@ -47,17 +45,8 @@ uint16_t Kp=16, Ki=0, Kd=0;
 /*#define ERROR_STEP 50*/
 
 
-//TODO: delete either 0 or 7
-#define read_switches(){led.array = 0b01111111&(~(PINA));/*led.switches.sw0=SW0;\
-	led.switches.sw1=SW1;\
-	led.switches.sw2=SW2;\
-	led.switches.sw3=SW3;\
-	led.switches.sw4=SW4;\
-	led.switches.sw5=SW5;\
-	led.switches.sw6=SW6;\
-/*led.switches.sw7=SW7;*/}
 
-led_t led;
+volatile led_t led;
 
 
 /**
@@ -169,15 +158,6 @@ void get_line_error(void)
 void send_sensor_values(void) {
 	read_switches();
 	send_led_info();
-}
-
-void sensor_eval(void) {
-	uint8_t sensor_value = led.array; 
-	read_switches();
-	if ((sensor_value & 0x7e)!= 0)
-	{	add_event(EVENT_LINE_FOUND);
-		
-	}
 }
 
 void start_line(task_t *task)

@@ -44,6 +44,8 @@
 #define set_m_backward(){set_l_backward();set_r_backward();status.system.motor_forward =false;}
 #define set_l_stop()	{set_left_m(0)	;mot_left_port	|=(1<<mot_left_back); mot_left_port |=(1<<mot_left_forw);}
 #define set_r_stop()	{set_right_m(0)	;mot_right_port	|=(1<<mot_right_forw);mot_right_port|=(1<<mot_right_back);}
+#define stoop()			{set_left_m(0); set_right_m(0); mot_left_port &=~(1<<mot_left_back);mot_left_port &=~(1<<mot_left_forw);mot_right_port &=~(1<<mot_right_back);mot_right_port &=~(1<<mot_right_forw);}
+
 	
 	#define MAX_RPM 200u
 
