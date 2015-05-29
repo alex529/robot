@@ -110,6 +110,6 @@ typedef struct
 volatile enable_features_t enable_features;
  extern volatile void (*control)();
 
-typedef enum {STATE_IDLE, STATE_FIND_TRACK, STATE_FOLLOW_TRACK_1, STATE_Y_INTERSECTION, STATE_FOLLOW_TRACK_2, STATE_TAKE_OVER, STATE_ANY} state_t;
+typedef enum {STATE_IDLE, STATE_FIND_TRACK, STATE_FOLLOW_TRACK_1, STATE_Y_INTERSECTION, STATE_FOLLOW_TRACK_2, STATE_WAIT_BEFORE_CORNER, STATE_TAKE_OVER} state_t;
 
 #endif /* COMMON_H_ */
