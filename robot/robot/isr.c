@@ -136,14 +136,22 @@ ISR(INT1_vect){
 
 ISR(ADC_vect) {
 	
-		uint32_t value=0;
-		uint32_t vstep = 488;
-		
-		value = ADCL;
-		value = value + (ADCH<<8);
-		result = value * vstep / 100;
-		
+	uint32_t value=0;
+	uint32_t vstep = 488;
+	
+	value = ADCL;
+	value = value + (ADCH<<8);
+	
+	if (first_channel){
+		result0 = value * vstep / 100;
+		setChannel(PINA1)
+		ADCSRA |= (1<<ADSC);
+		first_channel=false;
+	} else {
+		result1 = value * vstep / 100;
 		conversionIsInProgress = false;
 		new_data_available = true;
 		new_data_available_to_transmit = true;
+	}
+		
 }

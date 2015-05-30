@@ -102,5 +102,9 @@ void give_back_control_command(task_t *task) {
 		default:
 			control = &state_take_over_control_logic;
 			break;
+			
+	enable_features.adc = false;
+	enable_features.controller = false;
+	enable_features.send_adc_value = false;
 	}
 }

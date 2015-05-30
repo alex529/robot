@@ -13,16 +13,19 @@
 #include "task.h"
 #include "common.h"
 
-volatile uint16_t result;
+volatile uint16_t result0;
+volatile uint16_t result1;
 volatile bool new_data_available;
 volatile bool new_data_available_to_transmit;
 volatile bool conversionIsInProgress;
 volatile bool enabled;
+volatile bool first_channel;
 
 void adc_measurement_init() {
 	
 	/** setting AD7 as input */
-	DDRA&=~(1<<PINA7);
+	DDRA&=~(1<<PINA0);
+	DDRA&=~(1<<PINA1);
 
 	/** selecting ref voltage to AVCC */
 	ADMUX&=~(1<<REFS1);
@@ -42,11 +45,12 @@ void adc_measurement_init() {
 	conversionIsInProgress = false;
 }
 
-// starts the first conversion, the rest will be started in the ISR
+// starts the first conversion, the second will be started in the ISR
 void measure() {
 	
-		setChannel(PINA7);
 		conversionIsInProgress = true;
+		setChannel(PINA0);
+		first_channel = true;
 		ADCSRA |= (1<<ADSC);		
 	
 }
@@ -75,12 +79,10 @@ void send_adc_value_to_pc() {
 		task_t adc_value_task;
 		adc_value_task.data.command = ADC1;
 		adc_value_task.data.timestamp = 0;
-		adc_value_task.data.u8[0] = result & 0xff;
-		adc_value_task.data.u8[1] = result>>8; 
-		//adc_value_task.data.u8[2] = results[1] & 0xff;
-		//adc_value_task.data.u8[3] = results[1]>>8;
-		adc_value_task.data.u8[2]=0;
-		adc_value_task.data.u8[3]=0;
+		adc_value_task.data.u8[0] = result0 & 0xff;
+		adc_value_task.data.u8[1] = result0 >>8; 
+		adc_value_task.data.u8[2] = result1 & 0xff;
+		adc_value_task.data.u8[3] = result1 >>8;
 		add_task(&adc_value_task);	
 	}
 }
