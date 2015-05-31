@@ -12,34 +12,46 @@
 #include "common.h"
 #include "timer.h"
 #include "led.h"
+#include "adc.h"
 
 #define STATE_FIND_TRACK_SENSOR_BLACKOUT_INTERVAL		2000
 #define STATE_WAIT_BEFORE_CORNER_INTERVAL				3000
-#define STATE_APPROACH_CORNER_INTERVAL					3000 // to be deleted
+//#define STATE_APPROACH_CORNER_INTERVAL					3000 // to be deleted
 #define STATE_TURN_AFTER_FOUND_CORNER_TURNING_INTERVAL	1000
-#define STATE_GO_AHEAD_AFTER_TURN_INTERVAL				3000 // to be deleted
+//#define STATE_GO_AHEAD_AFTER_TURN_INTERVAL				3000 // to be deleted
 #define STATE_GO_A_BIT_MORE_INTERVAL					500
 #define STATE_SECOND_LEFT_TURN_INTERVAL					1000
-#define STATE_SECOND_GO_AHEAD_INTERVAL					1000  // to be deleted
+//#define STATE_SECOND_GO_AHEAD_INTERVAL					1000  // to be deleted
 #define STATE_SECOND_GO_A_BIT_MORE_INTERVAL				500
 #define STATE_THIRD_LEFT_TURN_INTERVAL					1000
-#define STATE_THIRD_GO_AHEAD_INTERVAL					2000 // to be deleted
+//#define STATE_THIRD_GO_AHEAD_INTERVAL					2000 // to be deleted
 #define STATE_RIGHT_TURN_INTERVAL						1000
-#define STATE_LAST_GO_AHEAD_INTERVAL					2000 // to be deleted
+//#define STATE_LAST_GO_AHEAD_INTERVAL					2000 // to be deleted
+
+#define STATE_APPROACH_CORNER_MINIMAL_VOLTAGE			800
+#define STATE_APPROACH_CORNER_MAXIMAL_VOLTAGE			1000
+#define STATE_GO_AHEAD_AFTER_TURN_VOLTAGE				600
+#define STATE_SECOND_GO_AHEAD_VOLTAGE					600
+#define STATE_THIRD_GO_AHEAD_MAXIMAL_VOLTAGE			1000
+#define STATE_THIRD_GO_AHEAD_MINIMAL_VOLTAGE			800
+#define STATE_LAST_GO_AHEAD_MAXIMAL_VOLTAGE				1000
+#define STATE_LAST_GO_AHEAD_MINIMAL_VOLTAGE				800
+
+
 
 timer_t state_find_track_sensor_blackout_timer;
 timer_t state_wait_before_corner_timer;
-timer_t state_approach_corner_timer; // to be deleted
+//timer_t state_approach_corner_timer; // to be deleted
 timer_t state_turn_after_found_corner_timer;
-timer_t state_go_ahead_after_turn_timer; // to be deleted
+//timer_t state_go_ahead_after_turn_timer; // to be deleted
 timer_t state_go_a_bit_more_timer;
 timer_t state_second_left_turn_timer;
-timer_t state_second_go_ahead_timer; // to be deleted
+//timer_t state_second_go_ahead_timer; // to be deleted
 timer_t state_second_go_a_bit_more_timer;
 timer_t state_third_left_turn_timer;
-timer_t state_third_go_ahead_timer; //to be deleted
+//timer_t state_third_go_ahead_timer; //to be deleted
 timer_t state_right_turn_timer;
-timer_t state_last_go_ahead_timer; //to be deleted
+//timer_t state_last_go_ahead_timer; //to be deleted
 
 volatile state_find_track_data_t state_find_track_data;
 volatile state_wait_before_corner_data_t state_wait_before_corner_data;
@@ -128,18 +140,21 @@ void state_approach_corner_logic() {
 		set_m_forward()
 		l_motor.rpm = 100;
 		r_motor.rpm = 100;
-		tmr_start(&state_approach_corner_timer,STATE_APPROACH_CORNER_INTERVAL);
 		return;
 	}
 	
-	if (tmr_exp(&state_approach_corner_timer)){
-		set_m_backward()
-		l_motor.rpm = 0;
-		r_motor.rpm = 0;
-		control = &state_turn_after_found_corner_logic;
-		state_turn_after_found_corner_data.not_first_run = false;
-		return;
-	}	
+	if (new_data_available){
+		new_data_available = false;
+		if (result0 <= STATE_APPROACH_CORNER_MINIMAL_VOLTAGE && result0 >= STATE_APPROACH_CORNER_MAXIMAL_VOLTAGE)
+		{
+			set_m_backward()
+			l_motor.rpm = 0;
+			r_motor.rpm = 0;
+			control = &state_turn_after_found_corner_logic;
+			state_turn_after_found_corner_data.not_first_run = false;
+			return;
+		}
+	}
 }
 
 void state_turn_after_found_corner_logic() {
@@ -169,18 +184,24 @@ void state_go_ahead_after_turn_logic() {
 			state_go_ahead_after_turn_data.not_first_run = true;
 			task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_GO_AHEAD_AFTER_TURN};
 			add_task(&system_state);
-			tmr_start(&state_go_ahead_after_turn_timer,STATE_GO_AHEAD_AFTER_TURN_INTERVAL);
 			set_m_forward()
 			r_motor.rpm = 100;
 			l_motor.rpm = 100;
 			return;
 		}
 		
-		if (tmr_exp(&state_go_ahead_after_turn_timer)){
+	if (new_data_available){
+		new_data_available = false;
+		if (result1 <= STATE_GO_AHEAD_AFTER_TURN_VOLTAGE)
+		{
+			set_m_backward()
+			l_motor.rpm = 0;
+			r_motor.rpm = 0;
 			control = &state_go_a_bit_more_logic;
 			state_go_a_bit_more_data.not_first_run = false;
 			return;
 		}
+	}
 }
 
 void state_go_a_bit_more_logic() {
@@ -232,22 +253,24 @@ void state_second_go_ahead_logic() {
 			state_second_go_ahead_data.not_first_run = true;
 			task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_SECOND_GO_AHEAD};
 			add_task(&system_state);
-			tmr_start(&state_second_go_ahead_timer,STATE_SECOND_GO_AHEAD_INTERVAL);
 			set_m_forward()
 			r_motor.rpm = 100;
 			l_motor.rpm = 100;
 			return;
 		}
 		
-		if (tmr_exp(&state_second_go_ahead_timer)){
+	if (new_data_available){
+		new_data_available = false;
+		if (result1 <= STATE_SECOND_GO_AHEAD_VOLTAGE)
+		{
 			set_m_backward()
-			r_motor.rpm = 0;
 			l_motor.rpm = 0;
+			r_motor.rpm = 0;
 			control = &state_second_go_a_bit_more_logic;
 			state_second_go_a_bit_more_data.not_first_run = false;
 			return;
-		}	
-	
+		}		
+	}
 }
 
 void state_second_go_a_bit_more_logic() {
@@ -299,21 +322,24 @@ void state_third_go_ahead_logic() {
 			state_third_go_ahead_data.not_first_run = true;
 			task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_THIRD_GO_AHEAD};
 			add_task(&system_state);
-			tmr_start(&state_third_go_ahead_timer,STATE_THIRD_GO_AHEAD_INTERVAL);
 			set_m_forward()
 			r_motor.rpm = 100;
 			l_motor.rpm = 100;
 			return;
 		}
 		
-		if (tmr_exp(&state_third_go_ahead_timer)){
+	if (new_data_available){
+		new_data_available = false;
+		if (result0 <= STATE_THIRD_GO_AHEAD_MAXIMAL_VOLTAGE && result0 >= STATE_THIRD_GO_AHEAD_MINIMAL_VOLTAGE)
+		{
 			set_m_backward()
-			r_motor.rpm = 0;
-			l_motor.rpm = 0;
+ 			r_motor.rpm = 0;
+ 			l_motor.rpm = 0;
 			control = &state_right_turn_logic;
 			state_right_turn_data.not_first_run = false;
 			return;
-		}
+		}				
+	}
 }
 
 void state_right_turn_logic() {
@@ -343,20 +369,25 @@ void state_last_go_ahead_logic() {
 			state_last_go_ahead_data.not_first_run = true;
 			task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_LAST_GO_AHEAD};
 			add_task(&system_state);
-			tmr_start(&state_last_go_ahead_timer,STATE_LAST_GO_AHEAD_INTERVAL);
 			set_m_forward()
 			r_motor.rpm = 100;
 			l_motor.rpm = 100;
 			return;
 		}
 		
-		if (tmr_exp(&state_last_go_ahead_timer)){
+	if (new_data_available){
+		new_data_available = false;
+		if (result0 <= STATE_LAST_GO_AHEAD_MAXIMAL_VOLTAGE && result0 >= STATE_LAST_GO_AHEAD_MINIMAL_VOLTAGE)
+		{
 			set_m_backward()
-			r_motor.rpm = 0;
-			l_motor.rpm = 0;
+ 			r_motor.rpm = 0;
+ 			l_motor.rpm = 0;
 			control = &state_finish_logic;
+			state_finish_data.not_first_run = false;
 			return;
 		}
+	}
+		
 }
 
 void state_finish_logic() {
@@ -369,6 +400,7 @@ void state_finish_logic() {
 			l_motor.rpm = 0;
 		}
 }
+
 void state_take_over_control_logic() {
 	
 }
