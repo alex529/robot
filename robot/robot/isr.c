@@ -23,7 +23,7 @@
 volatile status_t status;
 volatile enable_features_t enable_features;
 volatile uint32_t system_tic;
-volatile uint16_t p_r, p_l;
+volatile int16_t p_r, p_l;
 /**
 * \brief Adds the received data to the rx_buffer when the frame is received a flag is raised.
 *			When the frame is ready the value bites are swapped.
@@ -104,7 +104,8 @@ ISR(USART_UDRE_vect)
 *
 * \return
 */
-#define Kp 3
+#define Kp 1
+#define KpBreak 1//error is always <0 when breaking therfore it needs to be converted to abs
 //#define aplie_Kp(x) ((x*Kp)/128)
 #define aplie_Kp(x) ((x*Kp))
 
@@ -113,111 +114,204 @@ ISR(TIMER1_COMPA_vect)
 	static uint8_t pulse_timer = 0,sys_timer = 0;
 	static int16_t l_m,r_m;
 	
-	if (++pulse_timer>15)//optimized for pid
+	if (++pulse_timer>7)//optimized for pid
 	{
 		pulse_timer = 0;
 		
 		l_motor.error = l_motor.ref_pulses - p_l;
 		r_motor.error = r_motor.ref_pulses - p_r;
 		p_r = 0;
-		p_l = 0;		
-		{//left motor
-			if (l_motor.breaking == OFF)
+		p_l = 0;
+		// 		{//left motor
+		// 			if (l_motor.breaking == OFF)
+		// 			{
+		// 				l_m=get_left_m();
+		// 			}
+		//
+		// 			if(l_motor.error<0)//too fast
+		// 			{
+		// 				if (l_motor.r_dir == FORWARD)
+		// 				{
+		// 					if (l_motor.m_dir == FORWARD)
+		// 					{
+		// 						set_lb();
+		// 						set_left_m(l_motor.error * KpBreak);
+		// 						l_m -= aplie_Kp(l_motor.error);
+		// 						l_motor.breaking = ON;
+		// 					}
+		// 					else
+		// 					{
+		// 						set_lf();
+		// 						set_left_m(l_m);
+		// 					}
+		// 				}
+		// 				else
+		// 				{
+		// 					if (l_motor.m_dir == FORWARD)
+		// 					{
+		// 						set_lb();
+		// 						set_left_m(l_m);
+		// 					}
+		// 					else
+		// 					{
+		// 						set_lf();
+		// 						set_left_m(l_motor.error*KpBreak);
+		// 						l_m -= aplie_Kp(l_motor.error);
+		// 					}
+		// 				}
+		// 			}
+		// 			else if (l_motor.error == 0)// no error keep it going
+		// 			{
+		// 				if (l_motor.ref_pulses == 0)//break
+		// 				{
+		// 					set_ls();
+		// 					set_left_m(0);
+		// 				}
+		// 				else//motor has the proper speed don't change shit
+		// 				{
+		// 					if (l_motor.r_dir == FORWARD)
+		// 					{
+		// 						set_lf();
+		// 					}
+		// 					else
+		// 					{
+		// 						set_lb();
+		// 					}
+		// 				}
+		// 			}
+		// 			else//acceleration needed
+		// 			{
+		// 				if (l_motor.r_dir == FORWARD)
+		// 				{
+		// 					if (l_motor.m_dir == FORWARD)
+		// 					{
+		// 						set_left_m(l_m+aplie_Kp(l_motor.error));
+		// 					}
+		// 					else
+		// 					{
+		// 						set_lf();
+		// 						set_left_m(l_motor.error*KpBreak);
+		// 					}
+		// 				}
+		// 				else
+		// 				{
+		// 					if (l_motor.m_dir == FORWARD)
+		// 					{
+		// 						set_lb();
+		// 						set_left_m(l_motor.error*KpBreak);
+		// 					}
+		// 					else
+		// 					{
+		// 						set_left_m(l_m+aplie_Kp(l_motor.error));
+		// 					}
+		// 				}
+		// 			}
+		// 		}
+		{//right motor
+			int16_t temp;
+			if (r_motor.breaking == OFF)
 			{
-				l_m = get_left_m();
+				r_m=get_right_m();
 			}
-			if(l_motor.error<0)//too fast
+			
+			if(r_motor.error<-2)//too fast
 			{
-				l_m+=aplie_Kp(l_motor.error);
-				set_l_stop();
-				l_motor.breaking = ON;
-				//set_left_m(l_m);
-			}
-			else if (l_motor.error == 0)// no error keep it going
-			{
-				if (l_motor.ref_pulses==0)//break
+				if (r_motor.r_dir == FORWARD)
 				{
-					set_l_stop();
-					set_left_m(0);
-				}
-				else//motor has the proper speed don't change shit
-				{
-					if(l_motor.direction == FORWARD)
+					if (r_motor.m_dir == FORWARD)
 					{
-						set_l_forward();
+						toggle_led();
+						set_right_m(r_motor.error * KpBreak*-1);
+						set_rb();
+						r_m += aplie_Kp(r_motor.error);
+						if (r_m<0){r_m=0;}
+						r_motor.breaking = ON;
 					}
 					else
 					{
-						set_l_backward();
+						set_rf();
+						//set_right_m(r_m);
 					}
-				}
-			}
-			else//acceleration needed
-			{
-				if(l_motor.direction == FORWARD)
-				{
-					set_l_forward();
 				}
 				else
 				{
-					set_l_backward();
+					if (r_motor.m_dir == FORWARD)
+					{
+						set_rb();
+						set_right_m(r_m);
+					}
+					else
+					{
+						set_rf();
+						set_right_m(r_motor.error*KpBreak*-1);
+						r_m += aplie_Kp(r_motor.error);
+						if (r_m<0){r_m=0;}
+					}
 				}
-				l_m+=aplie_Kp(l_motor.error);
-				if (l_m>255)
+			}
+			else if (r_motor.error <1)// no error keep it going
+			{
+				if (r_motor.ref_pulses == 0)//break
 				{
-					l_m=255;
-				}
-				set_left_m(l_m);
-			}
-		}
-		{//right motor
-			if (r_motor.breaking == OFF)
-			{
-				r_m = get_right_m();
-			}
-			if(r_motor.error<0)//too fast
-			{
-				toggle_led();
-				r_m+=aplie_Kp(r_motor.error);
-				set_r_stop();
-				r_motor.breaking = ON;
-				//set_right_m(r_m);
-			}
-			else if (r_motor.error == 0)// no error keep it going
-			{
-				if (r_motor.ref_pulses==0)//break
-				{
-					set_r_stop();
+					set_rs();
 					set_right_m(0);
 				}
 				else//motor has the proper speed don't change shit
 				{
-					if(r_motor.direction == FORWARD)
+					if (r_motor.r_dir == FORWARD)
 					{
-						set_r_forward();
+						set_rf();
 					}
 					else
 					{
-						set_r_backward();
+						set_rb();
 					}
 				}
 			}
 			else//acceleration needed
 			{
-				if(r_motor.direction == FORWARD)
+				if (r_motor.r_dir == FORWARD)
 				{
-					set_r_forward();
+					if (r_motor.m_dir == FORWARD)
+					{
+						temp = r_m+aplie_Kp(r_motor.error);
+						if(temp>255)
+						{
+							temp=255;
+							if(r_m>255)
+							{
+								r_m=255;
+							}
+						}
+						set_right_m(temp);
+					}
+					else
+					{
+						set_rf();
+						set_right_m(r_motor.error*KpBreak);
+					}
 				}
 				else
 				{
-					set_r_backward();
+					if (r_motor.m_dir == FORWARD)
+					{
+						set_rb();
+						set_right_m(r_motor.error*KpBreak);
+					}
+					else
+					{
+						temp = r_m+aplie_Kp(r_motor.error);
+						if(temp>255)
+						{
+							temp=255;
+							if(r_m>255)
+							{
+								r_m=255;
+							}
+						}
+						set_right_m(temp);
+					}
 				}
-				r_m+=(r_motor.error);
-				if (r_m>255)
-				{
-					r_m=255;
-				}
-				set_right_m(r_m);
 			}
 		}
 	}

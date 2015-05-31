@@ -85,25 +85,27 @@ void drive(uint8_t a, int8_t mag)
 
 void motor_handler(void)
 {
-	static int16_t last_l_rpm=0,last_r_rpm=0;
-	if(last_l_rpm!=l_motor.rpm)
-	{		
-		if (l_motor.rpm>MAX_RPM)
-		{
-			l_motor.rpm = MAX_RPM;
-		}
-		l_motor.ref_pulses = l_motor.rpm / 8;
-	}
-	if (last_r_rpm!=r_motor.rpm)
-	{
-		if (r_motor.rpm>MAX_RPM)
-		{
-			r_motor.rpm = MAX_RPM;
-		}
-		r_motor.ref_pulses = r_motor.rpm / 8;
-	}
-	last_l_rpm = l_motor.rpm;
-	last_r_rpm = r_motor.rpm;
+	l_motor.ref_pulses = 8;
+	r_motor.ref_pulses = 6;
+// 	static int16_t last_l_rpm=0,last_r_rpm=0;
+// 	if(last_l_rpm!=l_motor.rpm)
+// 	{		
+// 		if (l_motor.rpm>MAX_RPM)
+// 		{
+// 			l_motor.rpm = MAX_RPM;
+// 		}
+// 		l_motor.ref_pulses = l_motor.rpm / 8;
+// 	}
+// 	if (last_r_rpm!=r_motor.rpm)
+// 	{
+// 		if (r_motor.rpm>MAX_RPM)
+// 		{
+// 			r_motor.rpm = MAX_RPM;
+// 		}
+// 		r_motor.ref_pulses = r_motor.rpm / 8;
+// 	}
+// 	last_l_rpm = l_motor.rpm;
+// 	last_r_rpm = r_motor.rpm;
 }
 
 
@@ -143,14 +145,14 @@ void set_rpm(task_t *task)
 
 void set_forward(task_t *task)
 {
-	set_l_forward();
-	set_r_forward();
+	set_lf();
+	set_rf();
 }
 
 void set_backward(task_t *task)
 {
-	set_l_backward();
-	set_r_backward();
+	set_lb();
+	set_rb();
 }
 
 void set_motors(task_t *task)
@@ -164,8 +166,8 @@ void motors_init(void)
 {
 	init_ext_int();
 	init_pwm();
-	set_l_forward();
-	set_r_forward();
-	l_motor.rpm=70;
+	set_l_m_forward()
+	set_r_m_forward()
+	//l_motor.rpm=70;
 	r_motor.rpm=70;
 }
