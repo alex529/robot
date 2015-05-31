@@ -145,7 +145,7 @@ void state_approach_corner_logic() {
 	
 	if (new_data_available){
 		new_data_available = false;
-		if (result0 <= STATE_APPROACH_CORNER_MINIMAL_VOLTAGE && result0 >= STATE_APPROACH_CORNER_MAXIMAL_VOLTAGE)
+		if (result0 >= STATE_APPROACH_CORNER_MINIMAL_VOLTAGE && result0 <= STATE_APPROACH_CORNER_MAXIMAL_VOLTAGE)
 		{
 			set_m_backward()
 			l_motor.rpm = 0;
