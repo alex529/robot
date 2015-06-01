@@ -28,16 +28,14 @@
 #define STATE_RIGHT_TURN_INTERVAL						1000
 //#define STATE_LAST_GO_AHEAD_INTERVAL					2000 // to be deleted
 
-#define STATE_APPROACH_CORNER_MINIMAL_VOLTAGE			800
+#define STATE_APPROACH_CORNER_MINIMAL_VOLTAGE			400
 #define STATE_APPROACH_CORNER_MAXIMAL_VOLTAGE			1000
-#define STATE_GO_AHEAD_AFTER_TURN_VOLTAGE				600
-#define STATE_SECOND_GO_AHEAD_VOLTAGE					600
+#define STATE_GO_AHEAD_AFTER_TURN_VOLTAGE				400
+#define STATE_SECOND_GO_AHEAD_VOLTAGE					400
 #define STATE_THIRD_GO_AHEAD_MAXIMAL_VOLTAGE			1000
-#define STATE_THIRD_GO_AHEAD_MINIMAL_VOLTAGE			800
+#define STATE_THIRD_GO_AHEAD_MINIMAL_VOLTAGE			400
 #define STATE_LAST_GO_AHEAD_MAXIMAL_VOLTAGE				1000
-#define STATE_LAST_GO_AHEAD_MINIMAL_VOLTAGE				800
-
-
+#define STATE_LAST_GO_AHEAD_MINIMAL_VOLTAGE				400
 
 timer_t state_find_track_sensor_blackout_timer;
 timer_t state_wait_before_corner_timer;
@@ -135,6 +133,7 @@ void state_wait_before_corner_logic() {
 void state_approach_corner_logic() {
 		if (state_approach_corner_data.not_first_run == false){
 		state_approach_corner_data.not_first_run = true;
+		enable_features.adc = true;
 		task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_APPROACH_CORNER};
 		add_task(&system_state);
 		set_m_forward()
@@ -181,6 +180,7 @@ void state_turn_after_found_corner_logic() {
 
 void state_go_ahead_after_turn_logic() {
 		if (state_go_ahead_after_turn_data.not_first_run == false){
+			enable_features.adc = true;
 			state_go_ahead_after_turn_data.not_first_run = true;
 			task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_GO_AHEAD_AFTER_TURN};
 			add_task(&system_state);
@@ -251,6 +251,7 @@ void state_second_left_turn_logic() {
 void state_second_go_ahead_logic() {
 		if (state_second_go_ahead_data.not_first_run == false){
 			state_second_go_ahead_data.not_first_run = true;
+			enable_features.adc = true;
 			task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_SECOND_GO_AHEAD};
 			add_task(&system_state);
 			set_m_forward()
@@ -320,6 +321,7 @@ void state_third_left_turn_logic() {
 void state_third_go_ahead_logic() {
 	if (state_third_go_ahead_data.not_first_run == false){
 			state_third_go_ahead_data.not_first_run = true;
+			enable_features.adc = true;
 			task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_THIRD_GO_AHEAD};
 			add_task(&system_state);
 			set_m_forward()
@@ -367,6 +369,7 @@ void state_right_turn_logic() {
 void state_last_go_ahead_logic() {
 	if (state_last_go_ahead_data.not_first_run == false){
 			state_last_go_ahead_data.not_first_run = true;
+			enable_features.adc = true;
 			task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_LAST_GO_AHEAD};
 			add_task(&system_state);
 			set_m_forward()
