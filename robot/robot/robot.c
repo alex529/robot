@@ -31,10 +31,9 @@
 #define COMM_PROT_INTERVAL			10
 #define MOTOR_INTERVAL				1
 #define LED_INTERVAL				13
-#define ADC_INTERVAL				50
+#define ADC_INTERVAL				10
 #define SEND_ADC_VALUE_INTERVAL		50
 #define SEND_SENSOR_INTERVAL		3000
-#define CONTROL_LOGIC_INTERVAL		1
 
 volatile bool run_card_reader = false;
 volatile void (*control)();
@@ -119,7 +118,7 @@ int main(void)
  				led_timer = led_int;
  				start(run_led);
  			}
- 			if(enable_features.adc == true && --adc_timer == 0)
+ 			if( --adc_timer == 0 && enable_features.adc == true )
  			{
  				adc_timer = ADC_INTERVAL;
  				start(run_adc);
