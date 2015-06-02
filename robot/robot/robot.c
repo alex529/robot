@@ -19,7 +19,6 @@
 #include "date.h"
 #include "com_prot.h"
 #include "motor.h"
-#include "led.h"
 #include "adc.h"
 #include "control_logic.h"
 
@@ -70,7 +69,6 @@ int main(void)
 	bool run_send_adc_value		= false;
 	bool run_motor				= false;
 	bool run_led				= false;
-	bool run_clock				= false;
 	bool run_send_sensor		= false;
 	bool run_control_logic		= false;
 	
@@ -155,7 +153,7 @@ int main(void)
 				run_motor = false;
 				motor_handler();
 			}
-		}				
+				
  			if (run_led)
  			{
  				run_led = false;

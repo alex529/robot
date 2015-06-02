@@ -28,17 +28,26 @@ typedef union
 
 void led_init(void);
 void get_line_error(void);
-<<<<<<< HEAD
 void sensor_eval(void);
-void send_sensor_values(void);
-=======
 void eval(void);
+void send_sensor_values(void);
 void start_line(task_t *task);
 void set_Kp(task_t *task);
 void set_Kd(task_t *task);
 void set_Ki(task_t *task);
 void set_pid(task_t *task);
->>>>>>> origin/led_control
+
+extern volatile led_t led;
+
+//TODO: delete either 0 or 7
+#define read_switches(){led.array = 0b01111111&(~(PINA));/*led.switches.sw0=SW0;\
+	led.switches.sw1=SW1;\
+	led.switches.sw2=SW2;\
+	led.switches.sw3=SW3;\
+	led.switches.sw4=SW4;\
+	led.switches.sw5=SW5;\
+	led.switches.sw6=SW6;\
+/*led.switches.sw7=SW7;*/}
 
 
 #endif /* LED_H_ */

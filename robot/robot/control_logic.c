@@ -11,8 +11,8 @@
 #include "motor.h"
 #include "common.h"
 #include "timer.h"
-#include "led.h"
 #include "adc.h"
+#include "led.h"
 
 #define STATE_FIND_TRACK_SENSOR_BLACKOUT_INTERVAL		2000
 #define STATE_WAIT_BEFORE_CORNER_INTERVAL				3000
@@ -85,7 +85,7 @@ void state_find_track_control_logic() {
 	if (state_find_track_data.exp == true || tmr_exp(&state_find_track_sensor_blackout_timer)){
 		state_find_track_data.exp = true;
 		read_switches();
-		uint8_t sensor_value = led.array;
+		uint8_t sensor_value = 0;//led.array;
 		if ((sensor_value & 0x7e)!= 0)
 		{
 			state_find_track_data.exp=false;
