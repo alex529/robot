@@ -21,7 +21,7 @@
 //#define STATE_GO_AHEAD_AFTER_TURN_INTERVAL				3000 // to be deleted
 #define STATE_GO_A_BIT_MORE_INTERVAL					500
 #define STATE_SECOND_LEFT_TURN_INTERVAL					1000
-//#define STATE_SECOND_GO_AHEAD_INTERVAL					1000  // to be deleted
+#define STATE_SECOND_GO_AHEAD_INTERVAL					1000  // to be deleted
 #define STATE_SECOND_GO_A_BIT_MORE_INTERVAL				500
 #define STATE_THIRD_LEFT_TURN_INTERVAL					1000
 //#define STATE_THIRD_GO_AHEAD_INTERVAL					2000 // to be deleted
@@ -44,7 +44,7 @@ timer_t state_turn_after_found_corner_timer;
 //timer_t state_go_ahead_after_turn_timer; // to be deleted
 timer_t state_go_a_bit_more_timer;
 timer_t state_second_left_turn_timer;
-//timer_t state_second_go_ahead_timer; // to be deleted
+timer_t state_second_go_ahead_timer; // to be deleted
 timer_t state_second_go_a_bit_more_timer;
 timer_t state_third_left_turn_timer;
 //timer_t state_third_go_ahead_timer; //to be deleted
@@ -251,8 +251,8 @@ void state_second_left_turn_logic() {
 void state_second_go_ahead_logic() {
 		if (state_second_go_ahead_data.not_first_run == false){
 			state_second_go_ahead_data.not_first_run = true;
-			enable_features.adc = true;
 			task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_SECOND_GO_AHEAD};
+			tmr_start(&state_second_go_ahead_timer,STATE_SECOND_GO_AHEAD_INTERVAL);
 			add_task(&system_state);
 			set_m_forward()
 			r_motor.rpm = 100;
@@ -260,18 +260,14 @@ void state_second_go_ahead_logic() {
 			return;
 		}
 		
-	if (new_data_available){
-		new_data_available = false;
-		if (result1 <= STATE_SECOND_GO_AHEAD_VOLTAGE)
-		{
+	if (tmr_exp(&state_second_go_ahead_timer)){
 			set_m_backward()
-			l_motor.rpm = 0;
 			r_motor.rpm = 0;
+			l_motor.rpm = 0;
 			control = &state_second_go_a_bit_more_logic;
 			state_second_go_a_bit_more_data.not_first_run = false;
 			return;
-		}		
-	}
+		}
 }
 
 void state_second_go_a_bit_more_logic() {
