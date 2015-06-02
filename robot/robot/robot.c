@@ -28,7 +28,7 @@
 // 1 represents 10 ms
 #define CLOCK_INTERVAL				100
 #define COMM_PROT_INTERVAL			10
-#define MOTOR_INTERVAL				1
+#define MOTOR_INTERVAL				2
 #define LED_INTERVAL				13
 #define ADC_INTERVAL				10
 #define SEND_ADC_VALUE_INTERVAL		50
@@ -64,6 +64,7 @@ int main(void)
 	uint8_t send_sensor_timer			= SEND_SENSOR_INTERVAL;
 
 	bool do_handler				= false;
+	bool run_clock				= false;
 	bool run_com_prot			= false;
 	bool run_adc				= false;
 	bool run_send_adc_value		= false;
@@ -119,6 +120,7 @@ int main(void)
  				start(run_led);
  			}
  			if( --adc_timer == 0 && enable_features.adc == true )
+			
  			{
  				adc_timer = ADC_INTERVAL;
  				start(run_adc);
@@ -141,7 +143,7 @@ int main(void)
 			if (run_clock)
 			{
 				run_clock = false;
-				clock_tick();				
+				clock_tick();
 			}
 			if (run_com_prot)
 			{
@@ -151,8 +153,9 @@ int main(void)
 			if (run_motor)
 			{
 				run_motor = false;
-				motors_controoler();
+				motor_handler();
 			}
+		}				
  			if (run_led)
  			{
  				run_led = false;

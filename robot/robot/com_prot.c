@@ -105,7 +105,6 @@ void com_prot_task(void)
 				if (tx_task->data.command == STRING)
 				{
 					USART_transmit_string(tx_task->data.str);
-					toggle_led();
 				}
 				else
 				{

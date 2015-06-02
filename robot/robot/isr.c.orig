@@ -16,7 +16,6 @@
 #include "timer.h"
 #include "common.h"
 #include "motor.h"
-#include "adc.h"
 
 #define BREAK_COUNT 20
 #define BREAK_FORCE 15
@@ -276,6 +275,7 @@ ISR(INT1_vect){
 	int1_toggle_edge();
 	p_l++;
 }
+<<<<<<< HEAD
 
 ISR(ADC_vect) {
 	
@@ -298,3 +298,5 @@ ISR(ADC_vect) {
 	}
 		
 }
+=======
+>>>>>>> origin/new_motor_controller

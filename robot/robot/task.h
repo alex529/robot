@@ -32,6 +32,9 @@ typedef enum
 	MOTOR_F=25,                         //0x19
 	MOTOR_B=26,                         //0x1A
 	MOTOR_RPM=27,                       //0x1B
+	MOTOR_CORNER=28,                    //0x1C
+	MOTOR_CIRCLE=29,                    //0x1D
+	MOTOR_CIRCLE_TIME=30,               //0x1E
 	
 	PID_ERROR=40,						//0x28
 	PID_KP=41,							//0x29
