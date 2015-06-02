@@ -21,12 +21,12 @@
 #define BREAK_FORCE 15
 
 //#define Kp 110
-uint8_t Kp = 250;
+uint8_t Kp = 4;
 uint8_t Kd = 65;
 #define KpBreak 1//error is always <0 when breaking therfore it needs to be converted to abs
-#define aplie_Kp(x) ((x*Kp)/64)
+//#define aplie_Kp(x) ((x*Kp)/64)
 #define aplie_Kd(x) ((x*Kd)/64)
-//#define aplie_Kp(x) ((x*Kp))
+#define aplie_Kp(x) ((x*Kp))
 
 void set_Kp(task_t *task)
 {
@@ -133,7 +133,7 @@ ISR(TIMER1_COMPA_vect)
 {
 	static uint8_t pulse_timer = 0,sys_timer = 0;
 	static int16_t l_m,r_m;
-	/*static int16_t l_error, r_error;*/
+	static int16_t l_error, r_error;
 	
 	if (++pulse_timer>7)//optimized for pid
 	{
@@ -156,7 +156,7 @@ ISR(TIMER1_COMPA_vect)
 			{
 				set_lb();
 			}
-			l_m=get_left_m()+aplie_Kp(l_motor.error)/*+aplie_Kd(l_motor.error-l_error)*/;
+			l_m=get_left_m()+aplie_Kp(l_motor.error)+aplie_Kd(l_motor.error-l_error);
 			if (l_m>255)
 			{
 				l_m=255;
@@ -211,7 +211,7 @@ ISR(TIMER1_COMPA_vect)
 			{
 				set_rb();
 			}
-			r_m =get_right_m()+aplie_Kp(r_motor.error)/*+aplie_Kd(r_motor.error-r_error)*/;
+			r_m =get_right_m()+aplie_Kp(r_motor.error)+aplie_Kd(r_motor.error-r_error);
 			if (r_m>255)
 			{
 				r_m=255;
@@ -254,8 +254,8 @@ ISR(TIMER1_COMPA_vect)
 				}
 			}
 		}
-// 		l_error = l_motor.error;
-// 		r_error = r_motor.error;
+		l_error = l_motor.error;
+		r_error = r_motor.error;
 	}
 	
 	if (++sys_timer>9)
