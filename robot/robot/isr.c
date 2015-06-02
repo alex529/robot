@@ -21,8 +21,8 @@
 #define BREAK_FORCE 15
 
 //#define Kp 110
-uint8_t Kp = 4;
-uint8_t Kd = 65;
+uint8_t Kp = 3;
+uint8_t Kd = 140;
 #define KpBreak 1//error is always <0 when breaking therfore it needs to be converted to abs
 //#define aplie_Kp(x) ((x*Kp)/64)
 #define aplie_Kd(x) ((x*Kd)/64)
