@@ -17,7 +17,7 @@
 #include "usart.h"
 #include "com_prot.h"
 #include "motor.h"
-
+#include "isr.h"
 uint8_t task_count=0;
 
 task_function_ptr do_task[FUNCTION_POINTER_SIZE];
@@ -51,16 +51,14 @@ void recive_task_init(void)
 	
 	//do_task[SET_SPEED]		= &set_speed; //TODO find referent to it in git hist
 	
-	do_task[MOTOR_RPM]		= &set_rpm;	
-	do_task[MOTOR_L]        = &set_left;
-	do_task[MOTOR_R]        = &set_right;
-	do_task[MOTOR_F]        = &set_forward;
-	do_task[MOTOR_B]        = &set_backward;
-	do_task[MOTOR_X_Y]      = &set_motors;
+	do_task[MOTOR_RPM]		= &set_rpm;
+	do_task[MOTOR_CORNER]	= &set_corner_task;
+	do_task[MOTOR_CIRCLE]	= &start_circle;
+	do_task[MOTOR_CIRCLE_TIME]	= &set_circle_time;
 	
-// 	do_task[PID_KD]			= &set_Kd;
+ 	do_task[PID_KD]			= &set_Kd;
 // 	do_task[PID_KI]			= &set_Ki;
-// 	do_task[PID_KP]			= &set_Kp;
+ 	do_task[PID_KP]			= &set_Kp;
 // 	do_task[PID]			= &set_pid;
 	do_task[PID_INT]		= &set_pid_int;
 	
