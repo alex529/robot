@@ -19,9 +19,7 @@
 #include "date.h"
 #include "com_prot.h"
 #include "motor.h"
-#include "led.h"
 #include "adc.h"
-#include "state_machine.h"
 #include "control_logic.h"
 
 #define start(x){do_handler = true; x=true;}
@@ -29,13 +27,12 @@
 // 1 represents 10 ms
 #define CLOCK_INTERVAL				100
 #define COMM_PROT_INTERVAL			10
-#define MOTOR_INTERVAL				1
+#define MOTOR_INTERVAL				2
 #define LED_INTERVAL				13
 #define ADC_INTERVAL				10
 #define SEND_ADC_VALUE_INTERVAL		50
 #define SEND_SENSOR_INTERVAL		3000
 
-volatile bool run_card_reader = false;
 volatile void (*control)();
 timer_t test;
 
@@ -45,6 +42,7 @@ void set_pid_int(task_t *task)
 {
 	led_int=task->data.value;
 }
+
 /**
 * \brief Represents a scheduler implementation the scheduler ticking every 100ms.
 *
@@ -63,16 +61,17 @@ int main(void)
 	uint8_t led_timer					= LED_INTERVAL;
 	uint8_t send_adc_value_timer		= SEND_ADC_VALUE_INTERVAL;
 	uint8_t send_sensor_timer			= SEND_SENSOR_INTERVAL;
+
 	bool do_handler				= false;
+	bool run_clock				= false;
 	bool run_com_prot			= false;
 	bool run_adc				= false;
 	bool run_send_adc_value		= false;
 	bool run_motor				= false;
 	bool run_led				= false;
-	bool run_state_machine		= false;
-	bool run_clock				= false;
 	bool run_send_sensor		= false;
 	bool run_control_logic		= false;
+	
 	
 	DDRB|=(1<<PB7);
 	led_off();
@@ -119,6 +118,7 @@ int main(void)
  				start(run_led);
  			}
  			if( --adc_timer == 0 && enable_features.adc == true )
+			
  			{
  				adc_timer = ADC_INTERVAL;
  				start(run_adc);
@@ -141,7 +141,7 @@ int main(void)
 			if (run_clock)
 			{
 				run_clock = false;
-				clock_tick();				
+				clock_tick();
 			}
 			if (run_com_prot)
 			{
@@ -151,8 +151,9 @@ int main(void)
 			if (run_motor)
 			{
 				run_motor = false;
-				motors_controoler();
+				motor_handler();
 			}
+				
  			if (run_led)
  			{
  				run_led = false;

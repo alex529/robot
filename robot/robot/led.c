@@ -39,7 +39,7 @@
 // #define Ki 0
 // #define Kd 0
 
-uint16_t Kp=16, Ki=0, Kd=0;
+//uint16_t Kp=16, Ki=0, Kd=0;
 
 #define aplie_kd(x)(((x)*Kd)>>7)
 /*#define ERROR_STEP 50*/
@@ -121,7 +121,7 @@ void get_line_error(void)
 			break;
 		}
 		
-		p_factor = error*Kp;
+	/*	p_factor = error*Kp;
 		i_factor =i_factor+( Ki*error);
 		if (i_factor<-32)
 		{
@@ -133,13 +133,13 @@ void get_line_error(void)
 		}
 		d_factor =aplie_kd(error-last_error);
 		pid=p_factor+i_factor+d_factor;
-		
-		if(error<=0)
+		*/
+	/*	if(error<=0)
 			r_motor.rpm = r_motor.ref_rpm + pid;
 		if(error>=0) 
 			l_motor.rpm = l_motor.ref_rpm - pid;
 			
-	
+	*/
 		static uint8_t info_timer=5;//5*70ms = 350ms
 		if(--info_timer==0)
 		{
@@ -165,28 +165,29 @@ void start_line(task_t *task)
 	status.system.start_line=task->data.value;
 }
 
-void set_Kp(task_t *task)
-{
-	Kp=task->data.value;
-}
+// void set_Kp(task_t *task)
+// {
+// 	//Kp=task->data.value;
+// }
 
-void set_Ki(task_t *task)
-{
-	Ki=task->data.value;
-}
+// void set_Ki(task_t *task)
+// {
+// 	//Ki=task->data.value;
+// }
 
-void set_Kd(task_t *task)
-{
-	Kd=task->data.value;
-}
+// void set_Kd(task_t *task)
+// {
+// 	//Kd=task->data.value;
+// }
 void set_pid(task_t *task)
 {
-	Kp=task->data.u8[0];
+	/*Kp=task->data.u8[0];
 	Ki=task->data.u8[1];
 	Kd=task->data.u8[2];
 	task_t led_info  = {.data.command = PID_KP, .data.value = Kp};add_task(&led_info);
 	task_t led_info1 = {.data.command = PID_KI, .data.value = Ki};add_task(&led_info1);
 	task_t led_info2 = {.data.command = PID_KD, .data.value = Kd};add_task(&led_info2);
+		*/
 }
 
 void led_init(void)
@@ -198,5 +199,5 @@ void led_init(void)
 	set_pin_as_input(A,4);
 	set_pin_as_input(A,5);
 	set_pin_as_input(A,6);
-	status.system.motor_forward = true;
+	//status.system.motor_forward = true;
 }
