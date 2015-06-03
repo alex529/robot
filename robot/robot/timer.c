@@ -3,7 +3,7 @@
 *
 * The usart.c file is in charge of initializing timer1 and setting up delay functionalities.
 *
-*  Created: 2/18/2014 6:07:40 PM
+*  Created: 21/04/2015 19:37:11
 *  Author: Alexandru Savin
 */
 

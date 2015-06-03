@@ -1,7 +1,7 @@
 /*
 * common.h
 *
-* Created: 2/28/2014 11:58:57 AM
+* Created: 24/04/2015 15:37:40
 *  Author: Administrator
 */
 
@@ -34,10 +34,6 @@
 * NOTE!!! Last char has to be manually set to 0 if string parsing wants to be used.
 */
 #define uint_to_string(uint_nr,string_ptr, string_size)	{for(int i=0;uint_nr || i>string_size;i++){string_ptr[string_size-i-1]=uint_nr%10+48;	uint_nr/=10;}}
-/**
-* Swaps the value of 2 1byte variables.
-*/
-#define swap_uint8_t(x,y) {uint8_t temp;temp=x;x=y;y=temp;}//if memory needed can be changed with x^=y;y^=x;x^=y;
 
 /**
 * Used for debug porpoises it sends an INIT_CONN command with a desired value attached to it.
@@ -81,7 +77,7 @@ typedef union
 		uint8_t sending_task : 1;
 		uint8_t task_received : 1;
 
-		uint8_t not_used4 : 1;
+		uint8_t circle : 1;
 		
 		uint8_t start_line : 1;
 		
@@ -92,12 +88,9 @@ typedef union
 	uint8_t byte[4];
 } status_t;
 
-timer_t test_timer;
-task_t tes1_task;
 void set_pid_int(task_t *task);
 
 extern volatile status_t status;
-extern volatile bool run_card_reader;
 
 typedef struct
 {
@@ -108,7 +101,6 @@ typedef struct
 } enable_features_t;
 
 volatile enable_features_t enable_features;
-extern volatile void (*control)();
 
 typedef enum {STATE_IDLE, STATE_FIND_TRACK, STATE_FOLLOW_TRACK_1, STATE_Y_INTERSECTION, STATE_FOLLOW_TRACK_2, STATE_WAIT_BEFORE_CORNER, STATE_APPROACH_CORNER, STATE_TURN_AFTER_FOUND_CORNER, STATE_GO_AHEAD_AFTER_TURN, STATE_GO_A_BIT_MORE, STATE_SECOND_LEFT_TURN, STATE_SECOND_GO_AHEAD, STATE_SECOND_GO_A_BIT_MORE, STATE_THIRD_LEFT_TURN, STATE_THIRD_GO_AHEAD, STATE_RIGHT_TURN, STATE_LAST_GO_AHEAD, STATE_FINISH, STATE_TAKE_OVER} state_t;
 

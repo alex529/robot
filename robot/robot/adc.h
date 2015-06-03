@@ -9,14 +9,16 @@
 #ifndef ADC_H_
 #define ADC_H_
 
+#define VSTEP 488
+
 #define setChannel(pin_number){ADMUX= ((pin_number && 0x1F) | (ADMUX&0xE0));}
+#define get_adc(u16_union_value){u16_union_value.b[0] = ADCL;u16_union_value.b[1] = ADCH;}
 
 
 extern volatile	uint16_t result0;
 extern volatile	uint16_t result1;
 extern volatile bool new_data_available;
 extern volatile bool new_data_available_to_transmit;
-extern volatile uint8_t stage;
 extern volatile bool conversionIsInProgress;
 extern volatile bool first_channel;
 

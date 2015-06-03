@@ -4,7 +4,7 @@
 * The usart.c file is in charge of initializing the USART module and  
 * contains functionality for sending task structures to the server.
 *
-*  Created: 2/17/2014 12:48:55 PM
+*  Created: 21/04/2015 19:37:11
 *  Author: Alexandru Savin
 */
 

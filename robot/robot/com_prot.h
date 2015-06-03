@@ -1,7 +1,7 @@
 /*
  * com_prot.h
  *
- *  Created: 4/28/2014 2:07:06 AM
+ *  Created: 24/04/2015 15:37:40
  *  Author: Alexandru
  */ 
 
@@ -9,11 +9,6 @@
 #ifndef COM_PROT_H_
 #define COM_PROT_H_
 
-
-#include "timer.h"
-
-
-extern timer_t ping_tmr;
 
 void com_prot_task(void);
 

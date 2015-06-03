@@ -190,6 +190,13 @@ void set_pid(task_t *task)
 		*/
 }
 
+/**
+ * \brief initializes the pins for the light switches
+ * 
+ * \param 
+ * 
+ * \return void
+ */
 void led_init(void)
 {
 	set_pin_as_input(A,0);
@@ -199,5 +206,4 @@ void led_init(void)
 	set_pin_as_input(A,4);
 	set_pin_as_input(A,5);
 	set_pin_as_input(A,6);
-	//status.system.motor_forward = true;
 }

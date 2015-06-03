@@ -9,11 +9,34 @@
 #ifndef CONTROL_LOGIC_H_
 #define CONTROL_LOGIC_H_
 
+typedef struct  
+{
+	bool not_first_run;
+	bool exp;
+} state_data_t;
+
+extern bool state_changed;
+extern volatile state_data_t state_find_track_data;
+extern volatile state_data_t state_wait_before_corner_data;
+extern volatile state_data_t state_approach_corner_data;
+extern volatile state_data_t state_turn_after_found_corner_data;
+extern volatile state_data_t state_go_ahead_after_turn_data;
+extern volatile state_data_t state_go_a_bit_more_data;
+extern volatile state_data_t state_second_left_turn_data;
+extern volatile state_data_t state_second_go_ahead_data;
+extern volatile state_data_t state_second_go_a_bit_more_data;
+extern volatile state_data_t state_third_left_turn_data;
+extern volatile state_data_t state_third_go_ahead_data;
+extern volatile state_data_t state_right_turn_data;
+extern volatile state_data_t state_last_go_ahead_data;
+extern volatile state_data_t state_finish_data;
+
+
 void state_idle_control_logic();
-void state_find_track_control_logic(); 
-void state_follow_track_1_control_logic(); 
-void state_y_intersection_control_logic(); 
-void state_follow_track_2_control_logic(); 
+void state_find_track_control_logic();
+void state_follow_track_1_control_logic();
+void state_y_intersection_control_logic();
+void state_follow_track_2_control_logic();
 void state_wait_before_corner_logic();
 void state_approach_corner_logic();
 void state_turn_after_found_corner_logic();
@@ -28,103 +51,7 @@ void state_right_turn_logic();
 void state_last_go_ahead_logic();
 void state_finish_logic();
 void state_take_over_control_logic();
+extern void (*control)();
 
-typedef struct  
-{
-	bool not_first_run;
-	bool exp;
-} state_find_track_data_t;
 
-typedef struct
-{
-	bool not_first_run;
-	bool exp;
-} state_wait_before_corner_data_t;
-
-typedef struct
-{
-	bool not_first_run;
-	bool exp;
-} state_approach_corner_data_t;
-
-typedef struct
-{
-	bool not_first_run;
-	bool exp;
-} state_turn_after_found_corner_data_t;
-
-typedef struct
-{
-	bool not_first_run;
-	bool exp;
-} state_go_ahead_after_turn_data_t;
-
-typedef struct
-{
-	bool not_first_run;
-	bool exp;
-} state_go_a_bit_more_data_t;
-
-typedef struct
-{
-	bool not_first_run;
-	bool exp;
-} state_second_left_turn_data_t;
-
-typedef struct
-{
-	bool not_first_run;
-	bool exp;
-} state_second_go_ahead_data_t;
-
-typedef struct
-{
-	bool not_first_run;
-	bool exp;
-} state_second_go_a_bit_more_data_t;
-
-typedef struct
-{
-	bool not_first_run;
-	bool exp;
-} state_third_left_turn_data_t;
-
-typedef struct
-{
-	bool not_first_run;
-	bool exp;
-} state_third_go_ahead_data_t;
-
-typedef struct
-{
-	bool not_first_run;
-	bool exp;
-} state_right_turn_data_t;
-
-typedef struct
-{
-	bool not_first_run;
-	bool exp;
-} state_last_go_ahead_data_t;
-
-typedef struct
-{
-	bool not_first_run;
-	bool exp;
-} state_finish_data_t;
-
-extern volatile state_find_track_data_t state_find_track_data;
-extern volatile state_wait_before_corner_data_t state_wait_before_corner_data;
-extern volatile state_approach_corner_data_t state_approach_corner_data;
-extern volatile state_turn_after_found_corner_data_t state_turn_after_found_corner_data;
-extern volatile state_go_ahead_after_turn_data_t state_go_ahead_after_turn_data;
-extern volatile state_go_a_bit_more_data_t state_go_a_bit_more_data;
-extern volatile state_second_left_turn_data_t state_second_left_turn_data;
-extern volatile state_second_go_ahead_data_t state_second_go_ahead_data;
-extern volatile state_second_go_a_bit_more_data_t state_second_go_a_bit_more_data;
-extern volatile state_third_left_turn_data_t state_third_left_turn_data;
-extern volatile state_third_go_ahead_data_t state_third_go_ahead_data;
-extern volatile state_right_turn_data_t state_right_turn_data;
-extern volatile state_last_go_ahead_data_t state_last_go_ahead_data;
-extern volatile state_finish_data_t state_finish_data;
 #endif /* CONTROL_LOGIC_H_ */

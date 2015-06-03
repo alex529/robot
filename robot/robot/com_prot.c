@@ -4,7 +4,7 @@
 * The com_prot.c file is in charge of the communication layer of the client,
 * servicing the pending tasks and the received once.
 *
-*  Created: 4/28/2014 1:45:03 AM
+*  Created: 24/04/2015 15:37:40
 *  Author: Alexandru Savin
 */
 
@@ -17,7 +17,6 @@
 #include "com_prot.h"
 #include "motor.h"
 
-timer_t ping_tmr;
 
 
 /**
@@ -87,6 +86,7 @@ void ping(void)
 void com_prot_task(void)
 {
 	static task_t *tx_task;
+	static timer_t ping_tmr;
 	
 	if (status.system.connected==true)
 	{
