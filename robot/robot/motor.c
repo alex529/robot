@@ -363,8 +363,8 @@ void motors_init(void)
 {
 	init_ext_int();
 	init_pwm();
-	set_l_m_forward()
-	set_r_m_forward()
-	l_motor.rpm=0;
-	r_motor.rpm=0;
+	set_l_m_forward();
+	set_r_m_forward();
+	l_motor.rpm=100;
+	r_motor.rpm=100;
 }
