@@ -74,7 +74,7 @@ volatile state_data_t state_finish_data;
 bool state_changed = false;
 
 
-void (*control)();
+volatile void (*control)();
 
 void state_idle_control_logic() {
 	// left bank intentionally 

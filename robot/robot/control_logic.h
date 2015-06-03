@@ -51,7 +51,7 @@ void state_right_turn_logic();
 void state_last_go_ahead_logic();
 void state_finish_logic();
 void state_take_over_control_logic();
-extern void (*control)();
+extern volatile void (*control)();
 
 
 #endif /* CONTROL_LOGIC_H_ */
