@@ -4,7 +4,7 @@
  * Eable/dissable_uart_transmision has to be used because if not the UDRE
  * interrupt will always be fired
  *
- * Created: 2/17/2014 12:49:08 PM
+ * Created:  24/04/2015 15:37:40
  *  Author: Alexandru Savin
  */
 

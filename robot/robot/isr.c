@@ -3,7 +3,7 @@
 *
 * The isr.c file is in charge of servicing the ISR routines.
 *
-*  Created: 2/17/2014 12:57:18 PM
+*  Created:  24/04/2015 15:37:40
 *  Author: Alexandru Savin
 */
 
@@ -26,9 +26,16 @@ uint8_t Kp = 4;
 uint8_t Kd = 65;
 #define KpBreak 1//error is always <0 when breaking therfore it needs to be converted to abs
 //#define aplie_Kp(x) ((x*Kp)/64)
-#define aplie_Kd(x) ((x*Kd)/64)
-#define aplie_Kp(x) ((x*Kp))
+#define aplie_Kd(x) (((x)*Kd)/64)
+#define aplie_Kp(x) (((x)*Kp))
 
+/**
+ * \brief  Real-time motor Kp adjustments  has to be placed in data.u8[3]
+ * 
+ * \param task
+ * 
+ * \return void
+ */
 void set_Kp(task_t *task)
 {
 	Kp = task->data.u8[3];
@@ -36,6 +43,13 @@ void set_Kp(task_t *task)
 	task_t pk_task = {.data.command = PID_KP, .data.value = Kp};
 	add_task(&pk_task);
 }
+/**
+ * \brief Real-time motor Kd adjustments value will be divided by 64 has to be placed in data.u8[3]
+ * 
+ * \param task
+ * 
+ * \return void
+ */
 void set_Kd(task_t *task)
 {
 	Kd = task->data.u8[3];
@@ -121,7 +135,8 @@ ISR(USART_UDRE_vect)
 
 /**
 * \brief Increments the global millisecond variable that is needed for the timer.c module and
-*			facilitates a system tick(100ms) used for scheduling purposes in the main loop.
+*			facilitates a system tick(10ms) used for scheduling purposes in the main loop.
+*	motor controller is also implemented in here
 *
 * \author Alexandru
 *
@@ -136,7 +151,7 @@ ISR(TIMER1_COMPA_vect)
 	static int16_t l_m,r_m;
 	static int16_t l_error, r_error;
 	
-	if (++pulse_timer>7)//optimized for pid
+	if (++pulse_timer>7)// if happens to often can be increased up to 16ms
 	{
 		pulse_timer = 0;
 		
@@ -267,34 +282,48 @@ ISR(TIMER1_COMPA_vect)
 	milliseconds++;
 }
 
+/**
+* \brief Counts the pulses on the right motor
+*
+* \author Alexandru
+*
+* \param Vector for the  interrupt.
+*
+* \return
+*/
 ISR(INT0_vect){
 	int0_toggle_edge();
 	p_r++;
 }
 
+/**
+* \brief Counts the pulses on the left motor
+*
+* \author Alexandru
+*
+* \param Vector for the  interrupt.
+*
+* \return
+*/
 ISR(INT1_vect){
 	int1_toggle_edge();
 	p_l++;
 }
 
+
+static u16_union adc_value;
 ISR(ADC_vect) {
-	
-	uint32_t value=0;
-	uint32_t vstep = 488;
-	
-	value = ADCL;
-	value = value + (ADCH<<8);
-	
+		
+	get_adc(adc_value);	
 	if (first_channel){
-		result0 = value * vstep / 100;
+		result0 = (adc_value.w * VSTEP) / 100;
 		setChannel(PINA1)
 		ADCSRA |= (1<<ADSC);
 		first_channel=false;
 	} else {
-		result1 = value * vstep / 100;
+		result1 = (adc_value.w * VSTEP) / 100;
 		conversionIsInProgress = false;
 		new_data_available = true;
 		new_data_available_to_transmit = true;
 	}
-		
 }

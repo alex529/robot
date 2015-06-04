@@ -4,7 +4,7 @@
 * The robot.c file is in charge of scheduling all the functionality
 * that needs to be handled by the client.
 *
-* Created: 3/3/2014 11:13:44 AM
+* Created: 21/04/2015 19:37:11
 *  Author: Administrator
 */
 
@@ -21,6 +21,7 @@
 #include "motor.h"
 #include "adc.h"
 #include "control_logic.h"
+#include "led.h"
 
 #define start(x){do_handler = true; x=true;}
 
@@ -31,9 +32,8 @@
 #define LED_INTERVAL				13
 #define ADC_INTERVAL				10
 #define SEND_ADC_VALUE_INTERVAL		50
-#define SEND_SENSOR_INTERVAL		3000
+#define SEND_SENSOR_INTERVAL		255u
 
-volatile void (*control)();
 timer_t test;
 
 uint8_t led_int = 15;
@@ -70,7 +70,6 @@ int main(void)
 	bool run_motor				= false;
 	bool run_led				= false;
 	bool run_send_sensor		= false;
-	bool run_control_logic		= false;
 	
 	
 	DDRB|=(1<<PB7);
@@ -178,7 +177,11 @@ int main(void)
   				send_sensor_values();
   			}
 
-			(*control)();
+			if (state_changed||new_data_available||tmr_exp(&state_timer))//can be further optimised
+			{
+ 				state_changed=false;
+				(*control)();
+			}
 		}
 		
 		

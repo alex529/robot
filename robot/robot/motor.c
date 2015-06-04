@@ -22,32 +22,67 @@
 #include "timer.h"
 
 
+/**
+* Sets external interrupt no 1 to fire on rising edge 
+*/
 #define set_int1_to_rising()	{MCUCR |= (1 << ISC11) | (1 << ISC10);}
+
+/**
+* Sets external interrupt no 1 to fire on falling edge
+*/
 #define set_int1_to_falling()	{MCUCR &=  ~(1 << ISC10);}
+
+/**
+* Sets external interrupt no 0 to fire on rising edge 
+*/
 #define set_int0_to_rising()	{MCUCR |= (1 << ISC01) | (1 << ISC00);}
+
+/**
+* Sets external interrupt no 0 to fire on falling edge
+*/
 #define set_int0_to_falling()	{MCUCR &=  ~(1 << ISC00);}
+
+/**
+* Eanbles external interrupts no 0 and 1
+*/
 #define eneable_external_int()	{GICR |= (1 << INT0) | (1 << INT1);}
 
-#define is_in_bounds(x) (x<255&&x>>-255)
-#define ANGLE 248
-
+/**
+* Sends the value of the pwm register for the left motor
+*/
 #define send_left_m(x) {task_t m_info = {.data.command = MOTOR_L, .data.value = get_left_m()};add_task(&m_info);}
+
+/**
+* Sends the value of the pwm register for the right motor
+*/
 #define send_right_m(x){task_t m_info = {.data.command = MOTOR_R, .data.value = get_right_m()};add_task(&m_info);}
 
+/**
+* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!NOTE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+* Don't use anywheres else than inside void do_cirecle(void) it contains local variables
+* Creates a delay of specified ms and sets next state  after the timer expires
+*/
 #define circle_delay(time,next_state){if (do_once){do_once=false;tmr_start(&delay,time);}if (tmr_exp(&delay)){c_state = next_state;do_once=true;}}
 
-static const uint16_t rpm_speed[30]={15,29,44,58,73,87,102,116,131,145,160,174,189,203,218,233,247,262,276,291,305,320,334,349,363,378,392,407,422};
+/**
+* pulses to rpm conversion
+*/
+//static const uint16_t rpm_speed[30]={15,29,44,58,73,87,102,116,131,145,160,174,189,203,218,233,247,262,276,291,305,320,334,349,363,378,392,407,422};
 
+/**
+* Motor specific variables
+*/
 volatile motor_t l_motor, r_motor;
-static volatile bool motor_speed_change = false;
 
-
+/**
+* All states present in the circle trick
+*/
 typedef enum
 {
-	PRE_DELAY,						//0x00
-	FORWARD_RADIUS,						//0x00
+	PRE_DELAY,						
+	FORWARD_RADIUS,						
 	FIRST_DELAY,
-	FIRST_CORNER,						//0x00
+	FIRST_CORNER,						
 	SECOND_DELAY,
 	CIRCLE,
 	THIRD_DELAY,
@@ -61,7 +96,7 @@ typedef enum
 
 
 /**
-* \brief
+* \brief Initializes the external interrupts
 *
 * \param
 *
@@ -74,6 +109,13 @@ void init_ext_int(void)
 	eneable_external_int();
 }
 
+/**
+* \brief Initializes the PWM counters
+*
+* \param
+*
+* \return void
+*/
 void init_pwm(void){
 
 	TCCR0 |= (1 << WGM00)|(1 << COM01)|(1 << WGM01)|(1 << CS00); //fast pwm ,64 prescalar, 8 bit
@@ -83,7 +125,16 @@ void init_pwm(void){
 	DDRD |= (1 << PD7);
 }
 
-void check_corner(volatile motor_t* motor)
+
+#define check_corner(corner_t_value){if(motor->pulse_count>corner_t_value){motor->rpm = 0;motor->corner = C0;}}
+/**
+ * \brief  Checks if the motor finished the necessary corner
+ * 
+ * \param motor Used to specify a reference to the motor that needs to be checked
+ * 
+ * \return void
+ */
+void check_movement(volatile motor_t* motor)
 {
 	if (motor->corner!=C0)
 	{
@@ -91,29 +142,17 @@ void check_corner(volatile motor_t* motor)
 		{
 			case C90:
 			{
-				if (motor->pulse_count>C90)
-				{
-					motor->rpm = 0;
-					motor->corner = C0;
-				}
+				check_corner(C90);
 			}
 			break;
 			case C45:
 			{
-				if (motor->pulse_count>C45)
-				{
-					motor->rpm = 0;
-					motor->corner = C0;
-				}
+				check_corner(C45)
 			}
 			break;
 			case CIRCLE_RADIUS:
 			{
-				if (motor->pulse_count>CIRCLE_RADIUS)
-				{
-					motor->rpm = 0;
-					motor->corner = C0;
-				}
+				check_corner(CIRCLE_RADIUS)
 			}
 			break;
 			default:
@@ -126,7 +165,16 @@ void check_corner(volatile motor_t* motor)
 	}
 }
 
-void set_corner(int16_t rpm, corner_t corner, direction_t d)
+/**
+ * \brief  Interface for making the robot turn in a specific direction, can be used to make the robot go in a direction for a specific distance
+ * 
+ * \param rpm Used to specify the motor speed 50 rpms has the best output
+ * \param corner Used to specify the corner type
+ * \param d Used to specify Used to specyfy the direction
+ * 
+ * \return void
+ */
+void set_movement(int16_t rpm, corner_t corner, direction_t d)
 {
 	switch (d)
 	{
@@ -163,12 +211,21 @@ void set_corner(int16_t rpm, corner_t corner, direction_t d)
 	}
 	l_motor.rpm = rpm;
 	r_motor.rpm = rpm;
-	l_motor.corner = corner;//TODO maybe close interupts for all the assignments
+	l_motor.corner = corner;//TODO maybe close interrupts for all the assignments
 	r_motor.corner = corner;
 	r_motor.pulse_count=0;
 	l_motor.pulse_count=0;
 }
-void set_corner_task(task_t *task)
+
+
+/**
+ * \brief  Wrapper around set_corner function to be used with the usart interface
+ * 
+ * \param task Used to specify a pointer to a specific received task.
+ * 
+ * \return void
+ */
+void set_movement_task(task_t *task)
 {
 	static corner_t temp_corner= C0;
 	switch (task->data.u8[2])
@@ -186,9 +243,16 @@ void set_corner_task(task_t *task)
 		temp_corner = C0;
 		break;
 	}
-	set_corner(task->data.u8[3],temp_corner,task->data.u8[1]);
+	set_movement(task->data.u8[3],temp_corner,task->data.u8[1]);
 }
 
+/**
+ * \brief  Handles all the motor checking 
+ * 
+ * \param 
+ * 
+ * \return void
+ */
 void motor_handler(void)
 {
 	static int16_t last_l_rpm=0,last_r_rpm=0;
@@ -211,22 +275,29 @@ void motor_handler(void)
 		r_motor.ref_pulses = r_motor.rpm / 16;
 		last_r_rpm = r_motor.rpm;
 	}
-	check_corner(&l_motor);
-	check_corner(&r_motor);
-	if (status.system.not_used4 == true)
+	check_movement(&l_motor);
+	check_movement(&r_motor);
+	if (status.system.circle == true)//TODO: maybe it should be called from a state
 	{
 		do_cirecle();
 	}
 }
 
 
+/**
+ * \brief  sets the motor rpm acording to the data.w[0] data.w[1] int values should be pased if negative robot will go backwords
+ * 
+ * \param task Used to specify a pointer to a specific received task.
+ * 
+ * \return void
+ */
 void set_rpm(task_t *task)
 {
 	u32_union temp;
 	temp.dw = task->data.value;
 	int16_t l = (int16_t)temp.w[1],r = (int16_t)temp.w[0];
 	
-	if (l>=0)
+	if (l>-1)
 	{
 		set_m_forward()
 		l_motor.rpm = l;
@@ -243,7 +314,15 @@ void set_rpm(task_t *task)
 	task_t motor3 = {.data.command = MOTOR_R, .data.value = r_motor.rpm};
 	add_task(&motor3);
 }
+
 uint16_t circle_time = 13500;
+/**
+ * \brief  makes a circle with a radius of ~50cm
+ * 
+ * \param 
+ * 
+ * \return void
+ */
 void do_cirecle(void)
 {
 	// 	TODO: create a state so nobody fucks with the robot
@@ -262,9 +341,9 @@ void do_cirecle(void)
 			if(do_once)
 			{
 				do_once=false;
-				set_corner(100,CIRCLE_RADIUS,FORWARD);
+				set_movement(100,CIRCLE_RADIUS,FORWARD);
 			}
-			if (l_motor.corner == C0&&r_motor.corner==C0)
+			if (movement_finished())
 			{
 				do_once = true;
 				c_state=FIRST_DELAY;
@@ -281,9 +360,9 @@ void do_cirecle(void)
 			if (do_once)
 			{
 				do_once = false;
-				set_corner(50,C90,LEFT);
+				set_movement(50,C90,LEFT);
 			}
-			if (l_motor.corner == C0&&r_motor.corner==C0)
+			if (movement_finished())
 			{
 				do_once=true;
 				c_state=SECOND_DELAY;
@@ -325,9 +404,9 @@ void do_cirecle(void)
 			if(do_once)
 			{
 				do_once=false;
-				set_corner(50,C90,RIGHT);
+				set_movement(50,C90,RIGHT);
 			}
-			if (l_motor.corner == C0&&r_motor.corner==C0)
+			if (movement_finished())
 			{
 				do_once=true;
 				c_state=FORTH_DELAY;
@@ -340,25 +419,46 @@ void do_cirecle(void)
 		}
 		break;
 		default:
-		status.system.not_used4 =false;
+		status.system.circle =false;
 		c_state = PRE_DELAY;
 		break;
 	}
 }
 
 
+/**
+ * \brief  Starts the circle trick
+ * 
+ * \param task  Used to specify a pointer to a specific received task.
+ * 
+ * \return void
+ */
 void start_circle(task_t *task)
 {
 	do_cirecle();
-	status.system.not_used4 =true;
+	status.system.circle =true;
 }
 
+/**
+ * \brief Tunes the time that takes to complete the circle
+ * 
+ * \param task Used to specify a pointer to a specific received task. u8[3] represents a multiple of 100ms
+ * 
+ * \return void
+ */
 void set_circle_time(task_t *task)
 {
 	circle_time = task->data.u8[3]*100;
 }
 
 
+/**
+ * \brief Initializes the motors
+ * 
+ * \param 
+ * 
+ * \return void
+ */
 void motors_init(void)
 {
 	init_ext_int();

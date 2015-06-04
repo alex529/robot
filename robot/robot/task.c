@@ -5,7 +5,7 @@
 * all the ack functions in an array of function pointers
 *
 *
-* Created: 2/28/2014 11:37:53 AM
+* Created: 21/04/2015 19:37:11
 * Author: Alexandru Savin
 */
 
@@ -53,7 +53,7 @@ void recive_task_init(void)
 	//do_task[SET_SPEED]		= &set_speed; //TODO find referent to it in git hist
 	
 	do_task[MOTOR_RPM]		= &set_rpm;
-	do_task[MOTOR_CORNER]	= &set_corner_task;
+	do_task[MOTOR_CORNER]	= &set_movement_task;
 	do_task[MOTOR_CIRCLE]	= &start_circle;
 	do_task[MOTOR_CIRCLE_TIME]	= &set_circle_time;
 	

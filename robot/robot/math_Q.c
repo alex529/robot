@@ -8,8 +8,8 @@
 #include <stdint.h>
 /**
  * Calculates the absolute value of a 16bit int.
- * @param x Used to specify int16_t number.
- * @return Returns the absolute of the value.
+ * \param x Used to specify int16_t number.
+ * \return Returns the absolute of the value.
  */
 int16_t int16_abs_Q(int16_t x)
 {
@@ -19,8 +19,8 @@ int16_t int16_abs_Q(int16_t x)
 
 /**
  * Calculates the absolute value of a 8bit int.
- * @param x Used to specify int8_t number.
- * @return Returns the absolute of the value.
+ * \param x Used to specify int8_t number.
+ * \return Returns the absolute of the value.
  */
 int8_t int8_abs_Q(int8_t x)
 {

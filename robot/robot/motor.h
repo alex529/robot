@@ -47,6 +47,8 @@
 	
 #define stoop()			{set_left_m(0); set_right_m(0); mot_left_port &=~(1<<mot_left_back);mot_left_port &=~(1<<mot_left_forw);mot_right_port &=~(1<<mot_right_back);mot_right_port &=~(1<<mot_right_forw);}
 
+
+#define movement_finished() (l_motor.corner == C0&&r_motor.corner==C0)
 #define MAX_RPM 200
 
 typedef enum
@@ -89,9 +91,9 @@ extern volatile motor_t l_motor, r_motor;
 
 void motors_init(void);
 void set_rpm(task_t *task);
-void set_corner_task(task_t *task);
+void set_movement_task(task_t *task);
 void motor_handler(void);
-void set_corner(int16_t rpm, corner_t corner, direction_t d);
+void set_movement(int16_t rpm, corner_t corner, direction_t d);
 void start_circle(task_t *task);
 void set_circle_time(task_t *task);
 void do_cirecle(void);
