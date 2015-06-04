@@ -10,6 +10,7 @@
 #define TIMER_H_
 
 #include <stdbool.h>
+#include <stdint.h>
 /*
  * Used with tmr_start, represents half second.
  */

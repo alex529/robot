@@ -8,6 +8,7 @@
 
 #ifndef CONTROL_LOGIC_H_
 #define CONTROL_LOGIC_H_
+#include "timer.h"
 
 typedef struct  
 {
@@ -30,6 +31,8 @@ extern volatile state_data_t state_third_go_ahead_data;
 extern volatile state_data_t state_right_turn_data;
 extern volatile state_data_t state_last_go_ahead_data;
 extern volatile state_data_t state_finish_data;
+
+extern timer_t state_timer;
 
 
 void state_idle_control_logic();

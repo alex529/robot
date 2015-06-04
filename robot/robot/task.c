@@ -53,7 +53,7 @@ void recive_task_init(void)
 	//do_task[SET_SPEED]		= &set_speed; //TODO find referent to it in git hist
 	
 	do_task[MOTOR_RPM]		= &set_rpm;
-	do_task[MOTOR_CORNER]	= &set_corner_task;
+	do_task[MOTOR_CORNER]	= &set_movement_task;
 	do_task[MOTOR_CIRCLE]	= &start_circle;
 	do_task[MOTOR_CIRCLE_TIME]	= &set_circle_time;
 	

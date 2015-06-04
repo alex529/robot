@@ -125,6 +125,8 @@ void init_pwm(void){
 	DDRD |= (1 << PD7);
 }
 
+
+#define check_corner(corner_t_value){if(motor->pulse_count>corner_t_value){motor->rpm = 0;motor->corner = C0;}}
 /**
  * \brief  Checks if the motor finished the necessary corner
  * 
@@ -132,7 +134,7 @@ void init_pwm(void){
  * 
  * \return void
  */
-void check_corner(volatile motor_t* motor)
+void check_movement(volatile motor_t* motor)
 {
 	if (motor->corner!=C0)
 	{
@@ -140,29 +142,17 @@ void check_corner(volatile motor_t* motor)
 		{
 			case C90:
 			{
-				if (motor->pulse_count>C90)
-				{
-					motor->rpm = 0;
-					motor->corner = C0;
-				}
+				check_corner(C90);
 			}
 			break;
 			case C45:
 			{
-				if (motor->pulse_count>C45)
-				{
-					motor->rpm = 0;
-					motor->corner = C0;
-				}
+				check_corner(C45)
 			}
 			break;
 			case CIRCLE_RADIUS:
 			{
-				if (motor->pulse_count>CIRCLE_RADIUS)
-				{
-					motor->rpm = 0;
-					motor->corner = C0;
-				}
+				check_corner(CIRCLE_RADIUS)
 			}
 			break;
 			default:
@@ -184,7 +174,7 @@ void check_corner(volatile motor_t* motor)
  * 
  * \return void
  */
-void set_corner(int16_t rpm, corner_t corner, direction_t d)
+void set_movement(int16_t rpm, corner_t corner, direction_t d)
 {
 	switch (d)
 	{
@@ -235,7 +225,7 @@ void set_corner(int16_t rpm, corner_t corner, direction_t d)
  * 
  * \return void
  */
-void set_corner_task(task_t *task)
+void set_movement_task(task_t *task)
 {
 	static corner_t temp_corner= C0;
 	switch (task->data.u8[2])
@@ -253,7 +243,7 @@ void set_corner_task(task_t *task)
 		temp_corner = C0;
 		break;
 	}
-	set_corner(task->data.u8[3],temp_corner,task->data.u8[1]);
+	set_movement(task->data.u8[3],temp_corner,task->data.u8[1]);
 }
 
 /**
@@ -285,8 +275,8 @@ void motor_handler(void)
 		r_motor.ref_pulses = r_motor.rpm / 16;
 		last_r_rpm = r_motor.rpm;
 	}
-	check_corner(&l_motor);
-	check_corner(&r_motor);
+	check_movement(&l_motor);
+	check_movement(&r_motor);
 	if (status.system.circle == true)//TODO: maybe it should be called from a state
 	{
 		do_cirecle();
@@ -351,9 +341,9 @@ void do_cirecle(void)
 			if(do_once)
 			{
 				do_once=false;
-				set_corner(100,CIRCLE_RADIUS,FORWARD);
+				set_movement(100,CIRCLE_RADIUS,FORWARD);
 			}
-			if (l_motor.corner == C0&&r_motor.corner==C0)
+			if (movement_finished())
 			{
 				do_once = true;
 				c_state=FIRST_DELAY;
@@ -370,9 +360,9 @@ void do_cirecle(void)
 			if (do_once)
 			{
 				do_once = false;
-				set_corner(50,C90,LEFT);
+				set_movement(50,C90,LEFT);
 			}
-			if (l_motor.corner == C0&&r_motor.corner==C0)
+			if (movement_finished())
 			{
 				do_once=true;
 				c_state=SECOND_DELAY;
@@ -414,9 +404,9 @@ void do_cirecle(void)
 			if(do_once)
 			{
 				do_once=false;
-				set_corner(50,C90,RIGHT);
+				set_movement(50,C90,RIGHT);
 			}
-			if (l_motor.corner == C0&&r_motor.corner==C0)
+			if (movement_finished())
 			{
 				do_once=true;
 				c_state=FORTH_DELAY;

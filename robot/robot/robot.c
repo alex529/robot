@@ -177,11 +177,11 @@ int main(void)
   				send_sensor_values();
   			}
 
-// 			if (state_changed||new_data_available||tmr_exp(&state_timer))//will be called every 20 milliseconds or the smallest interval
-// 			{
-// 				state_changed=false;
+			if (state_changed||new_data_available||tmr_exp(&state_timer))//can be further optimised
+			{
+ 				state_changed=false;
 				(*control)();
-//			}
+			}
 		}
 		
 		

@@ -40,19 +40,19 @@
 #define set_state(next_state){state_changed=true;control=&next_state;}//TODO: this will not work yet
 
 //TODO use static qualifiers and put the timers inside the function smaller scope better practice
-timer_t state_find_track_sensor_blackout_timer;
-timer_t state_wait_before_corner_timer;
-//timer_t state_approach_corner_timer; // to be deleted
-timer_t state_turn_after_found_corner_timer;
-//timer_t state_go_ahead_after_turn_timer; // to be deleted
-timer_t state_go_a_bit_more_timer;
-timer_t state_second_left_turn_timer;
-timer_t state_second_go_ahead_timer; // to be deleted
-timer_t state_second_go_a_bit_more_timer;
-timer_t state_third_left_turn_timer;
-//timer_t state_third_go_ahead_timer; //to be deleted
-timer_t state_right_turn_timer;
-//timer_t state_last_go_ahead_timer; //to be deleted
+// timer_t state_find_track_sensor_blackout_timer;
+// timer_t state_wait_before_corner_timer;
+// //timer_t state_approach_corner_timer; // to be deleted
+// timer_t state_turn_after_found_corner_timer;
+// //timer_t state_go_ahead_after_turn_timer; // to be deleted
+// timer_t state_go_a_bit_more_timer;
+// timer_t state_second_left_turn_timer;
+// timer_t state_second_go_ahead_timer; // to be deleted
+// timer_t state_second_go_a_bit_more_timer;
+// timer_t state_third_left_turn_timer;
+// //timer_t state_third_go_ahead_timer; //to be deleted
+// timer_t state_right_turn_timer;
+// //timer_t state_last_go_ahead_timer; //to be deleted
 timer_t state_timer;
 //TODO: ask if it jumps from one state to another without reinitializing the timers
 
@@ -89,10 +89,10 @@ void state_find_track_control_logic() {
 		l_motor.rpm = 100;
 		r_motor.rpm = 100;
 		state_find_track_data.exp = false;
-		tmr_start(&state_find_track_sensor_blackout_timer,STATE_FIND_TRACK_SENSOR_BLACKOUT_INTERVAL); 
+		tmr_start(&state_timer,STATE_FIND_TRACK_SENSOR_BLACKOUT_INTERVAL); 
 	}
 	
-	if (state_find_track_data.exp == true || tmr_exp(&state_find_track_sensor_blackout_timer)){
+	if (state_find_track_data.exp == true || tmr_exp(&state_timer)){
 		state_find_track_data.exp = true;
 		read_switches();
 		uint8_t sensor_value = 0;//led.array;
@@ -129,11 +129,11 @@ void state_wait_before_corner_logic() {
 		set_m_backward()
 		l_motor.rpm = 0;
 		r_motor.rpm = 0;
-		tmr_start(&state_wait_before_corner_timer,STATE_WAIT_BEFORE_CORNER_INTERVAL);
+		tmr_start(&state_timer,STATE_WAIT_BEFORE_CORNER_INTERVAL);
 		return;
 	}
 	
-	if (tmr_exp(&state_wait_before_corner_timer)){
+	if (tmr_exp(&state_timer)){
 		set_state(state_approach_corner_logic);
 		state_approach_corner_data.not_first_run = false;
 		return;
@@ -171,14 +171,14 @@ void state_turn_after_found_corner_logic() {
 		state_turn_after_found_corner_data.not_first_run = true;
 		task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_TURN_AFTER_FOUND_CORNER};
 		add_task(&system_state);
-		tmr_start(&state_turn_after_found_corner_timer,STATE_TURN_AFTER_FOUND_CORNER_TURNING_INTERVAL);
+		tmr_start(&state_timer,STATE_TURN_AFTER_FOUND_CORNER_TURNING_INTERVAL);
 		set_m_forward()
 		l_motor.rpm = 100;
 		r_motor.rpm = 0;
 		return;
 	}
 	
-	if (tmr_exp(&state_turn_after_found_corner_timer)){
+	if (tmr_exp(&state_timer)){
 		set_m_backward()
 		r_motor.rpm = 0;
 		l_motor.rpm = 0;
@@ -219,14 +219,14 @@ void state_go_a_bit_more_logic() {
 			state_go_a_bit_more_data.not_first_run = true;
 			task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_GO_A_BIT_MORE};
 			add_task(&system_state);
-			tmr_start(&state_go_a_bit_more_timer,STATE_GO_A_BIT_MORE_INTERVAL);
+			tmr_start(&state_timer,STATE_GO_A_BIT_MORE_INTERVAL);
 			set_m_forward()
 			r_motor.rpm = 100;
 			l_motor.rpm = 100;
 			return;
 		}
 		
-		if (tmr_exp(&state_go_a_bit_more_timer)){
+		if (tmr_exp(&state_timer)){
 			set_m_backward()
 			r_motor.rpm = 0;
 			l_motor.rpm = 0;
@@ -241,14 +241,14 @@ void state_second_left_turn_logic() {
 			state_second_left_turn_data.not_first_run = true;
 			task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_SECOND_LEFT_TURN};
 			add_task(&system_state);
-			tmr_start(&state_second_left_turn_timer,STATE_SECOND_LEFT_TURN_INTERVAL);
+			tmr_start(&state_timer,STATE_SECOND_LEFT_TURN_INTERVAL);
 			set_m_forward()
 			r_motor.rpm = 100;
 			l_motor.rpm = 0;
 			return;
 		}
 		
-		if (tmr_exp(&state_second_left_turn_timer)){
+		if (tmr_exp(&state_timer)){
 			set_m_backward()
 			r_motor.rpm = 0;
 			l_motor.rpm = 0;
@@ -262,7 +262,7 @@ void state_second_go_ahead_logic() {
 		if (state_second_go_ahead_data.not_first_run == false){
 			state_second_go_ahead_data.not_first_run = true;
 			task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_SECOND_GO_AHEAD};
-			tmr_start(&state_second_go_ahead_timer,STATE_SECOND_GO_AHEAD_INTERVAL);
+			tmr_start(&state_timer,STATE_SECOND_GO_AHEAD_INTERVAL);
 			add_task(&system_state);
 			set_m_forward()
 			r_motor.rpm = 100;
@@ -270,7 +270,7 @@ void state_second_go_ahead_logic() {
 			return;
 		}
 		
-	if (tmr_exp(&state_second_go_ahead_timer)){
+	if (tmr_exp(&state_timer)){
 			set_m_backward()
 			r_motor.rpm = 0;
 			l_motor.rpm = 0;
@@ -285,14 +285,14 @@ void state_second_go_a_bit_more_logic() {
 			state_second_go_a_bit_more_data.not_first_run = true;
 			task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_SECOND_GO_A_BIT_MORE};
 			add_task(&system_state);
-			tmr_start(&state_second_go_a_bit_more_timer,STATE_SECOND_GO_A_BIT_MORE_INTERVAL);
+			tmr_start(&state_timer,STATE_SECOND_GO_A_BIT_MORE_INTERVAL);
 			set_m_forward()
 			r_motor.rpm = 100;
 			l_motor.rpm = 100;
 			return;
 		}
 		
-		if (tmr_exp(&state_second_go_a_bit_more_timer)){
+		if (tmr_exp(&state_timer)){
 			set_m_backward()
 			r_motor.rpm = 0;
 			l_motor.rpm = 0;
@@ -307,14 +307,14 @@ void state_third_left_turn_logic() {
 			state_third_left_turn_data.not_first_run = true;
 			task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_THIRD_LEFT_TURN};
 			add_task(&system_state);
-			tmr_start(&state_third_left_turn_timer,STATE_THIRD_LEFT_TURN_INTERVAL);
+			tmr_start(&state_timer,STATE_THIRD_LEFT_TURN_INTERVAL);
 			set_m_forward()
 			r_motor.rpm = 100;
 			l_motor.rpm = 0;
 			return;
 		}
 		
-		if (tmr_exp(&state_third_left_turn_timer)){
+		if (tmr_exp(&state_timer)){
 			set_m_backward()
 			r_motor.rpm = 0;
 			l_motor.rpm = 0;
@@ -355,14 +355,14 @@ void state_right_turn_logic() {
 			state_right_turn_data.not_first_run = true;
 			task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_RIGHT_TURN};
 			add_task(&system_state);
-			tmr_start(&state_right_turn_timer,STATE_RIGHT_TURN_INTERVAL);
+			tmr_start(&state_timer,STATE_RIGHT_TURN_INTERVAL);
 			set_m_forward()
 			r_motor.rpm = 0;
 			l_motor.rpm = 100;
 			return;
 		}
 		
-		if (tmr_exp(&state_right_turn_timer)){
+		if (tmr_exp(&state_timer)){
 			set_m_backward()
 			r_motor.rpm = 0;
 			l_motor.rpm = 0;
