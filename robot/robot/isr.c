@@ -135,8 +135,11 @@ ISR(TIMER1_COMPA_vect)
 	static int16_t l_m,r_m;
 	static int16_t l_error, r_error;
 	
+	toggle_led();
+	
 	if (++pulse_timer>7)//optimized for pid
 	{
+		toggle_led1();
 		pulse_timer = 0;
 		
 		l_motor.error = l_motor.ref_pulses - p_l;

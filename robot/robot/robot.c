@@ -57,7 +57,9 @@ int main(void)
 	bool run_motor				= false;
 	
 	DDRB|=(1<<PB7);
-	led_off();
+	DDRA|=(1<<PA1);
+	DDRA|=(1<<PA0);
+	//led_off();
 	
 	status.byte[0]=0;
 	USART_init();
@@ -65,6 +67,11 @@ int main(void)
 	recive_task_init();
 	motors_init();
 	
+	DDRB|=(1<<PB7);
+	DDRA|=(1<<PA1);
+	DDRA|=(1<<PA0);
+	led_on1();
+	led_on();
 	sei();
 	
 	while(1)
