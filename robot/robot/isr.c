@@ -166,6 +166,10 @@ ISR(TIMER1_COMPA_vect)
 				l_m=0;
 			}
 			set_left_m(l_m);
+			if (l_motor.error<0)
+			{
+				set_ld();
+			}
 			if(l_motor.ref_pulses == 0)
 			{
 				if(l_motor.error!=0)
@@ -221,6 +225,10 @@ ISR(TIMER1_COMPA_vect)
 				r_m=0;
 			}
 			set_right_m(r_m);
+			if (r_motor.error<0)
+			{
+				set_rd();
+			}
 			if (r_motor.ref_pulses == 0)
 			{
 				if(r_motor.error!=0)
