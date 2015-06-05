@@ -16,6 +16,7 @@
 #include "usart.h"
 #include "com_prot.h"
 #include "motor.h"
+#include "led.h"
 
 
 
@@ -69,7 +70,9 @@ void stop(task_t *task)
 */
 void ping(void)
 {
-	task_t ping = {.data.command = PING, .data.value = get_task_number()};	
+	
+	read_switches();
+	task_t ping = {.data.command = PING, .data.value = led.array/*get_task_number()*/};	
 	add_task(&ping);
 }
 

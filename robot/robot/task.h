@@ -39,9 +39,11 @@ typedef enum
 	PID_ERROR=40,						//0x28
 	PID_KP=41,							//0x29
 	PID_KD=42,							//0x2A
-	PID_KI=43,							//0x2B
-	PID=44,								//0x2C
-	PID_INT=45,							//0x2D
+	PID_L_KP=43,						//0x2B
+	PID_L_KI=44,						//0x2C
+	PID_L_KD=45,						//0x2D
+	PID=46,								//0x2E
+	PID_INT=47,							//0x2F
 		
 	ADC1=60,							//0x3C
 	ADC_PI_ERROR=61,					//0x3D

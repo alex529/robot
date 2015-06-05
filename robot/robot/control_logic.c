@@ -85,7 +85,7 @@ void state_find_track_control_logic() {
 		state_find_track_data.not_first_run = true;
 		task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_IDLE};
 		add_task(&system_state);
-		set_m_forward()
+		set_m_forward();
 		l_motor.rpm = 100;
 		r_motor.rpm = 100;
 		state_find_track_data.exp = false;
@@ -108,7 +108,7 @@ void state_find_track_control_logic() {
 void state_follow_track_1_control_logic() { //TODO: does it need to be called more than once
 		task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=2};
 		add_task(&system_state);
-		set_m_backward()
+		set_m_backward();
 		l_motor.rpm = 0;
 		r_motor.rpm = 0;
 }

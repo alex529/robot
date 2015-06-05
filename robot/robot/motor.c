@@ -121,8 +121,12 @@ void init_pwm(void){
 	TCCR0 |= (1 << WGM00)|(1 << COM01)|(1 << WGM01)|(1 << CS00); //fast pwm ,64 prescalar, 8 bit
 	TCCR2 |= (1 << WGM20)|(1 << WGM21)|(1 << COM21)|(1 << CS20); //fast pwm, 64 prescalar, 8 bit
 	
-	DDRB |= (1 << PB3);
-	DDRD |= (1 << PD7);
+	set_pin_as_output(B,PB3);
+	set_pin_as_output(D,PD7);
+	set_pin_as_output(C,PC0);
+	set_pin_as_output(D,PD4);
+	set_pin_as_output(D,PD5);
+	set_pin_as_output(D,PD6);
 }
 
 

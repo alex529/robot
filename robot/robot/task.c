@@ -19,7 +19,8 @@
 #include "motor.h"
 #include "isr.h"
 #include "take_over.h"
-uint8_t task_count=0;
+#include "led.h"
+static uint8_t task_count=0;
 
 task_function_ptr do_task[FUNCTION_POINTER_SIZE];
 
@@ -57,10 +58,12 @@ void recive_task_init(void)
 	do_task[MOTOR_CIRCLE]	= &start_circle;
 	do_task[MOTOR_CIRCLE_TIME]	= &set_circle_time;
 	
+	do_task[PID_KP]			= &set_Kp;
  	do_task[PID_KD]			= &set_Kd;
-// 	do_task[PID_KI]			= &set_Ki;
- 	do_task[PID_KP]			= &set_Kp;
-// 	do_task[PID]			= &set_pid;
+ 	do_task[PID_L_KP]			= &set_l_Kp;
+ 	do_task[PID_L_KD]			= &set_l_Kd;
+ 	do_task[PID_L_KI]			= &set_l_Ki;
+	do_task[PID]			= &set_pid;
 	do_task[PID_INT]		= &set_pid_int;
 	
  	do_task[TAKE_OVER]		= &take_over_command;
