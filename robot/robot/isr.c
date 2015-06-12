@@ -18,8 +18,8 @@
 #include "motor.h"
 #include "adc.h"
 
-#define BREAK_COUNT 20
-#define BREAK_FORCE 15
+#define BREAK_COUNT 10
+#define BREAK_FORCE 255
 
 //#define Kp 110
 uint8_t Kp = 4;
@@ -30,12 +30,12 @@ uint8_t Kd = 65;
 #define aplie_Kp(x) (((x)*Kp))
 
 /**
- * \brief  Real-time motor Kp adjustments  has to be placed in data.u8[3]
- * 
- * \param task
- * 
- * \return void
- */
+* \brief  Real-time motor Kp adjustments  has to be placed in data.u8[3]
+*
+* \param task
+*
+* \return void
+*/
 void set_Kp(task_t *task)
 {
 	Kp = task->data.u8[3];
@@ -44,12 +44,12 @@ void set_Kp(task_t *task)
 	add_task(&pk_task);
 }
 /**
- * \brief Real-time motor Kd adjustments value will be divided by 64 has to be placed in data.u8[3]
- * 
- * \param task
- * 
- * \return void
- */
+* \brief Real-time motor Kd adjustments value will be divided by 64 has to be placed in data.u8[3]
+*
+* \param task
+*
+* \return void
+*/
 void set_Kd(task_t *task)
 {
 	Kd = task->data.u8[3];
@@ -150,6 +150,7 @@ ISR(TIMER1_COMPA_vect)
 	static uint8_t pulse_timer = 0,sys_timer = 0;
 	static int16_t l_m,r_m;
 	static int16_t l_error, r_error;
+	static bool do_once_l,do_once_r;
 	
 	if (++pulse_timer>7)// if happens to often can be increased up to 16ms
 	{
@@ -162,8 +163,9 @@ ISR(TIMER1_COMPA_vect)
 		p_r = 0;
 		p_l = 0;
 		
-		if (l_motor.breaking == OFF)
+		if(l_motor.ref_pulses!=0)
 		{
+			do_once_l = true;
 			if (l_motor.r_dir == FORWARD)
 			{
 				set_lf();
@@ -186,43 +188,50 @@ ISR(TIMER1_COMPA_vect)
 			{
 				set_ld();
 			}
-			if(l_motor.ref_pulses == 0)
-			{
-				if(l_motor.error!=0)
-				{
-					l_motor.breaking = ON;
-					l_motor.break_count = BREAK_COUNT;
-				}
-				else
-				{
-					set_ls();
-				}
-			}
 		}
 		else
 		{
-			if (--l_motor.break_count < 1)
+			if (do_once_l)
 			{
-				set_ls();
+				do_once_l = false;
+				l_motor.breaking = ON;
+				l_motor.break_count = BREAK_COUNT;
+				toggle_led();
 			}
-			else
+			if (l_motor.breaking == ON)
 			{
-				if (l_motor.m_dir == FORWARD)
+				if (l_motor.r_dir==FORWARD)
 				{
 					set_lb();
-					set_left_m(BREAK_FORCE);
 				}
 				else
 				{
 					set_lf();
-					set_left_m(BREAK_FORCE);
+				}
+				set_left_m(BREAK_FORCE);
+				if (--l_motor.break_count<1)
+				{
+					l_motor.breaking = OFF;
+					toggle_led();
+				}
+			}
+			else
+			{
+				set_ls();
+				if (l_motor.error!=0)
+				{
+					set_left_m(255);
+				}
+				else
+				{
+					set_left_m(0);
 				}
 			}
 		}
 		
-		if(r_motor.breaking == OFF)
+		if(r_motor.ref_pulses!=0)
 		{
-			
+			do_once_r = true;
 			if (r_motor.r_dir == FORWARD)
 			{
 				set_rf();
@@ -231,7 +240,7 @@ ISR(TIMER1_COMPA_vect)
 			{
 				set_rb();
 			}
-			r_m =get_right_m()+aplie_Kp(r_motor.error)+aplie_Kd(r_motor.error-r_error);
+			r_m=get_right_m()+aplie_Kp(r_motor.error)+aplie_Kd(r_motor.error-r_error);
 			if (r_m>255)
 			{
 				r_m=255;
@@ -245,36 +254,41 @@ ISR(TIMER1_COMPA_vect)
 			{
 				set_rd();
 			}
-			if (r_motor.ref_pulses == 0)
-			{
-				if(r_motor.error!=0)
-				{
-					r_motor.breaking = ON;
-					r_motor.break_count = BREAK_COUNT;
-				}
-				else
-				{
-					set_rs();
-				}
-			}
 		}
 		else
 		{
-			if (--r_motor.break_count < 1)
+			if (do_once_r)
 			{
-				set_rs();
+				do_once_r = false;
+				r_motor.breaking = ON;
+				r_motor.break_count = BREAK_COUNT;
 			}
-			else
+			if (r_motor.breaking == ON)
 			{
-				if (r_motor.m_dir == FORWARD)
+				if (r_motor.r_dir==FORWARD)
 				{
 					set_rb();
-					set_right_m(BREAK_FORCE);
 				}
 				else
 				{
 					set_rf();
-					set_right_m(BREAK_FORCE);
+				}
+				set_right_m(BREAK_FORCE);
+				if (--r_motor.break_count<1)
+				{
+					r_motor.breaking = OFF;
+				}
+			}
+			else
+			{
+				set_rs();
+				if (r_motor.error!=0)
+				{
+					set_right_m(255);
+				}
+				else
+				{
+					set_right_m(0);
 				}
 			}
 		}
@@ -321,14 +335,14 @@ ISR(INT1_vect){
 
 static u16_union adc_value;
 ISR(ADC_vect) {
-		
-	get_adc(adc_value);	
+	
+	get_adc(adc_value);
 	if (first_channel){
 		result0 = (adc_value.w * VSTEP) / 100;
 		setChannel(PINA1)
 		ADCSRA |= (1<<ADSC);
 		first_channel=false;
-	} else {
+		} else {
 		result1 = (adc_value.w * VSTEP) / 100;
 		conversionIsInProgress = false;
 		new_data_available = true;

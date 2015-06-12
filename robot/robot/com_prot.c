@@ -73,7 +73,7 @@ void ping(void)
 	
 	read_switches();
 	task_t ping = {.data.command = PING, .data.value = led.array/*get_task_number()*/};	
-	add_task(&ping);
+	//add_task(&ping);
 }
 
 

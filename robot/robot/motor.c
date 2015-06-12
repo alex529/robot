@@ -23,7 +23,7 @@
 
 
 /**
-* Sets external interrupt no 1 to fire on rising edge 
+* Sets external interrupt no 1 to fire on rising edge
 */
 #define set_int1_to_rising()	{MCUCR |= (1 << ISC11) | (1 << ISC10);}
 
@@ -33,7 +33,7 @@
 #define set_int1_to_falling()	{MCUCR &=  ~(1 << ISC10);}
 
 /**
-* Sets external interrupt no 0 to fire on rising edge 
+* Sets external interrupt no 0 to fire on rising edge
 */
 #define set_int0_to_rising()	{MCUCR |= (1 << ISC01) | (1 << ISC00);}
 
@@ -79,10 +79,10 @@ volatile motor_t l_motor, r_motor;
 */
 typedef enum
 {
-	PRE_DELAY,						
-	FORWARD_RADIUS,						
+	PRE_DELAY,
+	FORWARD_RADIUS,
 	FIRST_DELAY,
-	FIRST_CORNER,						
+	FIRST_CORNER,
 	SECOND_DELAY,
 	CIRCLE,
 	THIRD_DELAY,
@@ -117,9 +117,9 @@ void init_ext_int(void)
 * \return void
 */
 void init_pwm(void){
-
+// 
 	TCCR0 |= (1 << WGM00)|(1 << COM01)|(1 << WGM01)|(1 << CS00); //fast pwm ,64 prescalar, 8 bit
-	TCCR2 |= (1 << WGM20)|(1 << WGM21)|(1 << COM21)|(1 << CS20); //fast pwm, 64 prescalar, 8 bit
+ 	TCCR2 |= (1 << WGM20)|(1 << WGM21)|(1 << COM21)|(1 << CS20); //fast pwm, 64 prescalar, 8 bit
 	
 	set_pin_as_output(B,PB3);
 	set_pin_as_output(D,PD7);
@@ -132,12 +132,12 @@ void init_pwm(void){
 
 #define check_corner(corner_t_value){if(motor->pulse_count>corner_t_value){motor->rpm = 0;motor->corner = C0;}}
 /**
- * \brief  Checks if the motor finished the necessary corner
- * 
- * \param motor Used to specify a reference to the motor that needs to be checked
- * 
- * \return void
- */
+* \brief  Checks if the motor finished the necessary corner
+*
+* \param motor Used to specify a reference to the motor that needs to be checked
+*
+* \return void
+*/
 void check_movement(volatile motor_t* motor)
 {
 	if (motor->corner!=C0)
@@ -170,14 +170,14 @@ void check_movement(volatile motor_t* motor)
 }
 
 /**
- * \brief  Interface for making the robot turn in a specific direction, can be used to make the robot go in a direction for a specific distance
- * 
- * \param rpm Used to specify the motor speed 50 rpms has the best output
- * \param corner Used to specify the corner type
- * \param d Used to specify Used to specyfy the direction
- * 
- * \return void
- */
+* \brief  Interface for making the robot turn in a specific direction, can be used to make the robot go in a direction for a specific distance
+*
+* \param rpm Used to specify the motor speed 50 rpms has the best output
+* \param corner Used to specify the corner type
+* \param d Used to specify Used to specyfy the direction
+*
+* \return void
+*/
 void set_movement(int16_t rpm, corner_t corner, direction_t d)
 {
 	switch (d)
@@ -223,12 +223,12 @@ void set_movement(int16_t rpm, corner_t corner, direction_t d)
 
 
 /**
- * \brief  Wrapper around set_corner function to be used with the usart interface
- * 
- * \param task Used to specify a pointer to a specific received task.
- * 
- * \return void
- */
+* \brief  Wrapper around set_corner function to be used with the usart interface
+*
+* \param task Used to specify a pointer to a specific received task.
+*
+* \return void
+*/
 void set_movement_task(task_t *task)
 {
 	static corner_t temp_corner= C0;
@@ -251,12 +251,12 @@ void set_movement_task(task_t *task)
 }
 
 /**
- * \brief  Handles all the motor checking 
- * 
- * \param 
- * 
- * \return void
- */
+* \brief  Handles all the motor checking
+*
+* \param
+*
+* \return void
+*/
 void motor_handler(void)
 {
 	static int16_t last_l_rpm=0,last_r_rpm=0;
@@ -267,8 +267,12 @@ void motor_handler(void)
 		{
 			l_motor.rpm = MAX_RPM;
 		}
-		l_motor.ref_pulses = l_motor.rpm / 16;
+		else if (l_motor.rpm<1)
+		{
+			l_motor.rpm=0;
+		}
 		last_l_rpm = l_motor.rpm;
+		l_motor.ref_pulses = l_motor.rpm / 16;
 	}
 	if (last_r_rpm!=r_motor.rpm)
 	{
@@ -276,8 +280,12 @@ void motor_handler(void)
 		{
 			r_motor.rpm = MAX_RPM;
 		}
-		r_motor.ref_pulses = r_motor.rpm / 16;
+		else if (r_motor.rpm<1)
+		{
+			r_motor.rpm=0;
+		}
 		last_r_rpm = r_motor.rpm;
+		r_motor.ref_pulses = r_motor.rpm / 16;
 	}
 	check_movement(&l_motor);
 	check_movement(&r_motor);
@@ -289,12 +297,12 @@ void motor_handler(void)
 
 
 /**
- * \brief  sets the motor rpm acording to the data.w[0] data.w[1] int values should be pased if negative robot will go backwords
- * 
- * \param task Used to specify a pointer to a specific received task.
- * 
- * \return void
- */
+* \brief  sets the motor rpm acording to the data.w[0] data.w[1] int values should be pased if negative robot will go backwords
+*
+* \param task Used to specify a pointer to a specific received task.
+*
+* \return void
+*/
 void set_rpm(task_t *task)
 {
 	u32_union temp;
@@ -321,12 +329,12 @@ void set_rpm(task_t *task)
 
 uint16_t circle_time = 13500;
 /**
- * \brief  makes a circle with a radius of ~50cm
- * 
- * \param 
- * 
- * \return void
- */
+* \brief  makes a circle with a radius of ~50cm
+*
+* \param
+*
+* \return void
+*/
 void do_cirecle(void)
 {
 	// 	TODO: create a state so nobody fucks with the robot
@@ -431,12 +439,12 @@ void do_cirecle(void)
 
 
 /**
- * \brief  Starts the circle trick
- * 
- * \param task  Used to specify a pointer to a specific received task.
- * 
- * \return void
- */
+* \brief  Starts the circle trick
+*
+* \param task  Used to specify a pointer to a specific received task.
+*
+* \return void
+*/
 void start_circle(task_t *task)
 {
 	do_cirecle();
@@ -444,12 +452,12 @@ void start_circle(task_t *task)
 }
 
 /**
- * \brief Tunes the time that takes to complete the circle
- * 
- * \param task Used to specify a pointer to a specific received task. u8[3] represents a multiple of 100ms
- * 
- * \return void
- */
+* \brief Tunes the time that takes to complete the circle
+*
+* \param task Used to specify a pointer to a specific received task. u8[3] represents a multiple of 100ms
+*
+* \return void
+*/
 void set_circle_time(task_t *task)
 {
 	circle_time = task->data.u8[3]*100;
@@ -457,18 +465,18 @@ void set_circle_time(task_t *task)
 
 
 /**
- * \brief Initializes the motors
- * 
- * \param 
- * 
- * \return void
- */
+* \brief Initializes the motors
+*
+* \param
+*
+* \return void
+*/
 void motors_init(void)
 {
 	init_ext_int();
 	init_pwm();
 	set_l_m_forward()
 	set_r_m_forward()
-	l_motor.rpm=0;
-	r_motor.rpm=0;
+	l_motor.ref_rpm=0;
+	r_motor.ref_rpm=0;
 }

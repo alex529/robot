@@ -73,8 +73,9 @@ int main(void)
 	bool run_send_sensor		= false;
 	
 	
-	DDRB|=(1<<PB7);
+	LED_PIN_init();
 	led_off();
+	led_on();
 	
 	status.byte[0]=0;
 	adc_measurement_init();
@@ -152,7 +153,7 @@ int main(void)
 			{
 				run_motor = false;
 				motor_handler();
-				get_line_error();
+				//get_line_error();
 			}
 				
  			if (run_led)
