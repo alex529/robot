@@ -90,6 +90,7 @@ int main(void)
 	enable_features.send_sensor_values=false;
 	
 	control = &state_idle_control_logic;
+	status.system.connected = true;
 	
 	sei();
 	
@@ -97,6 +98,7 @@ int main(void)
 	{
 		if(system_tic == true) // 10 millisecond has passed
 		{
+			toggle_led();
 			system_tic = false;
 			if(--clock_timer == 0)
 			{
@@ -153,7 +155,7 @@ int main(void)
 			{
 				run_motor = false;
 				motor_handler();
-				//get_line_error();
+				get_line_error();
 			}
 				
  			if (run_led)

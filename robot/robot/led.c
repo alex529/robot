@@ -36,15 +36,15 @@
 // #define Ki 0
 // #define Kd 0
 
-static int16_t Kp=48, Ki=0, Kd=0;
+static int16_t Kp=8, Ki=0, Kd=16;
 
-#define aplie_Kd(x)(((x)*Kd)/8)
+#define aplie_Kd(x)(((x)*Kd)/2)
 #define aplie_Ki(x)(((x)*Ki))
 /*#define ERROR_STEP 50*/
 
 #define REF_RPM 129
 #define MAX_DEVIATION 100
-#define MAX_I_DEVIATION 100
+#define MAX_I_DEVIATION 40
 
 volatile led_t led;
 
@@ -65,8 +65,11 @@ void get_line_error(void)
 		switch (led.array)//- line on right +line on left
 		{
 			case 0b01100011 : //0
-			error = 0;
-			i_factor = 0;
+			{
+				error = 0;
+				i_factor = 0;
+				toggle_led();
+			}
 			break;
 			case 0b01100111 : //-1
 			error = -1;
@@ -93,25 +96,25 @@ void get_line_error(void)
 			error = 4;
 			break;
 			case 0b00011111: //-5
-			error = -5;
+			error = -7;
 			break;
 			case 0b01111100: //5
-			error = 5;
+			error = 7;
 			break;
 			case 0b00111111: //-6
-			error = -6;
+			error = -9;
 			break;
 			case 0b01111110: //6
-			error = 6;
+			error = 9;
 			break;
 			case 0b00000000:
-			error = 0;
-			i_factor = 0;
+// 			error = 0;
+// 			i_factor = 0;
 			
 			break;
 			case 0b01111111:
-			error = 0;
-			i_factor = 0;
+// 			error = 0;
+// 			i_factor = 0;
 			if (last_error==-6||last_error==6)
 			{
 				//TODO: add sate to go back
@@ -126,9 +129,8 @@ void get_line_error(void)
 			}
 			break;
 		}
-		toggle_led();
-		if (error!=last_error)
-		{
+// 		if (error!=last_error)
+// 		{
 			p_factor = error*Kp;
 			
 			i_factor +=error;
@@ -143,7 +145,7 @@ void get_line_error(void)
 
 			d_factor =aplie_Kd(error-last_error);
 			
-			pid=p_factor+aplie_Ki(i_factor)/*+d_factor*/;
+			pid=p_factor+aplie_Ki(i_factor)+d_factor;
 			
 			if (pid>MAX_DEVIATION)
 			{
@@ -153,21 +155,23 @@ void get_line_error(void)
 			{
 				pid= -MAX_DEVIATION;
 			}
-			if(error<0)//- line on right +line on left
-			{
-				r_motor.rpm = r_motor.ref_rpm + pid; //decrees
-				l_motor.rpm = l_motor.ref_rpm;
-				//l_motor.rpm = l_motor.ref_rpm -pid/2;
-			}
-			else
-			{
-				l_motor.rpm = l_motor.ref_rpm - pid;//decrees
-				r_motor.rpm = r_motor.ref_rpm;
-				//r_motor.rpm = r_motor.ref_rpm + pid/2;
-				
-			}
+// 			if(error<0)//- line on right +line on left
+// 			{
+// 				r_motor.rpm = 17;//r_motor.ref_rpm + pid; //decrees
+// 				l_motor.rpm = 100;//l_motor.ref_rpm;
+// 				//l_motor.rpm = l_motor.ref_rpm -pid/2;
+// 			}
+// 			else
+// 			{
+// 				l_motor.rpm = 17;//l_motor.ref_rpm - pid;//decrees
+// 				r_motor.rpm = 100;//r_motor.ref_rpm;
+// 				//r_motor.rpm = r_motor.ref_rpm + pid/2;
+// 				
+// 			}
+			l_motor.rpm = l_motor.ref_rpm - pid;
+			r_motor.rpm = r_motor.ref_rpm + pid;
 			
-	}
+	//}
 	last_error = error;
 		static uint8_t info_timer=10;//5*70ms = 350ms
 		if(--info_timer==0)
@@ -251,6 +255,6 @@ void led_init(void)
 	set_pin_as_input(A,4);
 	set_pin_as_input(A,5);
 	set_pin_as_input(B,0);
-	l_motor.ref_rpm=128;
-	r_motor.ref_rpm=128;
+	l_motor.ref_rpm=129;
+	r_motor.ref_rpm=129;
 }

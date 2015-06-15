@@ -20,6 +20,7 @@
 
 #define BREAK_COUNT 10
 #define BREAK_FORCE 255
+#define FAST_BRAKE -2
 
 //#define Kp 110
 uint8_t Kp = 4;
@@ -174,7 +175,7 @@ ISR(TIMER1_COMPA_vect)
 			{
 				set_lb();
 			}
-			l_m=get_left_m()+aplie_Kp(l_motor.error)+aplie_Kd(l_motor.error-l_error);
+			l_m+=aplie_Kp(l_motor.error)+aplie_Kd(l_motor.error-l_error);
 			if (l_m>255)
 			{
 				l_m=255;
@@ -184,19 +185,18 @@ ISR(TIMER1_COMPA_vect)
 				l_m=0;
 			}
 			set_left_m(l_m);
-			if (l_motor.error<0)
-			{
-				set_ld();
-			}
+ 			if (l_motor.error<0)
+ 			{
+ 				set_ld();
+ 			}
 		}
 		else
 		{
-			if (do_once_l)
+			if (do_once_l&&l_motor.error!=0)
 			{
 				do_once_l = false;
 				l_motor.breaking = ON;
 				l_motor.break_count = BREAK_COUNT;
-				toggle_led();
 			}
 			if (l_motor.breaking == ON)
 			{
@@ -212,7 +212,6 @@ ISR(TIMER1_COMPA_vect)
 				if (--l_motor.break_count<1)
 				{
 					l_motor.breaking = OFF;
-					toggle_led();
 				}
 			}
 			else
@@ -240,7 +239,7 @@ ISR(TIMER1_COMPA_vect)
 			{
 				set_rb();
 			}
-			r_m=get_right_m()+aplie_Kp(r_motor.error)+aplie_Kd(r_motor.error-r_error);
+			r_m+=aplie_Kp(r_motor.error)+aplie_Kd(r_motor.error-r_error);
 			if (r_m>255)
 			{
 				r_m=255;
@@ -250,14 +249,14 @@ ISR(TIMER1_COMPA_vect)
 				r_m=0;
 			}
 			set_right_m(r_m);
-			if (r_motor.error<0)
-			{
-				set_rd();
-			}
+ 			if (r_motor.error<0)
+ 			{
+ 				set_rd();
+ 			}
 		}
 		else
 		{
-			if (do_once_r)
+			if (do_once_r&&r_motor.error!=0)
 			{
 				do_once_r = false;
 				r_motor.breaking = ON;

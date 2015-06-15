@@ -117,9 +117,9 @@ void init_ext_int(void)
 * \return void
 */
 void init_pwm(void){
-// 
+	//
 	TCCR0 |= (1 << WGM00)|(1 << COM01)|(1 << WGM01)|(1 << CS00); //fast pwm ,64 prescalar, 8 bit
- 	TCCR2 |= (1 << WGM20)|(1 << WGM21)|(1 << COM21)|(1 << CS20); //fast pwm, 64 prescalar, 8 bit
+	TCCR2 |= (1 << WGM20)|(1 << WGM21)|(1 << COM21)|(1 << CS20); //fast pwm, 64 prescalar, 8 bit
 	
 	set_pin_as_output(B,PB3);
 	set_pin_as_output(D,PD7);
@@ -327,156 +327,156 @@ void set_rpm(task_t *task)
 	add_task(&motor3);
 }
 
-uint16_t circle_time = 13500;
-/**
-* \brief  makes a circle with a radius of ~50cm
-*
-* \param
-*
-* \return void
-*/
-void do_cirecle(void)
-{
-	// 	TODO: create a state so nobody fucks with the robot
-	static circle_state c_state = PRE_DELAY;
-	static bool do_once = true;
-	static timer_t delay;
-	switch (c_state)
+	uint16_t circle_time = 13500;
+	/**
+	* \brief  makes a circle with a radius of ~50cm
+	*
+	* \param
+	*
+	* \return void
+	*/
+	void do_cirecle(void)
 	{
-		case PRE_DELAY:
+		// 	TODO: create a state so nobody fucks with the robot
+		static circle_state c_state = PRE_DELAY;
+		static bool do_once = true;
+		static timer_t delay;
+		switch (c_state)
 		{
-			circle_delay(500,FORWARD_RADIUS);
-		}
-		break;
-		case FORWARD_RADIUS:
-		{
-			if(do_once)
+			case PRE_DELAY:
 			{
-				do_once=false;
-				set_movement(100,CIRCLE_RADIUS,FORWARD);
+				circle_delay(500,FORWARD_RADIUS);
 			}
-			if (movement_finished())
+			break;
+			case FORWARD_RADIUS:
 			{
-				do_once = true;
-				c_state=FIRST_DELAY;
+				if(do_once)
+				{
+					do_once=false;
+					set_movement(100,CIRCLE_RADIUS,FORWARD);
+				}
+				if (movement_finished())
+				{
+					do_once = true;
+					c_state=FIRST_DELAY;
+				}
+				
 			}
-			
-		}
-		case FIRST_DELAY:
-		{
-			circle_delay(500,FIRST_CORNER);
-		}
-		break;
-		case FIRST_CORNER:
-		{
-			if (do_once)
+			case FIRST_DELAY:
 			{
-				do_once = false;
-				set_movement(50,C90,LEFT);
+				circle_delay(500,FIRST_CORNER);
 			}
-			if (movement_finished())
+			break;
+			case FIRST_CORNER:
 			{
-				do_once=true;
-				c_state=SECOND_DELAY;
+				if (do_once)
+				{
+					do_once = false;
+					set_movement(50,C90,LEFT);
+				}
+				if (movement_finished())
+				{
+					do_once=true;
+					c_state=SECOND_DELAY;
+				}
 			}
-		}
-		break;
-		case SECOND_DELAY:
-		{
-			circle_delay(500,CIRCLE);
-		}
-		break;
-		case CIRCLE:
-		{
-			if (do_once)
+			break;
+			case SECOND_DELAY:
 			{
-				set_l_m_forward();
-				set_r_m_forward();
-				l_motor.rpm = 6*16+1;
-				r_motor.rpm = 8*16+1;
-				do_once=false;
-				tmr_start(&delay,circle_time);
+				circle_delay(500,CIRCLE);
 			}
-			if (tmr_exp(&delay))
+			break;
+			case CIRCLE:
 			{
-				l_motor.rpm = 0;
-				r_motor.rpm = 0;
-				c_state = THIRD_DELAY;
-				do_once=true;
+				if (do_once)
+				{
+					set_l_m_forward();
+					set_r_m_forward();
+					l_motor.rpm = 6*16+1;
+					r_motor.rpm = 8*16+1;
+					do_once=false;
+					tmr_start(&delay,circle_time);
+				}
+				if (tmr_exp(&delay))
+				{
+					l_motor.rpm = 0;
+					r_motor.rpm = 0;
+					c_state = THIRD_DELAY;
+					do_once=true;
+				}
 			}
-		}
-		break;
-		case THIRD_DELAY:
-		{
-			circle_delay(500,SECOND_CORNR);
-		}
-		break;
-		case SECOND_CORNR:
-		{
-			if(do_once)
+			break;
+			case THIRD_DELAY:
 			{
-				do_once=false;
-				set_movement(50,C90,RIGHT);
+				circle_delay(500,SECOND_CORNR);
 			}
-			if (movement_finished())
+			break;
+			case SECOND_CORNR:
 			{
-				do_once=true;
-				c_state=FORTH_DELAY;
+				if(do_once)
+				{
+					do_once=false;
+					set_movement(50,C90,RIGHT);
+				}
+				if (movement_finished())
+				{
+					do_once=true;
+					c_state=FORTH_DELAY;
+				}
 			}
+			break;
+			case FORTH_DELAY:
+			{
+				circle_delay(500,REINIT)
+			}
+			break;
+			default:
+			status.system.circle =false;
+			c_state = PRE_DELAY;
+			break;
 		}
-		break;
-		case FORTH_DELAY:
-		{
-			circle_delay(500,REINIT)
-		}
-		break;
-		default:
-		status.system.circle =false;
-		c_state = PRE_DELAY;
-		break;
 	}
-}
 
 
-/**
-* \brief  Starts the circle trick
-*
-* \param task  Used to specify a pointer to a specific received task.
-*
-* \return void
-*/
-void start_circle(task_t *task)
-{
-	do_cirecle();
-	status.system.circle =true;
-}
+	/**
+	* \brief  Starts the circle trick
+	*
+	* \param task  Used to specify a pointer to a specific received task.
+	*
+	* \return void
+	*/
+	void start_circle(task_t *task)
+	{
+		do_cirecle();
+		status.system.circle =true;
+	}
 
-/**
-* \brief Tunes the time that takes to complete the circle
-*
-* \param task Used to specify a pointer to a specific received task. u8[3] represents a multiple of 100ms
-*
-* \return void
-*/
-void set_circle_time(task_t *task)
-{
-	circle_time = task->data.u8[3]*100;
-}
+	/**
+	* \brief Tunes the time that takes to complete the circle
+	*
+	* \param task Used to specify a pointer to a specific received task. u8[3] represents a multiple of 100ms
+	*
+	* \return void
+	*/
+	void set_circle_time(task_t *task)
+	{
+		circle_time = task->data.u8[3]*100;
+	}
 
 
-/**
-* \brief Initializes the motors
-*
-* \param
-*
-* \return void
-*/
-void motors_init(void)
-{
-	init_ext_int();
-	init_pwm();
-	set_l_m_forward()
-	set_r_m_forward()
-	l_motor.ref_rpm=0;
-	r_motor.ref_rpm=0;
-}
+	/**
+	* \brief Initializes the motors
+	*
+	* \param
+	*
+	* \return void
+	*/
+	void motors_init(void)
+	{
+		init_ext_int();
+		init_pwm();
+		set_l_m_forward();
+		set_r_m_forward();
+		l_motor.ref_rpm=0;
+		r_motor.ref_rpm=0;
+	}
