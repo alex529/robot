@@ -36,13 +36,13 @@
 	#define set_lf()	{mot_left_port	|=(1<<mot_left_back); mot_left_port1 &=~(1<<mot_left_forw);l_motor.m_dir = BACKWARD;}
 	#define break_l(break_val){if(l_motor.m_dir == FORWARD){mot_left_port	 |=(1<<mot_left_back); mot_left_port1 &=~(1<<mot_left_forw);}else{mot_left_port1	|=(1<<mot_left_forw); mot_left_port &=~(1<<mot_left_back);}l_motor.breaking = ON;	set_left_m(break_val);}
 	#define set_ls()	{mot_left_port	|=(1<<mot_left_back); mot_left_port1 |=(1<<mot_left_forw);set_left_m(0);}
-	#define set_ld()	{mot_left_port	|=(1<<mot_left_back); mot_left_port1 |=(1<<mot_left_forw);}
+	#define set_ld()	{mot_left_port	|=(1<<mot_left_back); mot_left_port1 |=(1<<mot_left_forw);set_left_m(255);}
 
 	#define set_rb()	{mot_right_port	|=(1<<mot_right_forw); mot_right_port&=~(1<<mot_right_back);r_motor.m_dir = FORWARD;}
 	#define set_rf()	{mot_right_port |=(1<<mot_right_back); mot_right_port&=~(1<<mot_right_forw);r_motor.m_dir = BACKWARD;}
 	#define break_r(break_val){if(r_motor.m_dir == FORWARD){mot_right_port	 |=(1<<mot_right_back);mot_right_port&=~(1<<mot_right_forw);}else{mot_right_port	|=(1<<mot_right_forw);mot_right_port&=~(1<<mot_right_back);}r_motor.breaking = ON; set_right_m(break_val);}
 	#define set_rs()	{mot_right_port	|=(1<<mot_right_forw); mot_right_port|=(1<<mot_right_back);set_right_m(0);}
-	#define set_rd()	{mot_right_port	|=(1<<mot_right_forw); mot_right_port|=(1<<mot_right_back);}
+	#define set_rd()	{mot_right_port	|=(1<<mot_right_forw); mot_right_port|=(1<<mot_right_back);set_right_m(255);}
 #else
 	#define set_left_m(x)	{if(x>255){OCR2=255;}else {OCR2 = x;}}
 	#define set_right_m(x)	{if(x>255){OCR0=255;}else {OCR0 = x;}}

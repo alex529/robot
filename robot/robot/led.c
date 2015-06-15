@@ -96,16 +96,16 @@ void get_line_error(void)
 			error = 4;
 			break;
 			case 0b00011111: //-5
-			error = -7;
+			error = -5;
 			break;
 			case 0b01111100: //5
-			error = 7;
+			error = 5;
 			break;
 			case 0b00111111: //-6
-			error = -9;
+			error = -6;
 			break;
 			case 0b01111110: //6
-			error = 9;
+			error = 6;
 			break;
 			case 0b00000000:
 // 			error = 0;
