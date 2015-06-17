@@ -101,6 +101,7 @@ typedef enum
 	C90=380,						//0x00
 	CIRCLE_RADIUS = 1782,			//0x00
 	CIRCLE_CIRCUMFERENCE = 9523,
+	C_FIND_BIT_MORE = 100,
 } corner_t;
 
 typedef struct

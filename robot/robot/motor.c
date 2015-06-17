@@ -235,13 +235,16 @@ void set_movement_task(task_t *task)
 	switch (task->data.u8[2])
 	{
 		case 0:
-		temp_corner = C0;
+			temp_corner = C0;
 		break;
 		case 1:
-		temp_corner = C45;
+			temp_corner = C45;
 		break;
 		case 2:
-		temp_corner = C90;
+			temp_corner = C90;
+		break;
+		case 3:
+			temp_corner = C_FIND_BIT_MORE;
 		break;
 		default:
 		temp_corner = C0;

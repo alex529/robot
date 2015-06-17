@@ -18,6 +18,8 @@ typedef struct
 
 extern bool state_changed;
 extern volatile state_data_t state_find_track_data;
+extern volatile state_data_t state_find_track_go_a_bit_more_control_data;
+extern volatile state_data_t state_find_track_turn_left_control_data;
 extern volatile state_data_t state_wait_before_corner_data;
 extern volatile state_data_t state_approach_corner_data;
 extern volatile state_data_t state_turn_after_found_corner_data;
@@ -37,6 +39,8 @@ extern timer_t state_timer;
 
 void state_idle_control_logic();
 void state_find_track_control_logic();
+void state_find_track_go_a_bit_more_control_logic();
+void state_find_track_turn_left_control_logic();
 void state_follow_track_1_control_logic();
 void state_y_intersection_control_logic();
 void state_follow_track_2_control_logic();
@@ -55,6 +59,5 @@ void state_last_go_ahead_logic();
 void state_finish_logic();
 void state_take_over_control_logic();
 extern volatile void (*control)();
-
 
 #endif /* CONTROL_LOGIC_H_ */

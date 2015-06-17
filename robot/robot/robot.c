@@ -176,17 +176,17 @@ int main(void)
 //   				send_adc_value_to_pc();
 //   			}			
 // 		
-//  			if (run_send_sensor)
-//   			{
-//   				run_send_sensor = false;
-//   				send_sensor_values();
-//   			}
-// 
-// 			if (state_changed||new_data_available||tmr_exp(&state_timer))//can be further optimised
-// 			{
-//  				state_changed=false;
-// 				(*control)();
-//  			}
+ 			if (run_send_sensor)
+  			{
+  				run_send_sensor = false;
+  				send_sensor_values();
+  			}
+
+		//	if (state_changed||new_data_available||tmr_exp(&state_timer))//can be further optimised
+		//	{
+ 		//		state_changed=false;
+				(*control)();
+ 		//	}
 		}
 		
 		
