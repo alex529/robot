@@ -67,10 +67,10 @@
 	#define set_rs()	{mot_right_port	|=(1<<mot_right_forw);mot_right_port|=(1<<mot_right_back);r_motor.breaking = OFF;set_right_m(0);}
 #endif
 
-#define set_l_m_forward() {set_lf()	;l_motor.r_dir = FORWARD;}
-#define set_l_m_backward(){set_lb()	;l_motor.r_dir = BACKWARD;}
-#define set_r_m_forward() {set_rf()	;r_motor.r_dir = FORWARD;}
-#define set_r_m_backward(){set_rb()	;r_motor.r_dir = BACKWARD;}
+#define set_l_m_forward() {set_lf()	;l_motor.r_dir = BACKWARD;}
+#define set_l_m_backward(){set_lb()	;l_motor.r_dir = FORWARD;}
+#define set_r_m_forward() {set_rf()	;r_motor.r_dir = BACKWARD;}
+#define set_r_m_backward(){set_rb()	;r_motor.r_dir = FORWARD;}
 #define set_m_forward()	  {set_l_m_forward() ;set_r_m_forward();}
 #define set_m_backward()  {set_l_m_backward();set_r_m_backward();}	
 	
@@ -101,6 +101,7 @@ typedef enum
 	C90=380,						//0x00
 	CIRCLE_RADIUS = 1782,			//0x00
 	CIRCLE_CIRCUMFERENCE = 9523,
+	C_FIND_BIT_MORE		= 90
 } corner_t;
 
 typedef struct

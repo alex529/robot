@@ -37,6 +37,8 @@ extern timer_t state_timer;
 
 void state_idle_control_logic();
 void state_find_track_control_logic();
+void state_find_track_go_a_bit_more_control_logic();
+void state_find_track_turn_left_control_logic();
 void state_follow_track_1_control_logic();
 void state_y_intersection_control_logic();
 void state_follow_track_2_control_logic();

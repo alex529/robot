@@ -159,6 +159,11 @@ void check_movement(volatile motor_t* motor)
 				check_corner(CIRCLE_RADIUS)
 			}
 			break;
+			case C_FIND_BIT_MORE:
+			{
+				check_corner(C_FIND_BIT_MORE)
+			}
+			break;
 			default:
 			{
 				motor->rpm = 0;
@@ -242,6 +247,9 @@ void set_movement_task(task_t *task)
 		break;
 		case 2:
 		temp_corner = C90;
+		break;
+		case 3:
+		temp_corner = C_FIND_BIT_MORE;
 		break;
 		default:
 		temp_corner = C0;

@@ -83,9 +83,9 @@ void state_idle_control_logic() {
 void state_find_track_control_logic() {			
 	if (state_find_track_data.not_first_run == false){
 		state_find_track_data.not_first_run = true;
-		task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_IDLE};
+		task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_FIND_TRACK};
 		add_task(&system_state);
-		set_m_forward();
+		set_m_backward();
 		l_motor.rpm = 100;
 		r_motor.rpm = 100;
 		state_find_track_data.exp = false;
@@ -95,23 +95,36 @@ void state_find_track_control_logic() {
 	if (state_find_track_data.exp == true || tmr_exp(&state_timer)){
 		state_find_track_data.exp = true;
 		read_switches();
-		uint8_t sensor_value = 0;//led.array;
-		if ((sensor_value & 0x7e)!= 0)
+		uint8_t sensor_value = led.array;
+		if ((sensor_value & 0x3f) != 0x3f)
 		{
 			state_find_track_data.exp=false;
-			set_state(state_follow_track_1_control_logic);	
+			set_state(state_find_track_go_a_bit_more_control_logic);	
 		}
 		return;	
 	}
 }
 
-void state_follow_track_1_control_logic() { //TODO: does it need to be called more than once
-		task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=2};
-		add_task(&system_state);
-		set_m_backward();
+void state_find_track_go_a_bit_more_control_logic() {
+		l_motor.rpm = 0;
+		r_motor.rpm = 0;
+		set_movement(0x32,C_FIND_BIT_MORE,BACKWARD);
+}
+
+void state_find_track_turn_left_control_logic() {
 		l_motor.rpm = 0;
 		r_motor.rpm = 0;
 }
+
+void state_follow_track_1_control_logic() { //TODO: does it need to be called more than once
+		task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=2};
+		add_task(&system_state);
+		//set_m_backward();
+		
+		//TODO line following does not work as advertised
+		//status.system.start_line=1;
+
+		}
 
 void state_y_intersection_control_logic() {
 	
