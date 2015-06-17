@@ -294,16 +294,19 @@ void set_movement_task(task_t *task)
 	switch (task->data.u8[2])
 	{
 		case 0:
-		temp_corner = C0;
+			temp_corner = C0;
 		break;
 		case 1:
-		temp_corner = C45;
+			temp_corner = C45;
 		break;
 		case 2:
-		temp_corner = C90;
+			temp_corner = C90;
+		break;
+		case 3:
+			temp_corner = C_FIND_BIT_MORE;
 		break;
 		default:
-		temp_corner = C0;
+			temp_corner = C0;
 		break;
 	}
 	set_movement(task->data.u8[3],temp_corner,task->data.u8[1]);
@@ -391,7 +394,7 @@ void set_rpm(task_t *task)
 	add_task(&motor3);
 }
 
-	uint16_t circle_time = 7500;
+	uint16_t circle_time = 4400;
 
 	/**
 	* \brief Tunes the time that takes to complete the circle

@@ -19,7 +19,7 @@
 #include "adc.h"
 
 #define BREAK_COUNT 20
-#define BREAK_COUNT_C 9
+#define BREAK_COUNT_C 2
 #define BREAK_FORCE 255
 #define FAST_BRAKE -2
 
@@ -354,7 +354,8 @@ ISR(ADC_vect) {
 	get_adc(adc_value);
 	if (first_channel){
 		result0 = (adc_value.w * VSTEP) / 100;
-		setChannel(PINA1)
+		ADMUX&= 0xf8;
+		ADMUX|= 0x07;
 		ADCSRA |= (1<<ADSC);
 		first_channel=false;
 		} else {

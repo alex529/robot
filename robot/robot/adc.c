@@ -23,13 +23,14 @@ volatile bool first_channel;
 
 void adc_measurement_init() {
 	
-	/** setting AD7 as input */
-	DDRA&=~(1<<PINA0);
-	DDRA&=~(1<<PINA1);
+	/** setting as input */
+	DDRA&=~(1<<PINA6);
+	DDRA&=~(1<<PINA7);
 
 	/** selecting ref voltage to AVCC */
-	ADMUX&=~(1<<REFS1);
+	//ADMUX&=~(1<<REFS1);
 	ADMUX|=(1<<REFS0);
+	ADMUX|=(1<<REFS1);
 
 	/** enabling ADC */
 	ADCSRA|=(1<<ADEN);
@@ -49,7 +50,8 @@ void adc_measurement_init() {
 void measure() {
 	
 		conversionIsInProgress = true;
-		setChannel(PINA0);
+		ADMUX&= 0xf8;
+		ADMUX|= 0x06;
 		first_channel = true;
 		ADCSRA |= (1<<ADSC);		
 	

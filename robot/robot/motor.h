@@ -101,10 +101,12 @@ typedef enum
 	C90=480,
 	CIRCLE_RADIUS = 1082,
 	WALL_FORWARD = 2164,
-	WALL_1 = 1554,
-	WALL_2 = 2464,
-	WALL_3 = 1555,
-	WALL_4 = 2000,
+	C_FIND_BIT_MORE = 200,
+	// not used
+ 	WALL_1 = 1554,
+ 	WALL_2 = 2464,
+ 	WALL_3 = 1555,
+ 	WALL_4 = 2000,
 	CIRCLE_CIRCUMFERENCE = 9523,
 } corner_t;
 

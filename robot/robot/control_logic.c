@@ -57,6 +57,8 @@ timer_t state_timer;
 //TODO: ask if it jumps from one state to another without reinitializing the timers
 
 volatile state_data_t state_find_track_data;
+volatile state_data_t state_find_track_go_a_bit_more_control_data;
+volatile state_data_t state_find_track_turn_left_control_data;
 volatile state_data_t state_wait_before_corner_data;
 volatile state_data_t state_approach_corner_data;
 volatile state_data_t state_turn_after_found_corner_data;
@@ -82,6 +84,7 @@ void state_idle_control_logic() {
 
 void state_find_track_control_logic() {			
 	if (state_find_track_data.not_first_run == false){
+		status.system.start_line=false;
 		state_find_track_data.not_first_run = true;
 		task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_IDLE};
 		add_task(&system_state);
@@ -95,15 +98,47 @@ void state_find_track_control_logic() {
 	if (state_find_track_data.exp == true || tmr_exp(&state_timer)){
 		state_find_track_data.exp = true;
 		read_switches();
-		uint8_t sensor_value = 0;//led.array;
-		if ((sensor_value & 0x7e)!= 0)
+		uint8_t sensor_value = led.array;
+		if ((sensor_value & 0x3f)!= 0x3f)
 		{
 			state_find_track_data.exp=false;
-			set_state(state_follow_track_1_control_logic);	
+			state_find_track_go_a_bit_more_control_data.not_first_run=false;
+			set_state(state_find_track_go_a_bit_more_control_logic);
 		}
 		return;	
 	}
 }
+
+void state_find_track_go_a_bit_more_control_logic() {
+		if (state_find_track_go_a_bit_more_control_data.not_first_run == false){
+				state_find_track_go_a_bit_more_control_data.not_first_run = true;
+				task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_FIND_GO_A_BIT_MORE};
+				add_task(&system_state);
+				set_m_forward();
+				l_motor.rpm = 0;
+				r_motor.rpm = 0;
+				//set_movement(0x32,C_FIND_BIT_MORE,BACKWARD);
+				set_movement(0x32,C90,LEFT);
+		}
+		if (l_motor.corner==C0 && r_motor.corner==C0)
+		{
+			state_find_track_turn_left_control_data.not_first_run=false;
+			set_state(state_find_track_turn_left_control_logic);
+		}
+	
+}
+
+void state_find_track_turn_left_control_logic() {
+			if (state_find_track_go_a_bit_more_control_data.not_first_run == false){
+				state_find_track_go_a_bit_more_control_data.not_first_run = true;
+				task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_FIND_LEFT_TURN};
+				add_task(&system_state);
+				set_m_forward();
+				l_motor.rpm = 20;
+				r_motor.rpm = 20;
+		}
+}
+
 
 void state_follow_track_1_control_logic() { //TODO: does it need to be called more than once
 		task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=2};
