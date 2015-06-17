@@ -15,6 +15,7 @@
 */
 
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include "motor.h"
 #include "common.h"
 #include "task.h"
@@ -91,7 +92,31 @@ typedef enum
 	REINIT,
 } circle_state;
 
-
+/**
+* All states present in the circle trick
+*/
+typedef enum
+{
+	W_PRE_DELAY,
+	W_FORWARD,
+	W_DELAY_1,
+	W_FIRST_CORNER,
+	W_DELAY_2,
+	W_WALL_1,
+	W_DELAY_3,	
+	W_SECOND_CORNR,
+	W_DELAY_4,
+	W_WALL_2,
+	W_DELAY_5,
+	W_THIRD_CORNR,
+	W_DELAY_6,
+	W_WALL_3,
+	W_DELAY_7,
+	W_FORTH_CORNR,
+	W_DELAY_8,
+	W_WALL_4,
+	W_REINIT,
+} wall_state;
 
 
 
@@ -129,8 +154,17 @@ void init_pwm(void){
 	set_pin_as_output(D,PD6);
 }
 
-
-#define check_corner(corner_t_value){if(motor->pulse_count>corner_t_value){motor->rpm = 0;motor->corner = C0;}}
+#define check_corner(corner_t_value)\
+{\
+	if(motor->pulse_count>corner_t_value)\
+	{\
+		cli();\
+		motor->rpm = 0;\
+		motor->finished_corner=true;\
+		sei();\
+		motor->corner = C0;\
+	}\
+}
 /**
 * \brief  Checks if the motor finished the necessary corner
 *
@@ -157,6 +191,31 @@ void check_movement(volatile motor_t* motor)
 			case CIRCLE_RADIUS:
 			{
 				check_corner(CIRCLE_RADIUS)
+			}
+			break;
+			case WALL_FORWARD:
+			{
+				check_corner(WALL_FORWARD)
+			}
+			break;
+			case WALL_1:
+			{
+				check_corner(WALL_1)
+			}
+			break;
+			case WALL_2:
+			{
+				check_corner(WALL_2)
+			}
+			break;
+			case WALL_3:
+			{
+				check_corner(WALL_3)
+			}
+			break;
+			case WALL_4:
+			{
+				check_corner(WALL_4)
 			}
 			break;
 			default:
@@ -259,7 +318,7 @@ void set_movement_task(task_t *task)
 */
 void motor_handler(void)
 {
-	static int16_t last_l_rpm=0,last_r_rpm=0;
+	static int16_t last_l_rpm=1,last_r_rpm=1;
 	
 	if(last_l_rpm!=l_motor.rpm)
 	{
@@ -292,6 +351,11 @@ void motor_handler(void)
 	if (status.system.circle == true)//TODO: maybe it should be called from a state
 	{
 		do_cirecle();
+	}
+	if (status.system.wall == true)
+	{
+		
+		do_wall();
 	}
 }
 
@@ -327,7 +391,26 @@ void set_rpm(task_t *task)
 	add_task(&motor3);
 }
 
-	uint16_t circle_time = 13500;
+	uint16_t circle_time = 7500;
+
+	/**
+	* \brief Tunes the time that takes to complete the circle
+	*
+	* \param task Used to specify a pointer to a specific received task. u8[3] represents a multiple of 100ms
+	*
+	* \return void
+	*/
+	void set_circle_time(task_t *task)
+	{
+		circle_time = task->data.u8[3]*100;
+	}
+	static uint16_t L=7, R=15;
+
+	void set_corner_time(task_t *task)
+	{
+		R = task->data.u8[3];
+		L = task->data.u8[2];
+	}
 	/**
 	* \brief  makes a circle with a radius of ~50cm
 	*
@@ -345,7 +428,7 @@ void set_rpm(task_t *task)
 		{
 			case PRE_DELAY:
 			{
-				circle_delay(500,FORWARD_RADIUS);
+				circle_delay(250,FORWARD_RADIUS);
 			}
 			break;
 			case FORWARD_RADIUS:
@@ -353,7 +436,7 @@ void set_rpm(task_t *task)
 				if(do_once)
 				{
 					do_once=false;
-					set_movement(100,CIRCLE_RADIUS,FORWARD);
+					set_movement(180,CIRCLE_RADIUS,FORWARD);
 				}
 				if (movement_finished())
 				{
@@ -364,7 +447,7 @@ void set_rpm(task_t *task)
 			}
 			case FIRST_DELAY:
 			{
-				circle_delay(500,FIRST_CORNER);
+				circle_delay(250,FIRST_CORNER);
 			}
 			break;
 			case FIRST_CORNER:
@@ -372,7 +455,7 @@ void set_rpm(task_t *task)
 				if (do_once)
 				{
 					do_once = false;
-					set_movement(50,C90,LEFT);
+					set_movement(180,C90,LEFT);
 				}
 				if (movement_finished())
 				{
@@ -383,7 +466,7 @@ void set_rpm(task_t *task)
 			break;
 			case SECOND_DELAY:
 			{
-				circle_delay(500,CIRCLE);
+				circle_delay(250,CIRCLE);
 			}
 			break;
 			case CIRCLE:
@@ -392,8 +475,8 @@ void set_rpm(task_t *task)
 				{
 					set_l_m_forward();
 					set_r_m_forward();
-					l_motor.rpm = 6*16+1;
-					r_motor.rpm = 8*16+1;
+					l_motor.rpm = L*16+1;
+					r_motor.rpm = R*16+1;
 					do_once=false;
 					tmr_start(&delay,circle_time);
 				}
@@ -408,7 +491,7 @@ void set_rpm(task_t *task)
 			break;
 			case THIRD_DELAY:
 			{
-				circle_delay(500,SECOND_CORNR);
+				circle_delay(250,SECOND_CORNR);
 			}
 			break;
 			case SECOND_CORNR:
@@ -416,7 +499,7 @@ void set_rpm(task_t *task)
 				if(do_once)
 				{
 					do_once=false;
-					set_movement(50,C90,RIGHT);
+					set_movement(180,C90,RIGHT);
 				}
 				if (movement_finished())
 				{
@@ -427,7 +510,7 @@ void set_rpm(task_t *task)
 			break;
 			case FORTH_DELAY:
 			{
-				circle_delay(500,REINIT)
+				circle_delay(250,REINIT)
 			}
 			break;
 			default:
@@ -437,6 +520,199 @@ void set_rpm(task_t *task)
 		}
 	}
 
+
+	/**
+	* \brief  makes a circle with a radius of ~50cm
+	*
+	* \param
+	*
+	* \return void
+	*/
+	void do_wall(void)
+	{
+		// 	TODO: create a state so nobody fucks with the robot
+		static wall_state c_state = W_PRE_DELAY;
+		static bool do_once = true;
+		static timer_t delay;
+		switch (c_state)
+		{
+			case W_PRE_DELAY:
+			{
+				circle_delay(3000,FORWARD_RADIUS);
+			}
+			break;
+			case W_FORWARD:
+			{
+				if(do_once)
+				{
+					do_once=false;
+					set_movement(300,WALL_FORWARD,FORWARD);
+				}
+				if (movement_finished())
+				{
+					do_once = true;
+					c_state=W_DELAY_1;
+				}
+				
+			}
+			case W_DELAY_1:
+			{
+				circle_delay(250,W_FIRST_CORNER);
+			}
+			break;
+			case W_FIRST_CORNER:
+			{
+				if (do_once)
+				{
+					do_once = false;
+					set_movement(180,C90,RIGHT);
+				}
+				if (movement_finished())
+				{
+					do_once=true;
+					c_state=W_DELAY_2;
+				}
+			}
+			break;
+			case W_DELAY_2:
+			{
+				circle_delay(250,W_WALL_1);
+			}
+			break;
+			case W_WALL_1:
+			{				
+				if (do_once)
+				{
+					do_once = false;
+					set_movement(300,WALL_1,FORWARD);
+				}
+				if (movement_finished())
+				{
+					do_once=true;
+					c_state=W_DELAY_3;
+				}
+			}
+			break;
+			case W_DELAY_3:
+			{
+				circle_delay(250,W_SECOND_CORNR);
+			}
+			break;
+			case W_SECOND_CORNR:
+			{
+				if(do_once)
+				{
+					do_once=false;
+					set_movement(180,C90,LEFT);
+				}
+				if (movement_finished())
+				{
+					do_once=true;
+					c_state=W_DELAY_4;
+				}
+			}
+			break;
+			case W_DELAY_4:
+			{
+				circle_delay(250,W_WALL_2)
+			}
+			break;
+			case W_WALL_2:
+			{
+				if(do_once)
+				{
+					do_once=false;
+					set_movement(300,WALL_2,FORWARD);
+				}
+				if (movement_finished())
+				{
+					do_once=true;
+					c_state=W_DELAY_5;
+				}
+			}
+			break;
+			case W_DELAY_5:
+			{
+				circle_delay(250,W_THIRD_CORNR)
+			}
+			break;
+			case W_THIRD_CORNR:
+			{
+				if(do_once)
+				{
+					do_once=false;
+					set_movement(180,C90,LEFT);
+				}
+				if (movement_finished())
+				{
+					do_once=true;
+					c_state=W_DELAY_6;
+				}
+			}
+			break;
+			case W_DELAY_6:
+			{
+				circle_delay(250,W_WALL_3)
+			}
+			break;
+			case W_WALL_3:
+			{
+				if(do_once)
+				{
+					do_once=false;
+					set_movement(300,WALL_3,FORWARD);
+				}
+				if (movement_finished())
+				{
+					do_once=true;
+					c_state=W_DELAY_7;
+				}
+			}
+			break;
+			case W_DELAY_7:
+			{
+				circle_delay(250,W_FORTH_CORNR)
+			}
+			break;
+			case W_FORTH_CORNR:
+			{
+				if(do_once)
+				{
+					do_once=false;
+					set_movement(180,C90,RIGHT);
+				}
+				if (movement_finished())
+				{
+					do_once=true;
+					c_state=W_DELAY_8;
+				}
+			}
+			break;
+			case W_DELAY_8:
+			{
+				circle_delay(250,W_WALL_4)
+			}
+			break;
+			case W_WALL_4:
+			{
+				if(do_once)
+				{
+					do_once=false;
+					set_movement(300,WALL_4,FORWARD);
+				}
+				if (movement_finished())
+				{
+					do_once=true;
+					c_state=W_REINIT;
+				}
+			}
+			break;
+			default:
+			status.system.wall =false;
+			c_state = PRE_DELAY;
+			break;
+		}
+	}
 
 	/**
 	* \brief  Starts the circle trick
@@ -450,17 +726,18 @@ void set_rpm(task_t *task)
 		do_cirecle();
 		status.system.circle =true;
 	}
-
+	
 	/**
-	* \brief Tunes the time that takes to complete the circle
+	* \brief  Starts the circle trick
 	*
-	* \param task Used to specify a pointer to a specific received task. u8[3] represents a multiple of 100ms
+	* \param task  Used to specify a pointer to a specific received task.
 	*
 	* \return void
 	*/
-	void set_circle_time(task_t *task)
+	void start_wall(task_t *task)
 	{
-		circle_time = task->data.u8[3]*100;
+		do_wall();
+		status.system.wall =true;
 	}
 
 
@@ -479,4 +756,8 @@ void set_rpm(task_t *task)
 		set_r_m_forward();
 		l_motor.ref_rpm=0;
 		r_motor.ref_rpm=0;
+		l_motor.rpm=1;
+		r_motor.rpm=1;
+		l_motor.break_count=1;
+		r_motor.break_count=1;
 	}

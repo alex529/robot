@@ -32,14 +32,14 @@
 	#define mot_right_port	PORTD
 
 
-	#define set_lb()	{mot_left_port1	|=(1<<mot_left_forw); mot_left_port  &=~(1<<mot_left_back);l_motor.m_dir = FORWARD;}
-	#define set_lf()	{mot_left_port	|=(1<<mot_left_back); mot_left_port1 &=~(1<<mot_left_forw);l_motor.m_dir = BACKWARD;}
+	#define set_lf()	{mot_left_port1	|=(1<<mot_left_forw); mot_left_port  &=~(1<<mot_left_back);l_motor.m_dir = FORWARD;}
+	#define set_lb()	{mot_left_port	|=(1<<mot_left_back); mot_left_port1 &=~(1<<mot_left_forw);l_motor.m_dir = BACKWARD;}
 	#define break_l(break_val){if(l_motor.m_dir == FORWARD){mot_left_port	 |=(1<<mot_left_back); mot_left_port1 &=~(1<<mot_left_forw);}else{mot_left_port1	|=(1<<mot_left_forw); mot_left_port &=~(1<<mot_left_back);}l_motor.breaking = ON;	set_left_m(break_val);}
 	#define set_ls()	{mot_left_port	|=(1<<mot_left_back); mot_left_port1 |=(1<<mot_left_forw);set_left_m(0);}
 	#define set_ld()	{mot_left_port	|=(1<<mot_left_back); mot_left_port1 |=(1<<mot_left_forw);set_left_m(255);}
 
-	#define set_rb()	{mot_right_port	|=(1<<mot_right_forw); mot_right_port&=~(1<<mot_right_back);r_motor.m_dir = FORWARD;}
-	#define set_rf()	{mot_right_port |=(1<<mot_right_back); mot_right_port&=~(1<<mot_right_forw);r_motor.m_dir = BACKWARD;}
+	#define set_rf()	{mot_right_port	|=(1<<mot_right_forw); mot_right_port&=~(1<<mot_right_back);r_motor.m_dir = FORWARD;}
+	#define set_rb()	{mot_right_port |=(1<<mot_right_back); mot_right_port&=~(1<<mot_right_forw);r_motor.m_dir = BACKWARD;}
 	#define break_r(break_val){if(r_motor.m_dir == FORWARD){mot_right_port	 |=(1<<mot_right_back);mot_right_port&=~(1<<mot_right_forw);}else{mot_right_port	|=(1<<mot_right_forw);mot_right_port&=~(1<<mot_right_back);}r_motor.breaking = ON; set_right_m(break_val);}
 	#define set_rs()	{mot_right_port	|=(1<<mot_right_forw); mot_right_port|=(1<<mot_right_back);set_right_m(0);}
 	#define set_rd()	{mot_right_port	|=(1<<mot_right_forw); mot_right_port|=(1<<mot_right_back);set_right_m(255);}
@@ -78,7 +78,7 @@
 
 
 #define movement_finished() (l_motor.corner == C0&&r_motor.corner==C0)
-#define MAX_RPM 200
+#define MAX_RPM 400
 
 typedef enum
 {
@@ -96,10 +96,15 @@ typedef enum
 
 typedef enum
 {
-	C0=0,						//0x01
-	C45=180,						//0x01
-	C90=380,						//0x00
-	CIRCLE_RADIUS = 1782,			//0x00
+	C0=0,						
+	C45=180,						
+	C90=480,
+	CIRCLE_RADIUS = 1082,
+	WALL_FORWARD = 2164,
+	WALL_1 = 1554,
+	WALL_2 = 2464,
+	WALL_3 = 1555,
+	WALL_4 = 2000,
 	CIRCLE_CIRCUMFERENCE = 9523,
 } corner_t;
 
@@ -108,6 +113,8 @@ typedef struct
 	int8_t ref_pulses;
 	uint16_t pulse_count;
 	corner_t corner;
+	bool finished_corner;
+	bool	do_once;
 	int16_t error;
 	break_t breaking;
 	uint8_t break_count;
@@ -125,7 +132,10 @@ void set_movement_task(task_t *task);
 void motor_handler(void);
 void set_movement(int16_t rpm, corner_t corner, direction_t d);
 void start_circle(task_t *task);
+void start_wall(task_t *task);
 void set_circle_time(task_t *task);
 void do_cirecle(void);
+void do_wall(void);
+void set_corner_time(task_t *task);
 
 #endif /* MOTOR_H_ */

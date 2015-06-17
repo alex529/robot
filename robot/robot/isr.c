@@ -18,7 +18,8 @@
 #include "motor.h"
 #include "adc.h"
 
-#define BREAK_COUNT 10
+#define BREAK_COUNT 20
+#define BREAK_COUNT_C 9
 #define BREAK_FORCE 255
 #define FAST_BRAKE -2
 
@@ -151,7 +152,6 @@ ISR(TIMER1_COMPA_vect)
 	static uint8_t pulse_timer = 0,sys_timer = 0;
 	static int16_t l_m,r_m;
 	static int16_t l_error, r_error;
-	static bool do_once_l,do_once_r;
 	
 	if (++pulse_timer>7)// if happens to often can be increased up to 16ms
 	{
@@ -166,7 +166,7 @@ ISR(TIMER1_COMPA_vect)
 		
 		if(l_motor.ref_pulses!=0)
 		{
-			do_once_l = true;
+			l_motor.do_once = true;
 			if (l_motor.r_dir == FORWARD)
 			{
 				set_lf();
@@ -192,11 +192,19 @@ ISR(TIMER1_COMPA_vect)
 		}
 		else
 		{
-			if (do_once_l&&l_motor.error!=0)
+			if (l_motor.do_once&&l_motor.error!=0)
 			{
-				do_once_l = false;
+				l_motor.do_once = false;
 				l_motor.breaking = ON;
-				l_motor.break_count = BREAK_COUNT;
+				if (l_motor.finished_corner == true)
+				{
+					l_motor.finished_corner =false;
+					l_motor.break_count = BREAK_COUNT_C;
+				}
+				else
+				{
+					l_motor.break_count = BREAK_COUNT;
+				}
 			}
 			if (l_motor.breaking == ON)
 			{
@@ -230,7 +238,7 @@ ISR(TIMER1_COMPA_vect)
 		
 		if(r_motor.ref_pulses!=0)
 		{
-			do_once_r = true;
+			r_motor.do_once = true;
 			if (r_motor.r_dir == FORWARD)
 			{
 				set_rf();
@@ -256,11 +264,19 @@ ISR(TIMER1_COMPA_vect)
 		}
 		else
 		{
-			if (do_once_r&&r_motor.error!=0)
+			if (r_motor.do_once&&r_motor.error!=0)
 			{
-				do_once_r = false;
+				r_motor.do_once = false;
 				r_motor.breaking = ON;
-				r_motor.break_count = BREAK_COUNT;
+				if (r_motor.finished_corner == true)
+				{
+					r_motor.finished_corner =false;
+					r_motor.break_count = BREAK_COUNT_C;
+				}
+				else
+				{
+					r_motor.break_count = BREAK_COUNT;
+				}
 			}
 			if (r_motor.breaking == ON)
 			{

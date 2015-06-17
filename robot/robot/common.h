@@ -89,7 +89,8 @@ typedef union
 		
 		uint8_t start_line : 1;
 		
-		uint8_t not_used5 : 1;
+		uint8_t wall : 1;
+		
 		uint8_t not_used6 : 1;
 		uint8_t not_used7 : 1;
 	} system;

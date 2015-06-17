@@ -56,13 +56,19 @@ void recive_task_init(void)
 	do_task[MOTOR_RPM]		= &set_rpm;
 	do_task[MOTOR_CORNER]	= &set_movement_task;
 	do_task[MOTOR_CIRCLE]	= &start_circle;
+	do_task[MOTOR_WALL]	= &start_wall;
 	do_task[MOTOR_CIRCLE_TIME]	= &set_circle_time;
+	do_task[MOTOR_CORNER_TIME]		= &set_corner_time;
 	
 	do_task[PID_KP]			= &set_Kp;
  	do_task[PID_KD]			= &set_Kd;
  	do_task[PID_L_KP]		= &set_l_Kp;
  	do_task[PID_L_KD]		= &set_l_Kd;
  	do_task[PID_L_KI]		= &set_l_Ki;
+ 	do_task[PID_ERR4]		= &set_err4;
+ 	do_task[PID_ERR5]		= &set_err5;
+ 	do_task[PID_ERR6]		= &set_err6;
+ 	do_task[PID_ERRP1]		= &set_err_p1;
 	do_task[PID]			= &set_pid;
 	do_task[PID_INT]		= &set_pid_int;
 	

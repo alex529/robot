@@ -36,14 +36,15 @@
 // #define Ki 0
 // #define Kd 0
 
-static int16_t Kp=8, Ki=0, Kd=16;
+static int16_t Kp=24, Ki=0, Kd=0;
+static uint8_t err4=6, err5=9, err6=11;
 
 #define aplie_Kd(x)(((x)*Kd)/2)
 #define aplie_Ki(x)(((x)*Ki))
 /*#define ERROR_STEP 50*/
 
 #define REF_RPM 129
-#define MAX_DEVIATION 100
+#define MAX_DEVIATION 200
 #define MAX_I_DEVIATION 40
 
 volatile led_t led;
@@ -72,40 +73,40 @@ void get_line_error(void)
 			}
 			break;
 			case 0b01100111 : //-1
-			error = -1;
-			break;
-			case 0b0110011 : //1
 			error = 1;
 			break;
-			case 0b01000111 : //-2
-			error = -2;
+			case 0b01110011 : //1
+			error = -1;
 			break;
-			case 0b01110001 : //2
+			case 0b01000111 : //-2
 			error = 2;
 			break;
-			case 0b01001111 : //-3
-			error = -3;
+			case 0b01110001 : //2
+			error = -2;
 			break;
-			case 0b01111001: //3
+			case 0b01001111 : //-3
 			error = 3;
 			break;
+			case 0b01111001: //3
+			error = -3;
+			break;
 			case 0b00001111: //-4
-			error = -4;
+			error = err4;
 			break;
 			case 0b01111000: //4
-			error = 4;
+			error = -err4;
 			break;
 			case 0b00011111: //-5
-			error = -5;
+			error = err5;
 			break;
 			case 0b01111100: //5
-			error = 5;
+			error = -err5;
 			break;
 			case 0b00111111: //-6
-			error = -6;
+			error = err6;
 			break;
 			case 0b01111110: //6
-			error = 6;
+			error = -err6;
 			break;
 			case 0b00000000:
 // 			error = 0;
@@ -166,7 +167,6 @@ void get_line_error(void)
 // 				l_motor.rpm = 17;//l_motor.ref_rpm - pid;//decrees
 // 				r_motor.rpm = 100;//r_motor.ref_rpm;
 // 				//r_motor.rpm = r_motor.ref_rpm + pid/2;
-// 				
 // 			}
 			l_motor.rpm = l_motor.ref_rpm - pid;
 			r_motor.rpm = r_motor.ref_rpm + pid;
@@ -195,14 +195,13 @@ void send_sensor_values(void) {
 
 void start_line(task_t *task)
 {
-	status.system.start_line=task->data.u8[3];
 	if (task->data.u8[3]>0)
 	{
 		status.system.start_line=1;
-		l_motor.ref_rpm=task->data.u8[3];
-		r_motor.ref_rpm=task->data.u8[3];
-		l_motor.rpm=task->data.u8[3];
-		r_motor.rpm=task->data.u8[3];
+		l_motor.ref_rpm=task->data.u8[3]*2;
+		r_motor.ref_rpm=task->data.u8[3]*2;
+		l_motor.rpm=task->data.u8[3]*2;
+		r_motor.rpm=task->data.u8[3]*2;
 	}
 	else
 	{
@@ -222,13 +221,44 @@ void set_l_Kp(task_t *task)
 
 void set_l_Ki(task_t *task)
 {
-	Ki=task->data.value;
+	Ki=task->data.u8[3];
+	task_t led_info  = {.data.command = PID_L_KI, .data.value = Ki};add_task(&led_info);
 }
 
 void set_l_Kd(task_t *task)
 {
-	Kd=task->data.value;
+	Kd=task->data.u8[3];
+	task_t led_info  = {.data.command = PID_L_KD, .data.value = Kd};add_task(&led_info);
 }
+
+void set_err4(task_t *task)
+{
+	err4=task->data.u8[3];
+	task_t led_info  = {.data.command = PID_ERR4, .data.value = err4};add_task(&led_info);
+}
+
+void set_err5(task_t *task)
+{
+	err5=task->data.u8[3];
+	task_t led_info  = {.data.command = PID_ERR5, .data.value = err5};add_task(&led_info);
+}
+
+void set_err6(task_t *task)
+{
+	err6=task->data.u8[3];
+	task_t led_info  = {.data.command = PID_ERR6, .data.value = err6};add_task(&led_info);
+}
+
+void set_err_p1(task_t *task)
+{
+	err4++;
+	err5++;
+	err6++;
+	task_t led_info  = {.data.command = PID_ERR4, .data.value = err4};add_task(&led_info);
+	task_t led_info1  = {.data.command = PID_ERR5, .data.value = err5};add_task(&led_info);
+	task_t led_info2  = {.data.command = PID_ERR6, .data.value = err6};add_task(&led_info);
+}
+
 void set_pid(task_t *task)
 {
 	Kp=task->data.u8[0];

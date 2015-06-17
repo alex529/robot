@@ -35,6 +35,8 @@ typedef enum
 	MOTOR_CORNER=28,                    //0x1C
 	MOTOR_CIRCLE=29,                    //0x1D
 	MOTOR_CIRCLE_TIME=30,               //0x1E
+	MOTOR_CORNER_TIME=31,               //0x1F
+	MOTOR_WALL=32,						//0x20
 	
 	PID_ERROR=40,						//0x28
 	PID_KP=41,							//0x29
@@ -44,6 +46,10 @@ typedef enum
 	PID_L_KD=45,						//0x2D
 	PID=46,								//0x2E
 	PID_INT=47,							//0x2F
+	PID_ERR4=48,						//0x30
+	PID_ERR5=49,						//0x31
+	PID_ERR6=50,						//0x32
+	PID_ERRP1=51,						//0x33
 		
 	ADC1=60,							//0x3C
 	ADC_PI_ERROR=61,					//0x3D

@@ -36,6 +36,10 @@ void set_l_Kp(task_t *task);
 void set_l_Kd(task_t *task);
 void set_l_Ki(task_t *task);
 void set_pid(task_t *task);
+void set_err4(task_t *task);
+void set_err5(task_t *task);
+void set_err6(task_t *task);
+void set_err_p1(task_t *task);
 
 extern volatile led_t led;
 
