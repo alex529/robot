@@ -71,6 +71,7 @@ void recive_task_init(void)
  	do_task[PID_ERRP1]		= &set_err_p1;
 	do_task[PID]			= &set_pid;
 	do_task[PID_INT]		= &set_pid_int;
+	do_task[PID_START_T]	= &start_track;
 	
  	do_task[TAKE_OVER]		= &take_over_command;
  	do_task[GIVE_BACK_CONTROL] = &give_back_control_command;

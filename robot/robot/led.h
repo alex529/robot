@@ -40,6 +40,7 @@ void set_err4(task_t *task);
 void set_err5(task_t *task);
 void set_err6(task_t *task);
 void set_err_p1(task_t *task);
+void start_track(task_t *task);
 
 extern volatile led_t led;
 

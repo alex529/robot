@@ -50,6 +50,7 @@ typedef enum
 	PID_ERR5=49,						//0x31
 	PID_ERR6=50,						//0x32
 	PID_ERRP1=51,						//0x33
+	PID_START_T=52,						//0x34
 		
 	ADC1=60,							//0x3C
 	ADC_PI_ERROR=61,					//0x3D

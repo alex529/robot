@@ -80,30 +80,19 @@ void state_idle_control_logic() {
 	// left bank intentionally 
 }
 
-void state_find_track_control_logic() {			
+void state_find_track_control_logic() {
 	if (state_find_track_data.not_first_run == false){
 		state_find_track_data.not_first_run = true;
 		task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=STATE_IDLE};
 		add_task(&system_state);
 		set_m_forward();
-		l_motor.rpm = 100;
-		r_motor.rpm = 100;
+		l_motor.rpm = 400;
+		r_motor.rpm = 400;
 		state_find_track_data.exp = false;
-		tmr_start(&state_timer,STATE_FIND_TRACK_SENSOR_BLACKOUT_INTERVAL); 
-	}
-	
-	if (state_find_track_data.exp == true || tmr_exp(&state_timer)){
-		state_find_track_data.exp = true;
-		read_switches();
-		uint8_t sensor_value = 0;//led.array;
-		if ((sensor_value & 0x7e)!= 0)
-		{
-			state_find_track_data.exp=false;
-			set_state(state_follow_track_1_control_logic);	
-		}
-		return;	
+		tmr_start(&state_timer,STATE_FIND_TRACK_SENSOR_BLACKOUT_INTERVAL);
 	}
 }
+
 
 void state_follow_track_1_control_logic() { //TODO: does it need to be called more than once
 		task_t system_state = {.data.command = STATE_COMMAND, .data.timestamp=0, .data.value=2};

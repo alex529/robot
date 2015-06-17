@@ -165,6 +165,17 @@ void init_pwm(void){
 		motor->corner = C0;\
 	}\
 }
+
+#define check_move(corner_t_value)\
+{\
+	if(motor->pulse_count>corner_t_value)\
+	{\
+		cli();\
+		motor->rpm = 0;\
+		sei();\
+		motor->corner = C0;\
+	}\
+}
 /**
 * \brief  Checks if the motor finished the necessary corner
 *
@@ -195,27 +206,27 @@ void check_movement(volatile motor_t* motor)
 			break;
 			case WALL_FORWARD:
 			{
-				check_corner(WALL_FORWARD)
+				check_move(WALL_FORWARD)
 			}
 			break;
 			case WALL_1:
 			{
-				check_corner(WALL_1)
+				check_move(WALL_1)
 			}
 			break;
 			case WALL_2:
 			{
-				check_corner(WALL_2)
+				check_move(WALL_2)
 			}
 			break;
 			case WALL_3:
 			{
-				check_corner(WALL_3)
+				check_move(WALL_3)
 			}
 			break;
 			case WALL_4:
 			{
-				check_corner(WALL_4)
+				check_move(WALL_4)
 			}
 			break;
 			default:
@@ -391,7 +402,7 @@ void set_rpm(task_t *task)
 	add_task(&motor3);
 }
 
-	uint16_t circle_time = 7500;
+	uint16_t circle_time = 4400;
 
 	/**
 	* \brief Tunes the time that takes to complete the circle
@@ -521,6 +532,9 @@ void set_rpm(task_t *task)
 	}
 
 
+#define WALL_SPEED 300
+#define WALL_C_SPEED 140
+#define WALL_DELAY 350
 	/**
 	* \brief  makes a circle with a radius of ~50cm
 	*
@@ -546,7 +560,7 @@ void set_rpm(task_t *task)
 				if(do_once)
 				{
 					do_once=false;
-					set_movement(300,WALL_FORWARD,FORWARD);
+					set_movement(WALL_SPEED,WALL_FORWARD,FORWARD);
 				}
 				if (movement_finished())
 				{
@@ -557,7 +571,7 @@ void set_rpm(task_t *task)
 			}
 			case W_DELAY_1:
 			{
-				circle_delay(250,W_FIRST_CORNER);
+				circle_delay(WALL_DELAY,W_FIRST_CORNER);
 			}
 			break;
 			case W_FIRST_CORNER:
@@ -565,7 +579,7 @@ void set_rpm(task_t *task)
 				if (do_once)
 				{
 					do_once = false;
-					set_movement(180,C90,RIGHT);
+					set_movement(WALL_C_SPEED,C90,RIGHT);
 				}
 				if (movement_finished())
 				{
@@ -576,7 +590,7 @@ void set_rpm(task_t *task)
 			break;
 			case W_DELAY_2:
 			{
-				circle_delay(250,W_WALL_1);
+				circle_delay(WALL_DELAY,W_WALL_1);
 			}
 			break;
 			case W_WALL_1:
@@ -584,7 +598,7 @@ void set_rpm(task_t *task)
 				if (do_once)
 				{
 					do_once = false;
-					set_movement(300,WALL_1,FORWARD);
+					set_movement(WALL_SPEED,WALL_1,FORWARD);
 				}
 				if (movement_finished())
 				{
@@ -595,7 +609,7 @@ void set_rpm(task_t *task)
 			break;
 			case W_DELAY_3:
 			{
-				circle_delay(250,W_SECOND_CORNR);
+				circle_delay(WALL_DELAY,W_SECOND_CORNR);
 			}
 			break;
 			case W_SECOND_CORNR:
@@ -603,7 +617,7 @@ void set_rpm(task_t *task)
 				if(do_once)
 				{
 					do_once=false;
-					set_movement(180,C90,LEFT);
+					set_movement(WALL_C_SPEED,C90,LEFT);
 				}
 				if (movement_finished())
 				{
@@ -614,7 +628,7 @@ void set_rpm(task_t *task)
 			break;
 			case W_DELAY_4:
 			{
-				circle_delay(250,W_WALL_2)
+				circle_delay(WALL_DELAY,W_WALL_2)
 			}
 			break;
 			case W_WALL_2:
@@ -622,7 +636,7 @@ void set_rpm(task_t *task)
 				if(do_once)
 				{
 					do_once=false;
-					set_movement(300,WALL_2,FORWARD);
+					set_movement(WALL_SPEED,WALL_2,FORWARD);
 				}
 				if (movement_finished())
 				{
@@ -633,7 +647,7 @@ void set_rpm(task_t *task)
 			break;
 			case W_DELAY_5:
 			{
-				circle_delay(250,W_THIRD_CORNR)
+				circle_delay(WALL_DELAY,W_THIRD_CORNR)
 			}
 			break;
 			case W_THIRD_CORNR:
@@ -641,7 +655,7 @@ void set_rpm(task_t *task)
 				if(do_once)
 				{
 					do_once=false;
-					set_movement(180,C90,LEFT);
+					set_movement(WALL_C_SPEED,C90,LEFT);
 				}
 				if (movement_finished())
 				{
@@ -652,7 +666,7 @@ void set_rpm(task_t *task)
 			break;
 			case W_DELAY_6:
 			{
-				circle_delay(250,W_WALL_3)
+				circle_delay(WALL_DELAY,W_WALL_3)
 			}
 			break;
 			case W_WALL_3:
@@ -660,7 +674,7 @@ void set_rpm(task_t *task)
 				if(do_once)
 				{
 					do_once=false;
-					set_movement(300,WALL_3,FORWARD);
+					set_movement(WALL_SPEED,WALL_3,FORWARD);
 				}
 				if (movement_finished())
 				{
@@ -671,7 +685,7 @@ void set_rpm(task_t *task)
 			break;
 			case W_DELAY_7:
 			{
-				circle_delay(250,W_FORTH_CORNR)
+				circle_delay(WALL_DELAY,W_FORTH_CORNR)
 			}
 			break;
 			case W_FORTH_CORNR:
@@ -679,7 +693,7 @@ void set_rpm(task_t *task)
 				if(do_once)
 				{
 					do_once=false;
-					set_movement(180,C90,RIGHT);
+					set_movement(WALL_C_SPEED,C90,RIGHT);
 				}
 				if (movement_finished())
 				{
@@ -690,7 +704,7 @@ void set_rpm(task_t *task)
 			break;
 			case W_DELAY_8:
 			{
-				circle_delay(250,W_WALL_4)
+				circle_delay(WALL_DELAY,W_WALL_4)
 			}
 			break;
 			case W_WALL_4:
@@ -698,7 +712,7 @@ void set_rpm(task_t *task)
 				if(do_once)
 				{
 					do_once=false;
-					set_movement(300,WALL_4,FORWARD);
+					set_movement(WALL_SPEED,WALL_4,FORWARD);
 				}
 				if (movement_finished())
 				{

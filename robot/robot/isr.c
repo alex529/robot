@@ -18,8 +18,8 @@
 #include "motor.h"
 #include "adc.h"
 
-#define BREAK_COUNT 20
-#define BREAK_COUNT_C 9
+#define BREAK_COUNT 30
+#define BREAK_COUNT_C 11
 #define BREAK_FORCE 255
 #define FAST_BRAKE -2
 

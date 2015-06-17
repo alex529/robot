@@ -15,22 +15,17 @@
 #include "common.h"
 #include "control_logic.h"
 
-//TODO: check if this works
-#define read_switch(x)	(PINA & (1<<PA##x))
-#define SW0 read_switch(0)
-#define SW1 read_switch(1)
-#define SW2 read_switch(2)
-#define SW3 read_switch(3)
-#define SW4 read_switch(4)
-#define SW5 read_switch(5)
-#define SW6 read_switch(6)
-#define SW7 read_switch(7)
-
 #define send_led_info(){task_t led_info = {.data.command = LED, .data.value = led.array};add_task(&led_info);}
+#define send_state_info(){task_t sys_info = {.data.command = STATE_COMMAND, .data.value = sys};add_task(&sys_info);}
 #define send_pid(x){task_t pid_err = {.data.command = PID_ERROR, .data.value = x};add_task(&pid_err);}
 
 #define send_left_m(x) {task_t m_info = {.data.command = MOTOR_L, .data.value = l_motor.rpm};add_task(&m_info);}
 #define send_right_m(x){task_t m_info = {.data.command = MOTOR_R, .data.value = r_motor.rpm};add_task(&m_info);}
+
+#define clear_rpm(){l_motor.ref_rpm = 0;r_motor.ref_rpm = 0;l_motor.rpm = 0;r_motor.rpm = 0;}
+	
+#define state_delay(time,next_state){if (do_once){do_once=false;tmr_start(&delay,time);}if (tmr_exp(&delay)){c_state = next_state;do_once=true;}}
+
 
 // #define Kp 16
 // #define Ki 0
@@ -50,6 +45,28 @@ static uint8_t err4=6, err5=9, err6=11;
 volatile led_t led;
 
 
+typedef enum
+{
+	FIND_TRAK,
+	GO_TRACK,
+	FALLOW_TRACK1,
+	DO_CIRCLE,
+	FALLOW_TRACK2,
+	DO_WALL,
+	S_DELAY_1,
+	S_DELAY_2,
+	S_DELAY_3,
+	S_DELAY_4,
+	S_DELAY_5,
+	S_DELAY_6,
+	S_DELAY_7,
+	S_DELAY_8,
+	S_DELAY_9,
+	IDLE,
+} sys_state_t;
+
+sys_state_t sys = IDLE;
+
 /**
 * \brief  Returns the line error
 *
@@ -58,11 +75,18 @@ volatile led_t led;
 */
 void get_line_error(void)
 {
-	if (status.system.start_line)//TODO if java tool is used uncomment
+	if(status.system.start_track == true)
 	{
 		static int16_t i_factor,last_error,d_factor,p_factor, pid;
-		static int8_t error = 0;
+		static int8_t error = 0,k=0;
+		static bool do_once=true, did_corner = false;
+		static timer_t sys_tmr;
 		read_switches();
+		if (++k==20)
+		{
+			k=0;
+			send_state_info();
+		}
 		switch (led.array)//- line on right +line on left
 		{
 			case 0b01100011 : //0
@@ -109,29 +133,152 @@ void get_line_error(void)
 			error = -err6;
 			break;
 			case 0b00000000:
-// 			error = 0;
-// 			i_factor = 0;
-			
+			{
+				switch (sys)
+				{
+					case IDLE:
+					{
+						if (do_once)
+						{
+							do_once=false;
+							sys = S_DELAY_1;
+							set_m_forward();
+							l_motor.rpm = 400;
+							r_motor.rpm = 400;
+						}
+					}
+					break;
+					case S_DELAY_1:
+					{
+						if (do_once)
+						{
+							do_once=false;
+							tmr_start(&sys_tmr,350);
+						}
+					}
+					break;
+					case FIND_TRAK:
+					{
+						if (do_once)
+						{
+							do_once=false;
+							clear_rpm();
+							set_movement(180,C90,RIGHT);
+							did_corner = true;
+						}
+					}
+					break;
+					case FALLOW_TRACK1:
+					{
+						if (do_once)
+						{
+							sys=DO_CIRCLE;
+							do_once=false;
+							clear_rpm();
+							do_cirecle();
+							status.system.circle = true;
+						}
+					}
+					break;
+					case FALLOW_TRACK2:
+					{
+						if (do_once)
+						{
+							do_once=false;
+							clear_rpm();
+							sys = DO_WALL;
+							do_wall();
+							status.system.wall =true;
+						}
+					}
+					default:
+					/* Your code here */
+					break;
+				}
+				
+			}
 			break;
 			case 0b01111111:
-// 			error = 0;
-// 			i_factor = 0;
-			if (last_error==-6||last_error==6)
-			{
-				//TODO: add sate to go back
-			}
 			
 			break;
 			//more cases for the special lines
 			default:
 			{
-				//error =0;
-				
 			}
 			break;
 		}
-// 		if (error!=last_error)
-// 		{
+		
+		if(led.array!=0)
+		{
+			switch (sys)
+			{
+				case IDLE:
+				{
+					do_once=true;
+				}
+				break;				
+				case S_DELAY_1:
+				{
+					if (tmr_exp(&sys_tmr))
+					{
+						sys = FIND_TRAK;
+					}
+				}
+				case FIND_TRAK:
+				{
+					do_once=true;
+					if (movement_finished()&&did_corner==true)
+					{
+						sys=FALLOW_TRACK1;
+						set_m_forward();
+						l_motor.rpm = 400;
+						r_motor.rpm = 400;
+						status.system.start_line=1;
+						
+					}
+				}
+				break;
+				case FALLOW_TRACK1:
+				{
+					do_once=true;
+				}
+				break;
+				case DO_CIRCLE:
+				{
+					do_once=true;
+					if (status.system.circle==false)
+					{
+						sys = S_DELAY_2;
+						tmr_start(&sys_tmr,350);
+					}
+				}
+				break;
+				case S_DELAY_2:
+				{
+					do_once=true;					
+					if (tmr_exp(&sys_tmr))
+					{
+						sys = FALLOW_TRACK2;
+					}
+				}
+				break;
+				
+				case FALLOW_TRACK2:
+				{
+					do_once=true;
+				}
+				default:
+					do_once=true;
+				break;
+			}
+		}
+		
+		
+		
+		
+		
+		if (status.system.start_line)
+		{
 			p_factor = error*Kp;
 			
 			i_factor +=error;
@@ -156,23 +303,11 @@ void get_line_error(void)
 			{
 				pid= -MAX_DEVIATION;
 			}
-// 			if(error<0)//- line on right +line on left
-// 			{
-// 				r_motor.rpm = 17;//r_motor.ref_rpm + pid; //decrees
-// 				l_motor.rpm = 100;//l_motor.ref_rpm;
-// 				//l_motor.rpm = l_motor.ref_rpm -pid/2;
-// 			}
-// 			else
-// 			{
-// 				l_motor.rpm = 17;//l_motor.ref_rpm - pid;//decrees
-// 				r_motor.rpm = 100;//r_motor.ref_rpm;
-// 				//r_motor.rpm = r_motor.ref_rpm + pid/2;
-// 			}
 			l_motor.rpm = l_motor.ref_rpm - pid;
 			r_motor.rpm = r_motor.ref_rpm + pid;
+			last_error = error;
 			
-	//}
-	last_error = error;
+		}
 		static uint8_t info_timer=10;//5*70ms = 350ms
 		if(--info_timer==0)
 		{
@@ -186,6 +321,7 @@ void get_line_error(void)
 			//task_t led_info2 = {.data.command = PID_L_KD, .data.value = d_factor};add_task(&led_info2);
 		}
 	}
+
 }
 
 void send_sensor_values(void) {
@@ -217,6 +353,10 @@ void set_l_Kp(task_t *task)
 {
 	Kp=task->data.u8[3];
 	task_t led_info  = {.data.command = PID_L_KP, .data.value = Kp};add_task(&led_info);
+}
+void start_track(task_t *task)
+{
+	status.system.start_track = task->data.u8[3];
 }
 
 void set_l_Ki(task_t *task)

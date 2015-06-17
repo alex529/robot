@@ -91,7 +91,7 @@ typedef union
 		
 		uint8_t wall : 1;
 		
-		uint8_t not_used6 : 1;
+		uint8_t start_track : 1;
 		uint8_t not_used7 : 1;
 	} system;
 	uint8_t byte[4];
