@@ -9,9 +9,8 @@
 #ifndef ADC_H_
 #define ADC_H_
 
-#define VSTEP 488
+#define VSTEP 250
 
-#define setChannel(pin_number){ADMUX= ((pin_number && 0x1F) | (ADMUX&0xE0));}
 #define get_adc(u16_union_value){u16_union_value.b[0] = ADCL;u16_union_value.b[1] = ADCH;}
 
 

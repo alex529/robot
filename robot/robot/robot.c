@@ -90,7 +90,7 @@ int main(void)
 	enable_features.send_sensor_values=false;
 	
 	control = &state_idle_control_logic;
-	status.system.connected = true;
+	//status.system.connected = true;
 	
 	sei();
 	
@@ -110,16 +110,16 @@ int main(void)
 				com_prot_timer = COMM_PROT_INTERVAL;
 				start(run_com_prot);
 			}
-			if(--motor_timer == 0)
-			{
-				motor_timer = MOTOR_INTERVAL;
-				start(run_motor);
-			}
- 			if(--led_timer == 0)
- 			{
- 				led_timer = led_int;
- 				start(run_led);
- 			}
+// 			if(--motor_timer == 0)
+// 			{
+// 				motor_timer = MOTOR_INTERVAL;
+// 				start(run_motor);
+// 			}
+//  			if(--led_timer == 0)
+//  			{
+//  				led_timer = led_int;
+//  				start(run_led);
+//  			}
  			if( --adc_timer == 0 && enable_features.adc == true )
 			
  			{
@@ -131,11 +131,11 @@ int main(void)
  				send_adc_value_timer = SEND_ADC_VALUE_INTERVAL;
  				start(run_send_adc_value);
  			}
- 			if(--send_sensor_timer == 0)
- 			{
- 				send_sensor_timer = SEND_SENSOR_INTERVAL;
- 				start(run_send_sensor);
- 			}
+//  			if(--send_sensor_timer == 0)
+//  			{
+//  				send_sensor_timer = SEND_SENSOR_INTERVAL;
+//  				start(run_send_sensor);
+//  			}
 		
 		}
 		if(do_handler)/*get_line_error();*/
@@ -151,30 +151,30 @@ int main(void)
 				run_com_prot = false;
 				com_prot_task();
 			}
-			if (run_motor)
-			{
-				run_motor = false;
-				motor_handler();
-				get_line_error();
-			}
-				
- 			if (run_led)
- 			{
- 				run_led = false;
- 				//get_line_error();
- 			}
+// 			if (run_motor)
+// 			{
+// 				run_motor = false;
+// 				motor_handler();
+// 				get_line_error();
+// 			}
+// 				
+//  			if (run_led)
+//  			{
+//  				run_led = false;
+//  				//get_line_error();
+//  			}
  			
-//   			if (run_adc)
-//   			{
-//   				run_adc = false;
-//   				handleMeasurement();
-//   			}
-//   			
-//   			if (run_send_adc_value)
-//   			{
-//   				run_send_adc_value = false;
-//   				send_adc_value_to_pc();
-//   			}			
+  			if (run_adc)
+  			{
+  				run_adc = false;
+  				handleMeasurement();
+  			}
+  			
+  			if (run_send_adc_value)
+  			{
+  				run_send_adc_value = false;
+  				send_adc_value_to_pc();
+  			}			
 // 		
 //  			if (run_send_sensor)
 //   			{
@@ -185,7 +185,7 @@ int main(void)
 // 			if (state_changed||new_data_available||tmr_exp(&state_timer))//can be further optimised
 // 			{
 //  				state_changed=false;
-// 				(*control)();
+				(*control)();
 //  			}
 		}
 		

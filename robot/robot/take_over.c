@@ -33,79 +33,87 @@ void give_back_control_command(task_t *task) {
 	uint8_t state = task->data.u8[0];
 	switch(state) {
 		case 0:
-			control = &state_idle_control_logic;
-			break;
+		control = &state_idle_control_logic;
+		break;
 		case 1:
-			control = &state_find_track_control_logic;
-			state_find_track_data.not_first_run=false;
-			break;
+		control = &state_find_track_control_logic;
+		state_find_track_data.not_first_run=false;
+		break;
 		case 2:
-			control = &state_follow_track_1_control_logic;
-			break;
+		control = &state_find_track_go_a_bit_more_control_logic;
+		state_find_track_go_a_bit_more_control_data.not_first_run=false;
+		break;
 		case 3:
-			control = &state_y_intersection_control_logic;
-			break;
+		control = &state_find_track_turn_left_control_logic;
+		state_find_track_turn_left_control_data.not_first_run = false;
+		break;
 		case 4:
-			control = &state_follow_track_2_control_logic;
-			break;
+		control = &state_follow_track_1_control_logic;
+		break;
 		case 5:
-			state_wait_before_corner_data.not_first_run=false;
-			control = &state_wait_before_corner_logic;
-			break;
+		control = &state_y_intersection_control_logic;
+		break;
 		case 6:
-			state_approach_corner_data.not_first_run=false;
-			control = &state_approach_corner_logic;
-			break;
+		control = &state_follow_track_2_control_logic;
+		break;
 		case 7:
-			state_turn_after_found_corner_data.not_first_run=false;
-			control = &state_turn_after_found_corner_logic;
-			break;
+		state_wait_before_corner_data.not_first_run=false;
+		control = &state_wait_before_corner_logic;
+		break;
 		case 8:
-			state_go_ahead_after_turn_data.not_first_run=false;
-			control = &state_go_ahead_after_turn_logic;
-			break;
+		state_approach_corner_data.not_first_run=false;
+		control = &state_approach_corner_logic;
+		break;
 		case 9:
-			state_go_a_bit_more_data.not_first_run=false;
-			control = &state_go_a_bit_more_logic;
-			break;
+		state_turn_after_found_corner_data.not_first_run=false;
+		control = &state_turn_after_found_corner_logic;
+		break;
 		case 10:
-			state_second_left_turn_data.not_first_run=false;
-			control = &state_second_left_turn_logic;
-			break;
+		state_go_ahead_after_turn_data.not_first_run=false;
+		control = &state_go_ahead_after_turn_logic;
+		break;
 		case 11:
-			state_second_go_ahead_data.not_first_run=false;
-			control = &state_second_go_ahead_logic;
-			break;
+		state_go_a_bit_more_data.not_first_run=false;
+		control = &state_go_a_bit_more_logic;
+		break;
 		case 12:
-			state_second_go_a_bit_more_data.not_first_run=false;
-			control = &state_second_go_a_bit_more_logic;
-			break;
+		state_second_left_turn_data.not_first_run=false;
+		control = &state_second_left_turn_logic;
+		break;
 		case 13:
-			state_third_left_turn_data.not_first_run=false;
-			control = &state_third_left_turn_logic;
-			break;
+		state_second_go_ahead_data.not_first_run=false;
+		control = &state_second_go_ahead_logic;
+		break;
 		case 14:
-			state_third_go_ahead_data.not_first_run=false;
-			control = &state_third_go_ahead_logic;
-			break;
+		state_second_go_a_bit_more_data.not_first_run=false;
+		control = &state_second_go_a_bit_more_logic;
+		break;
 		case 15:
-			state_right_turn_data.not_first_run=false;
-			control = &state_right_turn_logic;
-			break;
+		state_third_left_turn_data.not_first_run=false;
+		control = &state_third_left_turn_logic;
+		break;
 		case 16:
-			state_last_go_ahead_data.not_first_run=false;
-			control = &state_last_go_ahead_logic;
-			break;
+		state_third_go_ahead_data.not_first_run=false;
+		control = &state_third_go_ahead_logic;
+		break;
 		case 17:
-			state_finish_data.not_first_run=false;
-			control = &state_finish_logic;
-			break;
+		state_right_turn_data.not_first_run=false;
+		control = &state_right_turn_logic;
+		break;
+		case 18:
+		state_last_go_ahead_data.not_first_run=false;
+		control = &state_last_go_ahead_logic;
+		break;
+		case 19:
+		state_finish_data.not_first_run=false;
+		control = &state_finish_logic;
+		break;
 		default:
-			control = &state_take_over_control_logic;
-			break;
-			
-	enable_features.adc = false;
-	enable_features.controller = false;
-	enable_features.send_adc_value = false;
+		control = &state_take_over_control_logic;
+		break;
+		
+		enable_features.adc = false;
+		enable_features.controller = false;
+		enable_features.send_adc_value = false;
 	}
 }

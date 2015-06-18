@@ -17,12 +17,21 @@
 #include "common.h"
 #include "motor.h"
 #include "adc.h"
-
+<<<<<<< HEAD
 // 
 // #define BREAK_COUNT 20
 // #define BREAK_COUNT_C 11
 uint8_t BREAK_COUNT = 30;
 uint8_t BREAK_COUNT_C = 9;
+||||||| merged common ancestors
+
+#define BREAK_COUNT 20
+#define BREAK_COUNT_C 9
+=======
+
+#define BREAK_COUNT 20
+#define BREAK_COUNT_C 2
+>>>>>>> 0ab7393fd1ef57b4dba6e2b2cbc72573c1fddf7e
 #define BREAK_FORCE 255
 #define FAST_BRAKE -2
 
@@ -383,8 +392,8 @@ ISR(ADC_vect) {
 	get_adc(adc_value);
 	if (first_channel){
 		result0 = (adc_value.w * VSTEP) / 100;
-		//setChannel(PINA1)
-		//TODO: merge shit
+		ADMUX&= 0xf8;
+		ADMUX|= 0x07;
 		ADCSRA |= (1<<ADSC);
 		first_channel=false;
 		} else {
