@@ -47,8 +47,9 @@ volatile led_t led;
 
 typedef enum
 {
-	FIND_TRAK,
-	GO_TRACK,
+	IDLE,
+	START_TRACK,
+	GET_ON_TRACK,
 	FALLOW_TRACK1,
 	DO_CIRCLE,
 	FALLOW_TRACK2,
@@ -62,7 +63,6 @@ typedef enum
 	S_DELAY_7,
 	S_DELAY_8,
 	S_DELAY_9,
-	IDLE,
 } sys_state_t;
 
 sys_state_t sys = IDLE;
@@ -141,56 +141,46 @@ void get_line_error(void)
 						if (do_once)
 						{
 							do_once=false;
-							sys = S_DELAY_1;
+							sys = START_TRACK;
 							set_m_forward();
 							l_motor.rpm = 400;
 							r_motor.rpm = 400;
 						}
 					}
 					break;
-					case S_DELAY_1:
-					{
-						if (do_once)
-						{
-							do_once=false;
-							tmr_start(&sys_tmr,350);
-						}
-					}
-					break;
-					case FIND_TRAK:
+					case START_TRACK:
 					{
 						if (do_once)
 						{
 							do_once=false;
 							clear_rpm();
-							set_movement(180,C90,RIGHT);
-							did_corner = true;
+							sys = S_DELAY_1;
+							tmr_start(&sys_tmr,350);							
 						}
 					}
-					break;
 					case FALLOW_TRACK1:
 					{
 						if (do_once)
 						{
-							sys=DO_CIRCLE;
 							do_once=false;
 							clear_rpm();
+							sys=DO_CIRCLE;
 							do_cirecle();
 							status.system.circle = true;
 						}
 					}
-					break;
-					case FALLOW_TRACK2:
-					{
-						if (do_once)
-						{
-							do_once=false;
-							clear_rpm();
-							sys = DO_WALL;
-							do_wall();
-							status.system.wall =true;
-						}
-					}
+// 					break;
+// 					case FALLOW_TRACK2:
+// 					{
+// 						if (do_once)
+// 						{
+// 							do_once=false;
+// 							clear_rpm();
+// 							sys = DO_WALL;
+// 							do_wall();
+// 							status.system.wall =true;
+// 						}
+// 					}
 					default:
 					/* Your code here */
 					break;
@@ -216,38 +206,32 @@ void get_line_error(void)
 				{
 					do_once=true;
 				}
-				break;				
+				break;
+				case START_TRACK:
+				{
+					do_once=true;
+				}
+				break;
 				case S_DELAY_1:
 				{
 					if (tmr_exp(&sys_tmr))
 					{
-						sys = FIND_TRAK;
-					}
-				}
-				case FIND_TRAK:
-				{
-					do_once=true;
-					if (movement_finished()&&did_corner==true)
-					{
-						sys=FALLOW_TRACK1;
-						set_m_forward();
-						l_motor.rpm = 400;
-						r_motor.rpm = 400;
-						status.system.start_line=1;
-						
+						sys = GET_ON_TRACK;
+						do_once=true;
 					}
 				}
 				break;
-				case FALLOW_TRACK1:
+				case GET_ON_TRACK:
 				{
-					do_once=true;
-				}
-				break;
-				case DO_CIRCLE:
-				{
-					do_once=true;
-					if (status.system.circle==false)
+					if (do_once)
 					{
+						do_once = false;
+						set_movement(180,C45,RIGHT);
+					}
+					else if (movement_finished())
+					{
+						do_once=true;
+						clear_rpm();
 						sys = S_DELAY_2;
 						tmr_start(&sys_tmr,350);
 					}
@@ -255,20 +239,49 @@ void get_line_error(void)
 				break;
 				case S_DELAY_2:
 				{
-					do_once=true;					
 					if (tmr_exp(&sys_tmr))
 					{
-						sys = FALLOW_TRACK2;
+						sys = FALLOW_TRACK1;
+						do_once=true;
+						status.system.start_line = true;
+						l_motor.ref_rpm = 400;
+						l_motor.rpm = 400;
+						r_motor.ref_rpm = 400;
+						r_motor.rpm = 400;
 					}
 				}
 				break;
-				
-				case FALLOW_TRACK2:
+				case FALLOW_TRACK1:
 				{
 					do_once=true;
 				}
+// 				break;
+// 				case DO_CIRCLE:
+// 				{
+// 					do_once=true;
+// 					if (status.system.circle==false)
+// 					{
+// 						sys = S_DELAY_2;
+// 						tmr_start(&sys_tmr,350);
+// 					}
+// 				}
+// 				break;
+// 				case S_DELAY_2:
+// 				{
+// 					do_once=true;					
+// 					if (tmr_exp(&sys_tmr))
+// 					{
+// 						sys = FALLOW_TRACK2;
+// 					}
+// 				}
+// 				break;
+// 				
+// 				case FALLOW_TRACK2:
+// 				{
+// 					do_once=true;
+// 				}
 				default:
-					do_once=true;
+					//do_once=true;
 				break;
 			}
 		}
@@ -357,6 +370,14 @@ void set_l_Kp(task_t *task)
 void start_track(task_t *task)
 {
 	status.system.start_track = task->data.u8[3];
+	if (status.system.start_track)
+	{
+		sys = IDLE;
+	}
+	else
+	{
+		clear_rpm();
+	}
 }
 
 void set_l_Ki(task_t *task)
@@ -395,8 +416,8 @@ void set_err_p1(task_t *task)
 	err5++;
 	err6++;
 	task_t led_info  = {.data.command = PID_ERR4, .data.value = err4};add_task(&led_info);
-	task_t led_info1  = {.data.command = PID_ERR5, .data.value = err5};add_task(&led_info);
-	task_t led_info2  = {.data.command = PID_ERR6, .data.value = err6};add_task(&led_info);
+	task_t led_info1  = {.data.command = PID_ERR5, .data.value = err5};add_task(&led_info1);
+	task_t led_info2  = {.data.command = PID_ERR6, .data.value = err6};add_task(&led_info2);
 }
 
 void set_pid(task_t *task)

@@ -97,7 +97,7 @@ typedef enum
 typedef enum
 {
 	C0=0,						
-	C45=180,						
+	C45=230,						
 	C90=460,
 	CIRCLE_RADIUS = 1082,
 	WALL_FORWARD = 2364,
