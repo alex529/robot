@@ -402,7 +402,7 @@ void set_rpm(task_t *task)
 	add_task(&motor3);
 }
 
-	uint16_t circle_time = 4400;
+	uint16_t circle_time = 4500;
 
 	/**
 	* \brief Tunes the time that takes to complete the circle
@@ -447,7 +447,7 @@ void set_rpm(task_t *task)
 				if(do_once)
 				{
 					do_once=false;
-					set_movement(180,CIRCLE_RADIUS,FORWARD);
+					set_movement(140,CIRCLE_RADIUS,FORWARD);
 				}
 				if (movement_finished())
 				{
@@ -466,7 +466,7 @@ void set_rpm(task_t *task)
 				if (do_once)
 				{
 					do_once = false;
-					set_movement(180,C90,LEFT);
+					set_movement(140,C90,LEFT);
 				}
 				if (movement_finished())
 				{
@@ -510,7 +510,7 @@ void set_rpm(task_t *task)
 				if(do_once)
 				{
 					do_once=false;
-					set_movement(180,C90,RIGHT);
+					set_movement(140,C90,RIGHT);
 				}
 				if (movement_finished())
 				{

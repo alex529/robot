@@ -17,9 +17,11 @@
 #include "common.h"
 #include "motor.h"
 #include "adc.h"
-
-#define BREAK_COUNT 30
-#define BREAK_COUNT_C 11
+// 
+// #define BREAK_COUNT 20
+// #define BREAK_COUNT_C 11
+uint8_t BREAK_COUNT = 30;
+uint8_t BREAK_COUNT_C = 9;
 #define BREAK_FORCE 255
 #define FAST_BRAKE -2
 
@@ -43,6 +45,32 @@ void set_Kp(task_t *task)
 	Kp = task->data.u8[3];
 	
 	task_t pk_task = {.data.command = PID_KP, .data.value = Kp};
+	add_task(&pk_task);
+}/**
+* \brief  Real-time motor Kp adjustments  has to be placed in data.u8[3]
+*
+* \param task
+*
+* \return void
+*/
+void set_corner_break(task_t *task)
+{
+	BREAK_COUNT_C = task->data.u8[3];
+	
+	task_t pk_task = {.data.command = MOTOR_CORNER_BREAK, .data.value = BREAK_COUNT_C};
+	add_task(&pk_task);
+}/**
+* \brief  Real-time motor Kp adjustments  has to be placed in data.u8[3]
+*
+* \param task
+*
+* \return void
+*/
+void set_break(task_t *task)
+{
+	BREAK_COUNT = task->data.u8[3];
+	
+	task_t pk_task = {.data.command = MOTOR_BREAK, .data.value = BREAK_COUNT};
 	add_task(&pk_task);
 }
 /**

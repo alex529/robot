@@ -51,14 +51,14 @@ void recive_task_init(void)
 	//do_task[PING]			= &ack_ping;
 	do_task[STOP_CONN]        = &stop;
 	
-	//do_task[SET_SPEED]		= &set_speed; //TODO find referent to it in git hist
-	
-	do_task[MOTOR_RPM]		= &set_rpm;
-	do_task[MOTOR_CORNER]	= &set_movement_task;
-	do_task[MOTOR_CIRCLE]	= &start_circle;
-	do_task[MOTOR_WALL]	= &start_wall;
+	do_task[MOTOR_RPM]			= &set_rpm;
+	do_task[MOTOR_CORNER]		= &set_movement_task;
+	do_task[MOTOR_CIRCLE]		= &start_circle;
+	do_task[MOTOR_WALL]			= &start_wall;
 	do_task[MOTOR_CIRCLE_TIME]	= &set_circle_time;
-	do_task[MOTOR_CORNER_TIME]		= &set_corner_time;
+	do_task[MOTOR_CORNER_TIME]	= &set_corner_time;
+	do_task[MOTOR_BREAK]		= &set_break;
+	do_task[MOTOR_CORNER_BREAK]	= &set_corner_break;
 	
 	do_task[PID_KP]			= &set_Kp;
  	do_task[PID_KD]			= &set_Kd;

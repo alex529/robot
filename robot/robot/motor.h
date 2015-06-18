@@ -97,14 +97,14 @@ typedef enum
 typedef enum
 {
 	C0=0,						
-	C45=230,						
-	C90=460,
+	C45=130,						
+	C90=480,
 	CIRCLE_RADIUS = 1082,
-	WALL_FORWARD = 2364,
-	WALL_1 = 1554,
-	WALL_2 = 2164,
-	WALL_3 = 1555,
-	WALL_4 = 2000,
+	WALL_FORWARD = 2264,
+	WALL_1 = 1354,
+	WALL_2 = 2500,
+	WALL_3 = 1705,
+	WALL_4 = 1500,
 	CIRCLE_CIRCUMFERENCE = 9523,
 } corner_t;
 

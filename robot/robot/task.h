@@ -37,6 +37,8 @@ typedef enum
 	MOTOR_CIRCLE_TIME=30,               //0x1E
 	MOTOR_CORNER_TIME=31,               //0x1F
 	MOTOR_WALL=32,						//0x20
+	MOTOR_BREAK=33,						//0x21
+	MOTOR_CORNER_BREAK=34,				//0x22
 	
 	PID_ERROR=40,						//0x28
 	PID_KP=41,							//0x29

@@ -13,5 +13,7 @@ extern volatile uint32_t system_tic;
 
 void set_Kp(task_t *task);
 void set_Kd(task_t *task);
+void set_break(task_t *task);
+void set_corner_break(task_t *task);
 
 #endif /* ISR_H_ */

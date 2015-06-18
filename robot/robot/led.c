@@ -48,6 +48,7 @@ volatile led_t led;
 typedef enum
 {
 	IDLE,
+	STOP,
 	START_TRACK,
 	GET_ON_TRACK,
 	FALLOW_TRACK1,
@@ -136,17 +137,6 @@ void get_line_error(void)
 			{
 				switch (sys)
 				{
-					case IDLE:
-					{
-						if (do_once)
-						{
-							do_once=false;
-							sys = START_TRACK;
-							set_m_forward();
-							l_motor.rpm = 400;
-							r_motor.rpm = 400;
-						}
-					}
 					break;
 					case START_TRACK:
 					{
@@ -166,21 +156,24 @@ void get_line_error(void)
 							clear_rpm();
 							sys=DO_CIRCLE;
 							do_cirecle();
+							status.system.start_line=false;
 							status.system.circle = true;
 						}
 					}
-// 					break;
-// 					case FALLOW_TRACK2:
-// 					{
-// 						if (do_once)
-// 						{
-// 							do_once=false;
-// 							clear_rpm();
-// 							sys = DO_WALL;
-// 							do_wall();
-// 							status.system.wall =true;
-// 						}
-// 					}
+					break;
+					case FALLOW_TRACK2:
+					{
+						if (do_once)
+						{
+							do_once=false;
+							clear_rpm();
+							sys = DO_WALL;
+							do_wall();
+							status.system.start_line=false;
+							status.system.start_track=false;
+							status.system.wall =true;
+						}
+					}
 					default:
 					/* Your code here */
 					break;
@@ -204,7 +197,13 @@ void get_line_error(void)
 			{
 				case IDLE:
 				{
-					do_once=true;
+					if (do_once)
+					{
+						do_once=false;
+						sys = START_TRACK;
+						l_motor.rpm = 400;
+						r_motor.rpm = 400;
+					}
 				}
 				break;
 				case START_TRACK:
@@ -226,11 +225,12 @@ void get_line_error(void)
 					if (do_once)
 					{
 						do_once = false;
-						set_movement(180,C45,RIGHT);
+						set_movement(140,C45,RIGHT);
 					}
 					else if (movement_finished())
 					{
 						do_once=true;
+						set_m_forward();
 						clear_rpm();
 						sys = S_DELAY_2;
 						tmr_start(&sys_tmr,350);
@@ -242,6 +242,7 @@ void get_line_error(void)
 					if (tmr_exp(&sys_tmr))
 					{
 						sys = FALLOW_TRACK1;
+						set_m_forward();
 						do_once=true;
 						status.system.start_line = true;
 						l_motor.ref_rpm = 400;
@@ -255,31 +256,37 @@ void get_line_error(void)
 				{
 					do_once=true;
 				}
-// 				break;
-// 				case DO_CIRCLE:
-// 				{
-// 					do_once=true;
-// 					if (status.system.circle==false)
-// 					{
-// 						sys = S_DELAY_2;
-// 						tmr_start(&sys_tmr,350);
-// 					}
-// 				}
-// 				break;
-// 				case S_DELAY_2:
-// 				{
-// 					do_once=true;					
-// 					if (tmr_exp(&sys_tmr))
-// 					{
-// 						sys = FALLOW_TRACK2;
-// 					}
-// 				}
-// 				break;
-// 				
-// 				case FALLOW_TRACK2:
-// 				{
-// 					do_once=true;
-// 				}
+ 				break;
+				case DO_CIRCLE:
+				{
+					do_once=true;
+					if (status.system.circle==false)
+					{
+						sys = S_DELAY_3;
+						tmr_start(&sys_tmr,350);
+					}
+				}
+				break;
+				case S_DELAY_3:
+				{
+					do_once=true;					
+					if (tmr_exp(&sys_tmr))
+					{
+						sys = FALLOW_TRACK2;
+						set_m_forward();
+						do_once=true;
+						status.system.start_line = true;
+						l_motor.ref_rpm = 400;
+						l_motor.rpm = 400;
+						r_motor.ref_rpm = 400;
+						r_motor.rpm = 400;
+					}
+				}
+ 				break;				
+				case FALLOW_TRACK2:
+				{
+					do_once=true;
+				}
 				default:
 					//do_once=true;
 				break;
@@ -373,10 +380,17 @@ void start_track(task_t *task)
 	if (status.system.start_track)
 	{
 		sys = IDLE;
+		clear_rpm();
+		set_m_forward();
 	}
 	else
 	{
 		clear_rpm();
+		set_m_forward();
+		status.system.circle = false;
+		status.system.start_line = false;
+		status.system.wall=false;
+		sys = STOP;
 	}
 }
 
