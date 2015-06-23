@@ -38,8 +38,8 @@ static uint8_t err4=6, err5=9, err6=11;
 #define aplie_Ki(x)(((x)*Ki))
 /*#define ERROR_STEP 50*/
 
-#define REF_RPM 129
-#define MAX_DEVIATION 200
+#define REF_RPM 500
+#define MAX_DEVIATION 300
 #define MAX_I_DEVIATION 40
 
 volatile led_t led;
@@ -80,7 +80,7 @@ void get_line_error(void)
 	{
 		static int16_t i_factor,last_error,d_factor,p_factor, pid;
 		static int8_t error = 0,k=0;
-		static bool do_once=true, did_corner = false;
+		static bool do_once=true;
 		static timer_t sys_tmr;
 		read_switches();
 		if (++k==20)
@@ -201,8 +201,8 @@ void get_line_error(void)
 					{
 						do_once=false;
 						sys = START_TRACK;
-						l_motor.rpm = 400;
-						r_motor.rpm = 400;
+						l_motor.rpm = REF_RPM;
+						r_motor.rpm = REF_RPM;
 					}
 				}
 				break;
@@ -245,10 +245,10 @@ void get_line_error(void)
 						set_m_forward();
 						do_once=true;
 						status.system.start_line = true;
-						l_motor.ref_rpm = 400;
-						l_motor.rpm = 400;
-						r_motor.ref_rpm = 400;
-						r_motor.rpm = 400;
+						l_motor.ref_rpm = REF_RPM;
+						l_motor.rpm = REF_RPM;
+						r_motor.ref_rpm = REF_RPM;
+						r_motor.rpm = REF_RPM;
 					}
 				}
 				break;
@@ -276,10 +276,10 @@ void get_line_error(void)
 						set_m_forward();
 						do_once=true;
 						status.system.start_line = true;
-						l_motor.ref_rpm = 400;
-						l_motor.rpm = 400;
-						r_motor.ref_rpm = 400;
-						r_motor.rpm = 400;
+						l_motor.ref_rpm = REF_RPM;
+						l_motor.rpm = REF_RPM;
+						r_motor.ref_rpm = REF_RPM;
+						r_motor.rpm = REF_RPM;
 					}
 				}
  				break;				
@@ -301,30 +301,38 @@ void get_line_error(void)
 		{
 			p_factor = error*Kp;
 			
-			i_factor +=error;
-			if (i_factor>MAX_I_DEVIATION)
-			{
-				i_factor=MAX_I_DEVIATION;
-			}
-			else if(i_factor<-MAX_I_DEVIATION)
-			{
-				i_factor=-MAX_I_DEVIATION;
-			}
+// 			i_factor +=error;
+// 			if (i_factor>MAX_I_DEVIATION)
+// 			{
+// 				i_factor=MAX_I_DEVIATION;
+// 			}
+// 			else if(i_factor<-MAX_I_DEVIATION)
+// 			{
+// 				i_factor=-MAX_I_DEVIATION;
+// 			}
 
 			d_factor =aplie_Kd(error-last_error);
 			
 			pid=p_factor+aplie_Ki(i_factor)+d_factor;
 			
-			if (pid>MAX_DEVIATION)
-			{
-				pid=MAX_DEVIATION;
-			}
-			else if (pid<-MAX_DEVIATION)
-			{
-				pid= -MAX_DEVIATION;
-			}
+// 			if (pid>MAX_DEVIATION)
+// 			{
+// 				pid=MAX_DEVIATION;
+// 			}
+// 			else if (pid<-MAX_DEVIATION)
+// 			{
+// 				pid= -MAX_DEVIATION;
+// 			}
 			l_motor.rpm = l_motor.ref_rpm - pid;
 			r_motor.rpm = r_motor.ref_rpm + pid;
+			if (l_motor.rpm<17)
+			{
+				l_motor.rpm=17;
+		}
+		if (r_motor.rpm<17)
+		{
+			r_motor.rpm=17;
+		}
 			last_error = error;
 			
 		}

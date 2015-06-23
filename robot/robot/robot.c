@@ -90,7 +90,7 @@ int main(void)
 	enable_features.send_sensor_values=false;
 	
 	control = &state_idle_control_logic;
-	//status.system.connected = true;
+	status.system.connected = true;
 	
 	sei();
 	
@@ -185,7 +185,7 @@ int main(void)
 // 			if (state_changed||new_data_available||tmr_exp(&state_timer))//can be further optimised
 // 			{
 //  				state_changed=false;
-				(*control)();
+//				(*control)();
 //  			}
 		}
 		

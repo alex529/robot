@@ -78,7 +78,7 @@
 
 
 #define movement_finished() (l_motor.corner == C0&&r_motor.corner==C0)
-#define MAX_RPM 400
+#define MAX_RPM 500
 
 typedef enum
 {
